@@ -50,7 +50,7 @@ following data:
 
 ```
 class MyNewAggregate
-  include Analytics::Aggregate
+  include Granalytics::Aggregate
  
   # One or more fields specific to this aggregate,
   # should at minimum include the field being scoped by.

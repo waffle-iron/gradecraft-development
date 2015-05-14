@@ -1,17 +1,19 @@
-# TODO: refactor as AssignmentEvent type Aggregate::Count
-class AssignmentEvent
-  include Analytics::Aggregate
+# TODO: refactor as CourseUserPageview of type Aggregate::Count
+class Aggregates::CourseUserPageview
+  include Granalytics::Aggregate
 
-  field :assignment_id, type: Integer
-  field :events, type: Hash
+  field :course_id, type: Integer
+  field :user_id, type: Integer
+  field :pages, type: Hash
 
-  scope_by :assignment_id
+  scope_by :course_id, :user_id
 
-  increment_keys "events.%{event_type}.%{granular_key}" => 1,
-                 "events._all.%{granular_key}" => 1
+  increment_keys "pages.%{page}.%{granular_key}" => 1,
+                 "pages._all.%{granular_key}" => 1
 
-  # assignment_id: 1,
-  # events: {
+  # course_id: 1,
+  # user_id: 1,
+  # pages: {
   #   "_all": {
   #     all_time: %,
   #     yearly: {
@@ -33,7 +35,7 @@ class AssignmentEvent
   #       key: %
   #     }
   #   },
-  #   "predictor": {
+  #   "/some/page": {
   #     all_time: %,
   #     yearly: {
   #       key: %

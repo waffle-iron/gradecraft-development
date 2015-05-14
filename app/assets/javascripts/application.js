@@ -31,7 +31,7 @@
 //= require preload_store
 //= require users
 //= require selectToUISlider.jQuery
-//= require analytics
+//= require granalytics
 //= require analytics_dashboard
 //= require assignment_types
 //= require assignments

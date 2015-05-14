@@ -1,23 +1,17 @@
-# TODO: refactor as CourseUserLoginFrequency type Aggregate::Average
-class CourseUserLogin
-  include Analytics::Aggregate
+# TODO: refactor as CourseRoleLogin type Aggregate::Average
+class Aggregates::CourseRoleLogin
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
-  field :user_id, type: Integer
+  field :role_group, type: String
 
-  scope_by :course_id, :user_id
+  scope_by :course_id, :role_group
 
   increment_keys "%{granular_key}.total" => lambda { |event, granularity, interval| self.frequency(interval, event.last_login_at, event.created_at) },
                  "%{granular_key}.count" => 1
 
   ## No 'all_time' key since frequency for all-time would be 0
   # course_id: 1,
-  # user_id: 1,
-  # all_time: {
-  #   total: %,
-  #   count: %,
-  #   average: %%
-  # },
   # yearly: {
   #   key: {
   #     total: %,
@@ -60,6 +54,11 @@ class CourseUserLogin
   #     average: %%
   #   }
   # }
+
+  def self.decorate_event(event)
+    event[:role_group] = event.user_role == "student" ? "student" : "staff"
+    event
+  end
 
   def self.incr(event)
     super

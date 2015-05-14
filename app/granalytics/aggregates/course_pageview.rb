@@ -1,19 +1,17 @@
-# TODO: refactor as CourseRoleEvent of type Aggregate::Count
-class CourseRoleEvent
-  include Analytics::Aggregate
+# TODO: refactor as CoursePageview of type Aggregate::Count
+class Aggregates::CoursePageview
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
-  field :role_group, type: String
-  field :events, type: Hash
+  field :pages, type: Hash
 
-  scope_by :course_id, :role_group
+  scope_by :course_id
 
-  increment_keys "events.%{event_type}.%{granular_key}" => 1,
-                 "events._all.%{granular_key}" => 1
+  increment_keys "pages.%{page}.%{granular_key}" => 1,
+                 "pages._all.%{granular_key}" => 1
 
   # course_id: 1,
-  # role_group: 'student',
-  # events: {
+  # pages: {
   #   "_all": {
   #     all_time: %,
   #     yearly: {
@@ -35,7 +33,7 @@ class CourseRoleEvent
   #       key: %
   #     }
   #   },
-  #   "predictor": {
+  #   "/some/page": {
   #     all_time: %,
   #     yearly: {
   #       key: %
@@ -57,9 +55,4 @@ class CourseRoleEvent
   #     }
   #   }
   # }
-
-  def self.decorate_event(event)
-    event[:role_group] = event.user_role == "student" ? "student" : "staff"
-    event
-  end
 end

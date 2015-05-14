@@ -1,16 +1,15 @@
-class CourseUserPagePageview
-  include Analytics::Aggregate
+# TODO: refactor as CoursePageview of type Aggregate::Count
+class Aggregates::CoursePagePageview
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
-  field :user_id, type: Integer
   field :page, type: String
 
-  scope_by :course_id, :page, :user_id
+  scope_by :course_id, :page
 
   increment_keys "%{granular_key}" => 1
 
   # course_id: 1,
-  # user_id: 2,
   # page: "/some/page",
   # all_time: %,
   # yearly: {

@@ -1,6 +1,6 @@
 # TODO: refactor as AssignmentUserEvent of type Aggregate::Count
-class AssignmentUserEvent
-  include Analytics::Aggregate
+class Aggregates::AssignmentUserEvent
+  include Granalytics::Aggregate
 
   field :assignment_id, type: Integer
   field :user_id, type: Integer

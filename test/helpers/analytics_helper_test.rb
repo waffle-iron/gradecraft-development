@@ -1,6 +1,6 @@
 require "test_helper"
 
-class AnalyticsHelperTest < ActionView::TestCase
+class GranalyticsHelperTest < ActionView::TestCase
 
   def test_sanity
     assert true

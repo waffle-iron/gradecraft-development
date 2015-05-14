@@ -1,5 +1,5 @@
-class CourseEventExport
-  include Analytics::Export
+class Exports::CourseEventExport
+  include Granalytics::Export
 
   rows_by :events
 

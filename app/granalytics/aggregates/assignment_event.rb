@@ -1,18 +1,16 @@
-# TODO: refactor as CourseUserEvent of type Aggregate::Count
-class CourseUserEvent
-  include Analytics::Aggregate
+# TODO: refactor as AssignmentEvent type Aggregate::Count
+class Aggregates::AssignmentEvent
+  include Granalytics::Aggregate
 
-  field :course_id, type: Integer
-  field :user_id, type: Integer
+  field :assignment_id, type: Integer
   field :events, type: Hash
 
-  scope_by :course_id, :user_id
+  scope_by :assignment_id
 
   increment_keys "events.%{event_type}.%{granular_key}" => 1,
                  "events._all.%{granular_key}" => 1
 
-  # course_id: 1,
-  # user_id: 1,
+  # assignment_id: 1,
   # events: {
   #   "_all": {
   #     all_time: %,

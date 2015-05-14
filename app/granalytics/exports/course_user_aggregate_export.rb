@@ -1,5 +1,5 @@
-class CourseUserAggregateExport
-  include Analytics::Export
+class Exports::CourseUserAggregateExport
+  include Granalytics::Export
 
   rows_by :users
 

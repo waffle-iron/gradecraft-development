@@ -1,15 +1,15 @@
-# TODO: refactor as CoursePredictionScore of type Aggregate::Average
-class CoursePrediction
-  include Analytics::Aggregate
+# TODO: refactor as AssignmentPredictionScore of type Aggregate::Average
+class Aggregates::AssignmentPrediction
+  include Granalytics::Aggregate
 
-  field :course_id, type: Integer
+  field :assignment_id, type: Integer
 
-  scope_by :course_id
+  scope_by :assignment_id
 
-  increment_keys "%{granular_key}.total" => lambda { |event| event.score.to_f / event.possible.to_f },
+  increment_keys "%{granular_key}.total" => lambda{ |event| event.score.to_f / event.possible.to_f },
                  "%{granular_key}.count" => 1
 
-  # course_id: 1,
+  # assignment_id: 1,
   # all_time: %,
   # yearly: {
   #   key: {

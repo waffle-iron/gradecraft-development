@@ -1,16 +1,15 @@
-# TODO: refactor as CoursePageview of type Aggregate::Count
-class CoursePagePageview
-  include Analytics::Aggregate
+class Aggregates::CourseRolePageview
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
-  field :page, type: String
+  field :role_group, type: String
 
-  scope_by :course_id, :page
+  scope_by :course_id, :role_group
 
   increment_keys "%{granular_key}" => 1
 
   # course_id: 1,
-  # page: "/some/page",
+  # role_group: "student",
   # all_time: %,
   # yearly: {
   #   key: %
@@ -30,4 +29,9 @@ class CoursePagePageview
   # minutely: {
   #   key: %
   # }
+
+  def self.decorate_event(event)
+    event[:role_group] = event.user_role == "student" ? "student" : "staff"
+    event
+  end
 end

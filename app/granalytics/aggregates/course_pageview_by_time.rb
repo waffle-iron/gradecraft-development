@@ -1,6 +1,6 @@
 # TODO: refactor as CoursePageviewByTime of type Aggregate::Count
-class CoursePageviewByTime
-  include Analytics::Aggregate
+class Aggregates::CoursePageviewByTime
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
 

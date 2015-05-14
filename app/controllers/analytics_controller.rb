@@ -16,7 +16,7 @@ class AnalyticsController < ApplicationController
   end
 
   def all_events
-    data = CourseEvent.data(@granularity, @range, {course_id: current_course.id}, {event_type: "_all"})
+    data = Aggregates::CourseEvent.data(@granularity, @range, {course_id: current_course.id}, {event_type: "_all"})
 
     render json: data
   end
@@ -49,14 +49,14 @@ class AnalyticsController < ApplicationController
   end
 
   def role_events
-    data = CourseRoleEvent.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]}, {event_type: "_all"})
+    data = Aggregates::CourseRoleEvent.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]}, {event_type: "_all"})
 
     render json: data
   end
 
   def assignment_events
     assignments = Hash[current_course.assignments.select([:id, :name]).collect{ |h| [h.id, h.name] }]
-    data = AssignmentEvent.data(@granularity, @range, {assignment_id: assignments.keys}, {event_type: "_all"})
+    data = Aggregates::AssignmentEvent.data(@granularity, @range, {assignment_id: assignments.keys}, {event_type: "_all"})
 
     data.decorate! { |result| result[:name] = assignments[result.assignment_id] }
 
@@ -64,7 +64,7 @@ class AnalyticsController < ApplicationController
   end
 
   def login_frequencies
-    data = CourseLogin.data(@granularity, @range, {course_id: current_course.id})
+    data = Aggregates::CourseLogin.data(@granularity, @range, {course_id: current_course.id})
 
     data[:lookup_keys] = ['{{t}}.average']
 
@@ -80,7 +80,7 @@ class AnalyticsController < ApplicationController
   end
 
   def role_login_frequencies
-    data = CourseRoleLogin.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
+    data = Aggregates::CourseRoleLogin.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
 
     data[:lookup_keys] = ['{{t}}.average']
 
@@ -96,7 +96,7 @@ class AnalyticsController < ApplicationController
   end
 
   def login_events
-    data = CourseLogin.data(@granularity, @range, {course_id: current_course.id})
+    data = Aggregates::CourseLogin.data(@granularity, @range, {course_id: current_course.id})
 
     # Only graph counts
     data[:lookup_keys] = ['{{t}}.count']
@@ -105,7 +105,7 @@ class AnalyticsController < ApplicationController
   end
 
   def login_role_events
-    data = CourseRoleLogin.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
+    data = Aggregates::CourseRoleLogin.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
 
     # Only graph counts
     data[:lookup_keys] = ['{{t}}.count']
@@ -114,33 +114,33 @@ class AnalyticsController < ApplicationController
   end
 
   def all_pageview_events
-    data = CoursePageview.data(@granularity, @range, {course_id: current_course.id}, {page: "_all"})
+    data = Aggregates::CoursePageview.data(@granularity, @range, {course_id: current_course.id}, {page: "_all"})
 
     render json: data
   end
 
   def all_role_pageview_events
-    data = CourseRolePageview.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]}, {page: "_all"})
+    data = Aggregates::CourseRolePageview.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]}, {page: "_all"})
 
     render json: data
   end
 
   def all_user_pageview_events
     user = current_course_data.students.find(params[:user_id])
-    data = CourseUserPageview.data(@granularity, @range, {course_id: current_course.id, user_id: user.id}, {page: "_all"})
+    data = Aggregates::CourseUserPageview.data(@granularity, @range, {course_id: current_course.id, user_id: user.id}, {page: "_all"})
 
     render json: data
   end
 
   def pageview_events
-    data = CoursePagePageview.data(@granularity, @range, {course_id: current_course.id})
+    data = Aggregates::CoursePagePageview.data(@granularity, @range, {course_id: current_course.id})
     data.decorate! { |result| result[:name] = result.page }
 
     render json: data
   end
 
   def role_pageview_events
-    data = CourseRolePagePageview.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
+    data = Aggregates::CourseRolePagePageview.data(@granularity, @range, {course_id: current_course.id, role_group: params[:role_group]})
     data.decorate! { |result| result[:name] = result.page }
 
     render json: data
@@ -148,14 +148,14 @@ class AnalyticsController < ApplicationController
 
   def user_pageview_events
     user = current_course_data.students.find(params[:user_id])
-    data = CourseUserPagePageview.data(@granularity, @range, {course_id: current_course.id, user_id: user.id})
+    data = Aggregates::CourseUserPagePageview.data(@granularity, @range, {course_id: current_course.id, user_id: user.id})
     data.decorate! { |result| result[:name] = result.page }
 
     render json: data
   end
 
   def prediction_averages
-    data = CoursePrediction.data(@granularity, @range, {course_id: current_course.id})
+    data = Aggregates::CoursePrediction.data(@granularity, @range, {course_id: current_course.id})
 
     data[:lookup_keys] = ['{{t}}.average']
     data.decorate! do |result|
@@ -169,7 +169,7 @@ class AnalyticsController < ApplicationController
 
   def assignment_prediction_averages
     assignments = Hash[current_course.assignments.select([:id, :name]).collect{ |h| [h.id, h.name] }]
-    data = AssignmentPrediction.data(@granularity, @range, {assignment_id: assignments.keys})
+    data = Aggregates::AssignmentPrediction.data(@granularity, @range, {assignment_id: assignments.keys})
 
     data[:lookup_keys] = ['{{t}}.count','{{t}}.total']
     data.decorate! do |result|

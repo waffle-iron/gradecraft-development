@@ -1,16 +1,18 @@
-# TODO: refactor as CourseEvent of type Aggregate::Count
-class CourseEvent
-  include Analytics::Aggregate
+# TODO: refactor as CourseRoleEvent of type Aggregate::Count
+class Aggregates::CourseRoleEvent
+  include Granalytics::Aggregate
 
   field :course_id, type: Integer
+  field :role_group, type: String
   field :events, type: Hash
 
-  scope_by :course_id
+  scope_by :course_id, :role_group
 
   increment_keys "events.%{event_type}.%{granular_key}" => 1,
                  "events._all.%{granular_key}" => 1
 
   # course_id: 1,
+  # role_group: 'student',
   # events: {
   #   "_all": {
   #     all_time: %,
@@ -55,4 +57,9 @@ class CourseEvent
   #     }
   #   }
   # }
+
+  def self.decorate_event(event)
+    event[:role_group] = event.user_role == "student" ? "student" : "staff"
+    event
+  end
 end
