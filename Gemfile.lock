@@ -1,9 +1,4 @@
 GIT
-<<<<<<< HEAD
-  remote: https://github.com/resque/resque.git
-  revision: 68b43a3a01006abb0aabf0d564967f546ec1e134
-  branch: 1-x-stable
-=======
   remote: https://github.com/alfajango/granalytics.git
   revision: c71f97df6564baa6d7ab3c04bd50078052b71acd
   specs:
@@ -11,9 +6,9 @@ GIT
       mongoid
 
 GIT
-  remote: https://github.com/mongoid/kiqstand.git
-  revision: fdd5ea62293707fe044180a220670b0142314d04
->>>>>>> granalytics
+  remote: https://github.com/resque/resque.git
+  revision: 68b43a3a01006abb0aabf0d564967f546ec1e134
+  branch: 1-x-stable
   specs:
     resque (1.25.2)
       mono_logger (~> 1.0)
