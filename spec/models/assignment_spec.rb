@@ -471,6 +471,13 @@ describe Assignment do
       expect(subject.rubric.assignment_id).to eq subject.id
       expect(subject.rubric).to_not be_new_record
     end
+
+    it "copies the assignment files", focus: true do
+      assignment.save
+      assignment.assignment_files.create file: fixture_file("test_file.txt", "txt")
+
+      expect(subject.assignment_files.count).to eq 1
+    end
   end
 
   describe "#future?" do

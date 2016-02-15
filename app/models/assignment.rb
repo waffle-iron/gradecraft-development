@@ -80,7 +80,7 @@ class Assignment < ActiveRecord::Base
 
   def copy(attributes={})
     ModelCopier.new(self).copy(attributes: attributes,
-                               associations: [:assignment_score_levels],
+                               associations: [:assignment_score_levels, :assignment_files],
                                options: { prepend: { name: "Copy of "},
                                           overrides: [->(copy) {
                                   copy.rubric = self.rubric.copy if self.rubric.present?
