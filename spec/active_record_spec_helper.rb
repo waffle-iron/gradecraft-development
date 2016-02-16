@@ -48,7 +48,7 @@ require "paper_trail/frameworks/rspec"
 unless defined?(Rails)
   module Rails
     def self.env
-      ENV["RAILS_ENV"]
+      ActiveSupport::StringInquirer.new(ENV["RAILS_ENV"])
     end
   end
 end
