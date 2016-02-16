@@ -54,6 +54,16 @@ describe AssignmentFile do
     end
   end
 
+  describe "#copy", focus: true do
+    let(:assignment_file) { build :assignment_file, filename: "test_file.txt", file: fixture_file("test_file.txt", "txt") }
+    subject { assignment_file.copy }
+
+    it "prepends the filename with 'copy_of'" do
+      assignment_file.save
+      expect(subject.filename).to eq "copy_of_test_file.txt"
+    end
+  end
+
   describe "url" do
     subject { new_assignment_file.url }
     before { allow(new_assignment_file).to receive_message_chain(:s3_object, :presigned_url) { "http://some.url" }}
