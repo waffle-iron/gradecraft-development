@@ -55,13 +55,26 @@ describe AssignmentFile do
   end
 
   describe "#copy", focus: true do
-    let(:assignment_file) { build :assignment_file, filename: "test_file.txt", file: fixture_file("test_file.txt", "txt") }
+    let(:assignment_file) { build :assignment_file, assignment: assignment, filename: "test_file.txt",
+                            file: fixture_file("test_file.txt", "txt") }
     subject { assignment_file.copy }
 
     it "prepends the filename with 'copy_of'" do
       assignment_file.save
       expect(subject.filename).to eq "copy_of_test_file.txt"
     end
+
+    it "keeps the same assignment id" do
+      assignment_file.save
+      expect(subject.assignment_id).to eq assignment_file.assignment_id
+    end
+
+    it "is not the same file" do
+      assignment_file.save
+      expect(subject.file).to_not eq assignment_file.file
+    end
+
+    xit "ignores the processing flag"
   end
 
   describe "url" do
