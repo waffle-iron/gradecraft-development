@@ -9,8 +9,8 @@ ENV DOCKER_FIX random
 RUN gem install -v 1.10.6 bundler
 RUN mkdir /gradecraft
 WORKDIR /gradecraft/
-ADD Gemfile /gradecraft/Gemfile
-ADD Gemfile.lock /gradecraft/Gemfile.lock
+ADD ../Gemfile /gradecraft/Gemfile
+ADD ../Gemfile.lock /gradecraft/Gemfile.lock
 RUN bundle install
 COPY . /gradecraft
 RUN cp /intermidiate/gradecraft_saml_idp.pem /gradecraft/gradecraft_saml_idp.pem
