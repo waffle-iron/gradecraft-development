@@ -11,7 +11,7 @@ module Services
         context.fail_with_rollback!("The grade is invalid and cannot be saved", error_code: 422) \
           unless grade.save
         # warning: LightService doesn't set context keys to false, will be nil !
-        context[:student_visible_status] = grade.is_student_visible?
+        context[:student_visible_status] = GradeProctor.new(grade).viewable?
       end
     end
   end

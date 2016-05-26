@@ -32,7 +32,8 @@ describe Services::Actions::SavesGrade do
   end
 
   it "sets the student visible status to true when grade is visible" do
-    allow(grade).to receive(:is_student_visible?).and_return(true)
+    allow_any_instance_of(GradeProctor).to \
+              receive(:viewable?).and_return true
     result = described_class.execute grade: grade
     expect(result[:student_visible_status]).to be_truthy
   end

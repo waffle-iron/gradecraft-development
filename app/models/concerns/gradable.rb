@@ -5,6 +5,8 @@ module Gradable
     attr_accessible :grades_attributes
 
     has_many :grades, dependent: :destroy
+    has_many :predicted_earned_grades, dependent: :destroy
+
     accepts_nested_attributes_for :grades,
       reject_if: proc { |attrs| attrs[:raw_score].blank? }
   end
@@ -48,8 +50,8 @@ module Gradable
   end
 
   def is_predicted_by_student?(student)
-    grade = grades.where(student_id: student.id).first
-    !grade.nil? && grade.predicted_score > 0
+    grade = predicted_earned_grades.where(student_id: student.id).first
+    !grade.nil? && grade.predicted_points > 0
   end
 
   def median
@@ -59,6 +61,6 @@ module Gradable
   end
 
   def predicted_count
-    grades.predicted_to_be_done.count
+    predicted_earned_grades.predicted_to_be_done.count
   end
 end

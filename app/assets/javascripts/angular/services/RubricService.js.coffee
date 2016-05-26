@@ -1,6 +1,7 @@
 @gradecraft.factory 'RubricService', ['CourseBadge', 'Criterion', 'CriterionGrade', '$http', (CourseBadge, Criterion, CriterionGrade, $http) ->
 
   pointsPossible = 0
+  thresholdPoints = 0
   assignment = {}
   grade = {}
 
@@ -20,10 +21,10 @@
         id: parseInt(window.location.search.match(/student_id=(\d+)/)[1])
       }
     # GRADING A GROUP FOR AN ASSIGNMENT
-    else if window.location.search.match(/group_id=/)
+    else if location.pathname.split('/')[3] == "groups"
       assignment.scope = {
         type: "GROUP",
-        id: parseInt(window.location.search.match(/group_id=(\d+)/)[1])
+        id: parseInt(location.pathname.split('/')[4])
       }
     # DESIGNING A RUBRIC
     else
@@ -74,6 +75,7 @@
       $http.get('/api/assignments/' + assignment.id + '/students/' + assignment.scope.id + '/grade/').success((res)->
         angular.copy(res.data.attributes, grade)
         angular.copy(res.meta.grade_status_options, gradeStatusOptions)
+        thresholdPoints = res.meta.threshold_points
       )
     else if assignment.scope.type == "GROUP"
       $http.get('/api/assignments/' + assignment.id + '/groups/' + assignment.scope.id + '/grades/').success((res)->
@@ -82,6 +84,7 @@
         # For now we filter to the first student's grade since all students grades are identical
         angular.copy(_.find(res.data, { attributes: {'student_id' : res.meta.student_ids[0] }}).attributes, grade)
         angular.copy(res.meta.grade_status_options, gradeStatusOptions)
+        thresholdPoints = res.meta.threshold_points
       )
 
   putRubricGradeSubmission = (assignment, params, returnURL)->
@@ -95,6 +98,9 @@
         if data.errors.length
           console.log(data.errors[0].detail)
     )
+
+  thresholdPoints = ()->
+    thresholdPoints
 
   pointsPossible = ()->
     points = 0
@@ -116,6 +122,7 @@
       criterionGrades: criterionGrades,
       grade: grade,
       gradeStatusOptions: gradeStatusOptions,
-      pointsPossible: pointsPossible
+      pointsPossible: pointsPossible,
+      thresholdPoints: thresholdPoints
   }
 ]

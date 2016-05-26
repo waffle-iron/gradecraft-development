@@ -1,0 +1,22 @@
+= content_nav_for @assignment, "Import Grades"
+
+%h3.pagetitle= @title
+
+.pageContent
+  = render "layouts/alerts"
+
+  %p
+    To import grades, upload a .csv file with the following format. These fields <b> MUST </b> be in the specified order. Two important keys:
+    %ul
+      %li You may include additional information in the extra columns, but that content will be ignored.
+      %li If a student already has a grade for this assignment in GradeCraft, and there is a new grade present in the upload, <b> the old grade will be replaced. </b>
+
+  %hr
+
+    %p
+      Columns should be in the following order:
+      %br #{term_for :student}'s first name, #{term_for :student}'s last name, #{term_for :student}'s email or username, score, and any text feedback you'd like to include. #{link_to "Download Sample File", download_assignment_grades_path(id: @assignment.id, format: "csv"), class: "bold"}
+
+    = form_tag({action: :upload}, :multipart => true) do
+      = file_field_tag "file"
+      = submit_tag("Import", class: "button")

@@ -1,0 +1,6 @@
+- if grade.group.nil?
+  - path = edit_assignment_grade_path(grade.assignment, student_id: grade.student_id)
+- else
+  - path = grade_assignment_group_path(grade.assignment, grade.group)
+
+= link_to "Edit Grade", path, class: "button"

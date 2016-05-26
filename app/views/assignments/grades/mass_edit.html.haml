@@ -1,0 +1,62 @@
+= content_nav_for @assignment, "Quick Grade"
+
+%h3.pagetitle= @title
+
+.pageContent
+  = render "layouts/alerts"
+
+  - if current_course.has_teams? && @assignment.is_individual?
+    .team-filter
+      = form_tag mass_edit_assignment_grades_path, name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
+        = hidden_field_tag :assignment_id, @assignment.id
+        %label.sr-only{:for => "team_id"}
+          Select Team
+        = select_tag :team_id, options_for_select(current_course.teams.alpha.map { |t| [t.name, t.id] }, @team.try(:id)), :prompt => "– Select #{current_course.team_term} –"
+
+  #massGrade
+    = simple_form_for @assignment, method: :put, :url => mass_update_assignment_grades_path(@assignment) do |f|
+      - if @team.present?
+        = hidden_field_tag :team_id, @team.id
+
+      %table
+        %thead
+          %tr
+            %th{:style => "text-align: right"}= "#{term_for :student}"
+            %th.center{:align => "center", scope: "col", "data-dynatable-no-sort" => "true" }
+              - if @assignment.grade_checkboxes?
+                %span.sr-only Check/Uncheck
+                %button.button.select-all= "Check All"
+                %button.button.select-none= "Uncheck All"
+            %th
+        - @grades.each_with_index do |grade, i|
+          %tr
+            %td{:style => "text-align: right"}= link_to grade.student.name, student_path(grade.student)
+            %td.center
+              = f.simple_fields_for :grades, grade do |gf|
+                = gf.hidden_field :graded_by_id, :value => current_user.id
+                - if !grade.status
+                  = gf.hidden_field :status, :value => "Graded"
+                = gf.hidden_field :instructor_modified, :value => true
+                = gf.hidden_field :student_id
+                = label_tag do
+                  // Checking to see if the grade is actually graded before setting the default value to 0
+                  - if @assignment.grade_select? && @assignment.has_levels?
+                    = gf.select :raw_score, options_from_collection_for_select(@assignment_score_levels, :value, :formatted_name, grade.try(:raw_score)), include_blank: true
+                  - elsif @assignment.grade_radio? && @assignment.has_levels?
+                    - @assignment_score_levels.each do |assignment_score_level|
+                      = gf.label :raw_score, "#{assignment_score_level.formatted_name}", value: assignment_score_level.value
+                      = gf.radio_button :raw_score, assignment_score_level.value, class: "radio_inline"
+                  - elsif @assignment.grade_checkboxes?
+                    = gf.check_box :raw_score, {}, @assignment.point_total, nil
+                  - else
+                    - if grade.persisted? && GradeProctor.new(grade).updatable?(user: current_user, course: current_course)
+                      = gf.text_field :raw_score, data: {autonumeric: true, "m-dec" => "0"}
+
+                    - else
+                      = gf.text_field :raw_score, :value => nil, data: {autonumeric: true, "m-dec" => "0"}
+            %td{:style => "text-align: left"}= "/ #{points @assignment.point_total}"
+
+      .submit-buttons
+        %ul
+          %li= f.button :submit, "Submit Grades"
+          %li= link_to glyph("times-circle") + "Cancel", assignments_path, class: "button"

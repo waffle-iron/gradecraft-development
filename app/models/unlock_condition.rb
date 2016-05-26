@@ -1,7 +1,7 @@
 class UnlockCondition < ActiveRecord::Base
 
-  attr_accessible :unlockable_id, :unlockable_type, :condition_id, :condition_type,
-  :condition_state, :condition_value, :condition_date
+  attr_accessible :unlockable_id, :unlockable_type, :condition_id,
+    :condition_type, :condition_state, :condition_value, :condition_date
 
   belongs_to :unlockable, polymorphic: true
   belongs_to :condition, polymorphic: true
@@ -9,7 +9,8 @@ class UnlockCondition < ActiveRecord::Base
   validates_presence_of :condition_id, :condition_type, :condition_state
   validates_associated :unlockable
 
-  # Returning the name of whatever badge or assignment has been identified as the condition
+  # Returning the name of whatever badge or assignment has been identified as
+  # the condition
   def name
     condition.name
   end
@@ -30,7 +31,7 @@ class UnlockCondition < ActiveRecord::Base
     check_condition_for_each_student(group)
   end
 
-  # Human readable sentence to describe what students need to do to unlock this thing
+  # Human readable sentence to describe what students need to do to unlock this
   def requirements_description_sentence
     "#{condition_state_do} the #{condition.name} #{condition_type}"
   end
@@ -44,7 +45,8 @@ class UnlockCondition < ActiveRecord::Base
     "#{condition_state_doing} it unlocks the #{unlockable.name} #{unlockable_type}"
   end
 
-  # Counting how many students in a group have done the work to unlock an assignment
+  # Counting how many students in a group have done the work to unlock an
+  # assignment
   def count_unlocked_in_group(group)
     unlocked_count = 0
     if group.present?
@@ -124,7 +126,7 @@ class UnlockCondition < ActiveRecord::Base
   def check_if_badge_earned_enough_times_by_date(student)
     badge_count = student.earned_badges_for_badge_count(condition_id)
     if badge_count >= condition_value &&
-      (student.earned_badges.where(badge_id: condition_id).last.created_at < condition_date)
+      student.earned_badges.where(badge_id: condition_id).last.created_at < condition_date
       return true
     else
       return false
@@ -177,7 +179,7 @@ class UnlockCondition < ActiveRecord::Base
       check_if_grade_earned_meets_condition_value(grade)
     elsif condition_date?
       check_if_grade_earned_met_condition_date(grade)
-    elsif grade.present? && grade.is_student_visible?
+    elsif GradeProctor.new(grade).viewable?(user: student)
       return true
     else
       return false
@@ -185,7 +187,8 @@ class UnlockCondition < ActiveRecord::Base
   end
 
   def check_if_grade_earned_meets_condition_value(grade)
-    if grade.present? && grade.is_student_visible? && grade.score >= condition_value
+    if GradeProctor.new(grade).viewable? &&
+        grade.score >= condition_value
       return true
     else
       return false
@@ -193,14 +196,15 @@ class UnlockCondition < ActiveRecord::Base
   end
 
   def check_if_grade_earned_met_condition_date(grade)
-    grade.present? && grade.is_student_visible? && grade.graded_at < condition_date
+    GradeProctor.new(grade).viewable? &&
+      grade.graded_at < condition_date
   end
 
   def check_feedback_read_condition(student)
     grade = student.grade_for_assignment_id(condition_id).first
     if grade.present? && grade.feedback_read?
       if condition_date?
-        if (grade.feedback_read_at < condition_date)
+        if grade.feedback_read_at < condition_date
           return true
         else
           return false
@@ -213,7 +217,8 @@ class UnlockCondition < ActiveRecord::Base
     end
   end
 
-  # Checking if the number of students who have completed the condition match the size of the group, returning true if so.
+  # Checking if the number of students who have completed the condition match
+  # the size of the group, returning true if so.
   def check_condition_for_each_student(group)
     unlocked_count = count_unlocked_in_group(group)
     if unlocked_count == group.students.count

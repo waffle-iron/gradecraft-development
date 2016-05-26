@@ -1,8 +1,8 @@
 @import color
+@import layout
 
 .context_menu
   background-color: $color-blue-3
-  height: 2rem
   margin: 0
   width: 100%
   opacity: .8
@@ -10,27 +10,36 @@
   ul
     padding: 0
     margin: 0 0 0 1rem
-    position: relative
     
     li
       list-style-type: none
-      margin: 0
-      line-height: 2rem
+      margin-right: -4px
       text-transform: capitalize
-      display: block
-      padding: 0rem .5rem
-      font-size: .8rem
-      float: left
-      border-left: 1px solid darken($color-blue-3, 20%)
+      padding: .5rem .4rem
+      font-size: .7rem
+      display: inline-block
+      border-right: 1px solid darken($color-blue-3, 20%)
       color: $color-blue-4
       border-radius: 0 !important
-      border-collapse: collapse
+      &:first-child
+        border-left: 1px solid darken($color-blue-3, 20%)
 
       &:hover
         background-color: $color-blue-1
 
-      & > a
+      & a
         color: $color-white
-
-      & a:hover
         display: block
+
+@media (max-width: 1200px)
+  .context_menu ul li
+    font-size: .6rem
+    padding: .5rem .35rem
+
+@media (max-width: $media-small-max)
+  .context_menu ul 
+    margin: 0
+    li:first-child
+      border-left: none
+    .hide-for-small
+      display: none

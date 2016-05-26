@@ -20,10 +20,11 @@ class CoursePredictorExport
       hash[user.id] = user.username
       hash
     end
-    @assignment_names = loaded_data[:assignments].inject({}) do |hash, assignment|
-      hash[assignment.id] = assignment.name
-      hash
-    end
+    @assignment_names =
+      loaded_data[:assignments].inject({}) do |hash, assignment|
+        hash[assignment.id] = assignment.name
+        hash
+      end
     super
   end
 
@@ -36,7 +37,8 @@ class CoursePredictorExport
   end
 
   def assignment_name(event, index)
-    @assignment_names[event.assignment_id] || "[assignment id: #{event.assignment_id}]"
+    @assignment_names[event.assignment_id] ||
+      "[assignment id: #{event.assignment_id}]"
   end
 
   def student_profile(event, index)

@@ -1,0 +1,5 @@
+%ul.button-bar
+  %li= link_to glyph(:check) + "Quick Award", mass_award_badge_path(badge), class: "button"
+  %li= link_to glyph(:star) + "Award", new_badge_earned_badge_path(badge), class: "button"
+  %li= link_to glyph(:edit) + "Edit", edit_badge_path(badge), class: "button"
+  %li= link_to glyph(:trash) + "Delete", badge_path(badge), class: "button", data: { confirm: "Are you sure?",  method: :delete }

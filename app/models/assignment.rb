@@ -8,16 +8,18 @@ class Assignment < ActiveRecord::Base
   include UploadsThumbnails
   include UnlockableCondition
 
-  attr_accessible :name, :assignment_type_id, :assignment_type, :description,
-    :point_total, :open_at, :due_at, :accepts_submissions_until,
-    :release_necessary, :student_logged, :accepts_submissions, :accepts_links,
-    :accepts_text, :accepts_attachments, :resubmissions_allowed, :grade_scope,
-    :visible, :visible_when_locked, :required, :pass_fail, :use_rubric,
-    :hide_analytics, :points_predictor_display, :notify_released,
-    :mass_grade_type, :include_in_timeline, :include_in_predictor,
-    :include_in_to_do, :assignment_file_ids,
-    :assignment_files_attributes, :assignment_file,
-    :assignment_score_levels_attributes, :assignment_score_level, :course, :course_id, :show_name_when_locked, :show_points_when_locked, :show_description_when_locked
+  attr_accessible :accepts_attachments, :accepts_links, :accepts_submissions,
+    :accepts_submissions_until, :accepts_text, :assignment_file,
+    :assignment_file_ids, :assignment_files_attributes, :assignment_score_level,
+    :assignment_score_levels_attributes, :assignment_type, :assignment_type_id,
+    :course, :course_id, :description, :due_at, :grade_scope, :hide_analytics,
+    :include_in_predictor, :include_in_timeline, :include_in_to_do,
+    :mass_grade_type, :name, :notify_released, :open_at, :pass_fail,
+    :point_total, :points_predictor_display, :purpose, :release_necessary,
+    :required, :resubmissions_allowed, :show_description_when_locked,
+    :show_purpose_when_locked, :show_name_when_locked,
+    :show_points_when_locked, :student_logged, :threshold_points, :use_rubric,
+    :visible, :visible_when_locked
 
   attr_accessor :current_student_grade
 
@@ -29,14 +31,17 @@ class Assignment < ActiveRecord::Base
   multiple_files :assignment_files
   # Preventing malicious content from being submitted
   clean_html :description
+  clean_html :purpose
 
   # For instances where the assignment needs its own unique score levels
   score_levels :assignment_score_levels, -> { order "value" }, dependent: :destroy
 
-  # This is the assignment weighting system (students decide how much assignments will be worth for them)
+  # This is the assignment weighting system (students decide how much
+  # assignments will be worth for them)
   has_many :weights, class_name: "AssignmentWeight", dependent: :destroy
 
-  # Student created groups, can connect to multiple assignments and receive group level or individualized feedback
+  # Student created groups, can connect to multiple assignments and receive
+  # group level or individualized feedback
   has_many :assignment_groups, dependent: :destroy
   has_many :groups, through: :assignment_groups
 
@@ -54,6 +59,8 @@ class Assignment < ActiveRecord::Base
 
   # Strip points from pass/fail assignments
   before_save :zero_points_for_pass_fail
+
+  before_save :reset_default_for_nil_values
 
   # Check to make sure the assignment has a name before saving
   validates :course_id, presence: true
@@ -95,10 +102,6 @@ class Assignment < ActiveRecord::Base
     super.presence || 0
   end
 
-  def has_rubric?
-    !!rubric
-  end
-
   def grade_with_rubric?
     use_rubric && rubric.present? && rubric.designed?
   end
@@ -121,19 +124,16 @@ class Assignment < ActiveRecord::Base
   # Custom point total if the class has weighted assignments
   def point_total_for_student(student, weight = nil)
     (point_total * weight_for_student(student, weight)).round rescue 0
-    # rescue methods with a '0' for pass/fail assignments that are also student weightable for some untold reason
+    # rescue methods with a '0' for pass/fail assignments that are also student
+    # weightable for some untold reason
   end
 
-  # Grabbing a student's set weight for the assignment - returns one if the course doesn't have weights
+  # Grabbing a student's set weight for the assignment - returns one if the
+  # course doesn't have weights
   def weight_for_student(student, weight = nil)
     return 1 unless student_weightable?
     weight ||= (weights.where(student: student).pluck("weight").first || 0)
-    weight > 0 ? weight : default_weight
-  end
-
-  # Allows instructors to set a value (presumably less than 1) that would be multiplied by *not* weighted assignments
-  def default_weight
-    course.default_assignment_weight
+    weight > 0 ? weight : course.default_assignment_weight
   end
 
   # Checking to see if an assignment is due soon
@@ -243,7 +243,8 @@ class Assignment < ActiveRecord::Base
       .where("submission_id in (select id from submissions where student_id in (select distinct(student_id) from team_memberships where team_id = ?))", team.id)
   end
 
-  # The below four are the Quick Grading Types, can be set at either the assignment or assignment type level
+  # The below four are the Quick Grading Types, can be set at either the
+  # assignment or assignment type level
   def grade_checkboxes?
     mass_grade_type == "Checkbox"
   end
@@ -311,7 +312,7 @@ class Assignment < ActiveRecord::Base
   end
 
   # Calculating attendance rate, which tallies number of people who have
-  # positive grades for attendance divided by the total number of students in the class
+  # positive grades for attendance divided by total number of students in class
   def completion_rate(course)
     return 0 if course.graded_student_count.zero?
     ((grade_count / course.graded_student_count.to_f) * 100).round(2)
@@ -327,7 +328,7 @@ class Assignment < ActiveRecord::Base
     GradeExporter.new.export_grades(self, students, options)
   end
 
-  # Creating an array with the set of scores earned on the assignment, and
+  # Creating an array with the set of scores earned on the assignment
   def percentage_score_earned
     { scores: earned_score_count.collect { |s| { data: s[1], name: s[0] }}}
   end
@@ -359,5 +360,10 @@ class Assignment < ActiveRecord::Base
 
   def zero_points_for_pass_fail
     self.point_total = 0 if self.pass_fail?
+    self.threshold_points = 0 if self.pass_fail?
+  end
+
+  def reset_default_for_nil_values
+    self.threshold_points = 0 if self.threshold_points.nil?
   end
 end

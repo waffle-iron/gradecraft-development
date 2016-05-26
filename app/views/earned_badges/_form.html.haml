@@ -3,11 +3,11 @@
 = simple_form_for([@badge, @earned_badge]) do |f|
   .italic= "You are awarding the #{@badge.name} #{term_for :badge} to..."
 
-  = hidden_field_tag :badge_id, @badge.id
-  = hidden_field_tag :student_visible, true
+  = f.hidden_field :badge_id, value: @badge.id
+  = f.hidden_field :student_visible, value: true
 
   %section
-    = select_tag :student_id, options_from_collection_for_select(current_course.students, "id", "name", @earned_badge.try(:student_id)), :prompt => "Select Student"
+    = f.select :student_id, options_from_collection_for_select(@students, "id", "name", @earned_badge.try(:student_id)), :prompt => "Select Student"
 
   %section
     .textarea

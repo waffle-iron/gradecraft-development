@@ -15,7 +15,7 @@ module GradesHelper
   end
 
   def in_progress_grades_count_cache_key(course)
-    # This cache key is busted when a grade is updated as a Grade touches a Course
+    # This cache key is busted when a grade is updated
     "#{course.cache_key}/in_progress_grades_count"
   end
 
@@ -26,7 +26,7 @@ module GradesHelper
   end
 
   def no_status_grades_count_cache_key(course)
-    # This cache key is busted when a grade is updated as a Grade touches a Course
+    # This cache key is busted when a grade is updated
     "#{course.cache_key}/no_status_grades_count"
   end
 
@@ -37,7 +37,7 @@ module GradesHelper
   end
 
   def unreleased_grades_count_cache_key(course)
-    # This cache key is busted when a grade is updated as a Grade touches a Course
+    # This cache key is busted when a grade is updated
     "#{course.cache_key}/unreleased_grades_count"
   end
 end

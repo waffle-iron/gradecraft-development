@@ -9,11 +9,12 @@
 
       #points-overview-floating(ng-cloak ng-hide="angular.element('#points-overview').isOnscreen()")
         %h4#points-legend
-          %span.points-assigned(ng-class="{'points-missing': pointsMissing(), 'points-satisfied': pointsSatisfied(), 'points-overage': pointsOverage()}") {{finalPoints() | number:0}}
-          \/{{pointsPossible() | number:0}} Points Allocated
+          %span.points-assigned(ng-class="{'points-missing': pointsMissing(), 'points-satisfied': pointsSatisfied(), 'points-overage': pointsOverage()}") {{ finalPoints() | number:0 }} Points
+        %h4.notice(ng-hide="!pointsSatisfied() && !pointsMissing()") {{ pointsAllocated() | number:0 }} / {{ pointsPossible() | number:0 }} Points Allocated
         %h4.notice(ng-hide="pointsSatisfied() || pointsMissing()") You have not yet allocated any points
-        %h4.notice(ng-show="pointsMissing()") {{pointsRemaining() | number:0}} point{{pointsRemaining() > 1 ? "s" : ""}} have not been assigned
+        %h4.notice(ng-show="pointsMissing()") {{ pointsRemaining() | number:0 }} point{{ pointsRemaining() > 1 ? "s" : "" }} have not been assigned
         %h4.notice(ng-show="pointsSatisfied()") You have allocated all possible points
+        %h4.notice(ng-show="isBelowThreshold()") {{ pointsBelowThreshold() | number:0 }} points below the threshold
         %h4.notice.adjustment(ng-class="{'positive-adjustment' : adjustmentPoints() > 0}" ng-show="pointsAdjusted()") You have adjusted the total by {{adjustmentPoints()}} points
 
       .clear
@@ -25,7 +26,7 @@
       %br
       %br
 
-    %table#grade-rubric-table.edit(ng-cloak)
+    %table#rubric-table.edit(ng-cloak)
       %thead
         %tr
           %td.criterion.heading
@@ -49,16 +50,16 @@
                 {{(criterion.max_points || 0) | number:0}}&nbsp;Points
             .criterion-description {{criterion.description}}
 
-          %td.level.level-level(ng-repeat="level in criterion.levels" ng-click="criterion.gradeWithLevel(level)" ng-class="{selected: criterion.isUsingLevel(level)}")
+          %td.level.level-level(ng-repeat="level in criterion.levels" ng-click="criterion.gradeWithLevel(level)" ng-class="{selected: criterion.isUsingLevel(level), 'meets-expectations': level.pointsMeetExpectations()}")
             .level-heading
               .level-name {{level.name.replace(" ","&nbsp;")}}
+              .level-meets-expectations(ng-show="level.meetsExpectations") Meets Expectations
               .level-points
                 {{level.points | number:0}}&nbsp;Points
-                %input(class="level-select" type="radio" name="criterion_level_{{criterion.id}}" ng-checked="criterion.isUsingLevel(level)")
             .clear
             .level-description
               {{level.description}}
-            .row.badge-row
+            .row.badge-row.design-view
               .level-badge-image(ng-repeat="(levelBadgeId, levelBadge) in level.badges")
                 %img(ng-src="{{levelBadge.badge.icon}}" height="50px")
               .clear
@@ -71,11 +72,12 @@
       .points-given
         .points-overview.bottom(ng-cloak)
           %h4.points-legend
-            %span.points-assigned(ng-class="{'points-missing': pointsMissing(), 'points-satisfied': pointsSatisfied(), 'points-overage': pointsOverage()}") {{pointsGiven() | number:0}}
+            %span.points-assigned(ng-class="{'points-missing': pointsMissing(), 'points-satisfied': pointsSatisfied(), 'points-overage': pointsOverage()}") {{pointsAllocated() | number:0}}
             \/{{pointsPossible() | number:0}} Points Allocated
           %h4.notice(ng-hide="pointsSatisfied() || pointsMissing()") You have not yet allocated any points
           %h4.notice(ng-show="pointsMissing()") {{pointsRemaining() | number:0}} point{{pointsRemaining() > 1 ? "s" : ""}} have not been assigned
           %h4.notice(ng-show="pointsSatisfied()") You have allocated all possible points
+          %h4.notice(ng-show="isBelowThreshold()") {{ pointsBelowThreshold() | number:0 }} points below the threshold
       %br
       .points-adjustment(ng-cloak)
         %h4 Points Adjustment
@@ -83,6 +85,7 @@
       %br
       .total-points(ng-cloak)
         %h3 {{finalPoints() | number:0}} Total Points
+
 
     .right
       .points-adjustment-feedback(ng-if="grade.adjustment_points != 0" ng-cloak)

@@ -4,6 +4,8 @@
   %th{scope: "col"} First Name
   %th{scope: "col"} Last Name
 
+  - if presenter.assignment.threshold_points?
+    %th Raw Score
   // If 'Score' only if the assignment type is not student_weightable
   - if !presenter.assignment_type.student_weightable? && !presenter.assignment.pass_fail?
     %th{scope: "col", "data-dynatable-sorts" => "numericScore"} Score
@@ -17,11 +19,11 @@
 
   %th{scope: "col"} Read?
 
-  - if presenter.assignment.release_necessary?
-    %th{scope: "col"} Status
+  %th{scope: "col"} Status
 
   - if presenter.assignment.accepts_submissions?
-    %th{scope: "col"} Submitted
+    %th{"data-dynatable-sorts" => "submittedAt"} Submitted
+    %th{:style => "display: none"} Submitted At
 
   %th{:style => "min-width: 180px"}
 

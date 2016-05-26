@@ -1,5 +1,5 @@
 RSpec.shared_examples "a model that needs sanitization" do |attribute|
-  describe "basic html sanitization" do
+  describe "relaxed html sanitization" do
     describe "##{attribute}" do
       def get(attribute)
         subject.send attribute
@@ -9,23 +9,10 @@ RSpec.shared_examples "a model that needs sanitization" do |attribute|
         subject.send "#{attribute}=", value
       end
 
-      it "does not allow images before saving" do
-        set attribute, "This is an image <img src='test.jpg' />, ok."
+      it "html-escapes entities" do
+        set attribute, "Hello & Goodbye"
         subject.save
-        expect(get attribute).to eq "This is an image , ok."
-      end
-
-      it "does not allow tables before saving" do
-        set attribute, "This is a table <table></table>, ok."
-        subject.save
-        expect(get attribute).to eq "This is a table , ok."
-      end
-
-      it "adds a no-follow attribute to links" do
-        set attribute, "This is a link <a href=\"gradecraft.com\">GradeCraft</a>, ok."
-        subject.save
-        expect(get attribute).to \
-          eq "This is a link <a href=\"gradecraft.com\" rel=\"nofollow\">GradeCraft</a>, ok."
+        expect(get attribute).to eq "Hello &amp; Goodbye"
       end
     end
   end

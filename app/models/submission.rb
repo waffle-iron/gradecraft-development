@@ -1,10 +1,10 @@
 class Submission < ActiveRecord::Base
-  attr_accessible :task, :task_id, :assignment, :assignment_id, :assignment_type_id,
-    :group, :group_id, :link, :student, :student_id, :creator, :creator_id,
-    :text_comment, :submission_file, :submission_files_attributes, :submission_files,
-    :course_id, :submission_file_ids, :updated_at, :submitted_at
+  attr_accessible :task, :task_id, :assignment, :assignment_id,
+    :assignment_type_id, :group, :group_id, :link, :student, :student_id,
+    :creator, :creator_id, :text_comment, :submission_file, :submitted_at,
+    :submission_files_attributes, :submission_files, :course_id, :updated_at,
+    :submission_file_ids
 
-  include Canable::Ables
   include Historical
   include MultipleFileAttributes
   include Sanitizable
@@ -25,11 +25,22 @@ class Submission < ActiveRecord::Base
   has_many :submission_files, dependent: :destroy, autosave: true
   accepts_nested_attributes_for :submission_files
 
-  scope :ungraded, -> { where("NOT EXISTS(SELECT 1 FROM grades WHERE submission_id = submissions.id OR (assignment_id = submissions.assignment_id AND student_id = submissions.student_id) AND (status = ? OR status = ?))", "Graded", "Released") }
-  scope :graded, -> { where(:grade) }
-  scope :resubmitted, -> { joins(:grade).where(grades: { status: ["Graded", "Released"] })
-                                        .where("grades.graded_at < submitted_at")
-                                      }
+  scope :with_grade, -> do
+    joins("INNER JOIN grades ON "\
+      "grades.assignment_id = submissions.assignment_id AND "\
+      "(grades.group_id = submissions.group_id OR "\
+      "grades.student_id = submissions.student_id)")
+  end
+
+  scope :ungraded, -> do
+    includes(:assignment, :group, :student)
+      .where.not(id: with_grade.where(grades: { status: ["Graded", "Released"] }))
+  end
+
+  scope :resubmitted, -> { includes(:grade)
+    .where(grades: { status: ["Graded", "Released"] })
+    .where("grades.graded_at < submitted_at")
+  }
   scope :order_by_submitted, -> { order("submitted_at ASC") }
   scope :for_course, ->(course) { where(course_id: course.id) }
   scope :for_student, ->(student) { where(student_id: student.id) }
@@ -43,20 +54,6 @@ class Submission < ActiveRecord::Base
 
   clean_html :text_comment
   multiple_files :submission_files
-
-  # Canable permissions
-  def updatable_by?(user)
-    permissions_check(user)
-  end
-
-  def destroyable_by?(user)
-    permissions_check(user)
-  end
-
-  # Permissions regarding who can see a grade
-  def viewable_by?(user)
-    permissions_check(user)
-  end
 
   def graded_at
     grade.graded_at if graded?
@@ -136,15 +133,6 @@ class Submission < ActiveRecord::Base
   end
 
   private
-
-  def permissions_check(user)
-    return true if user.is_staff?(course)
-    if assignment.is_individual?
-      student_id == user.id
-    elsif assignment.has_groups?
-      group_id == user.group_for_assignment(assignment).id
-    end
-  end
 
   def cache_associations
     if task

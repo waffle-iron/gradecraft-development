@@ -1,0 +1,27 @@
+.context_menu
+  %ul
+    - if actions.include? :new
+      %li
+        %a{:href => new_badge_path }
+          = glyph(:plus)
+          New #{(term_for :badge).titleize}
+    - if actions.include? :see
+      %li
+        %a{:href => badge_path(badge) }
+          = glyph(:eye)
+          See
+    - if actions.include? :edit
+      %li
+        %a{:href => edit_badge_path(badge) }
+          = glyph(:edit)
+          Edit
+    - if actions.include? :award
+      %li
+        %a{:href => new_badge_earned_badge_path(badge_id: badge) }
+          = glyph(:star)
+          Award
+    - if actions.include? :quick_award
+      %li
+        %a{:href => mass_award_badge_path(badge) }
+          = glyph(:check)
+          Quick Award

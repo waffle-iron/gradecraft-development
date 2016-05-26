@@ -107,32 +107,6 @@ describe AssignmentTypeWeightsController do
         expect(response).to render_template(:mass_edit)
       end
     end
-
-    describe "GET student predictor data" do
-      it "returns weightable assignment type ids and all course info regarding weighting assignments" do
-        get :predictor_data, format: :json, id: @student.id
-        expect(assigns(:assignment_types_weightable)).to eq([@assignment_type_weightable.id])
-        expect(assigns(:total_weights)).to eq(@course.total_assignment_weight)
-        expect(assigns(:close_at).to_s).to eq(@course.assignment_weight_close_at.to_s)
-        expect(assigns(:max_weights)).to eq(@course.max_assignment_weight)
-        expect(assigns(:max_types_weighted)).to eq(@course.max_assignment_types_weighted)
-        expect(assigns(:default_weight)).to eq(@course.default_assignment_weight)
-      end
-
-      it "returns assignment types as json with current student if id present and no call to update" do
-        get :predictor_data, format: :json, id: @student.id
-        expect(assigns(:student)).to eq(@student)
-        expect(assigns(:update_weights)).to be_falsey
-        expect(response).to render_template(:predictor_data)
-      end
-
-      it "returns assignment types with null student if no id present and no call to update" do
-        get :predictor_data, format: :json
-        expect(assigns(:student).class).to eq(NullStudent)
-        expect(assigns(:update_weights)).to be_falsey
-        expect(response).to render_template(:predictor_data)
-      end
-    end
   end
 
   context "as student" do
@@ -252,21 +226,6 @@ describe AssignmentTypeWeightsController do
         grade = create :released_grade, assignment: @assignment_type_weightable.assignments.first, student: @student, course: @course, raw_score: 1000
         post :update, id: @assignment_type_weightable.id, weight: 2, format: :json
         expect(@assignment_type_weightable.visible_score_for_student(@student)).to eq(2000)
-      end
-    end
-
-    describe "GET student predictor data" do
-      it "returns weightable assignment types info as json for the current course with a call to update" do
-        get :predictor_data, format: :json
-        expect(assigns(:student)).to eq(@student)
-        expect(assigns(:assignment_types_weightable)).to eq([@assignment_type_weightable.id])
-        expect(assigns(:total_weights)).to eq(@course.total_assignment_weight)
-        expect(assigns(:close_at).to_s).to eq(@course.assignment_weight_close_at.to_s)
-        expect(assigns(:max_weights)).to eq(@course.max_assignment_weight)
-        expect(assigns(:max_types_weighted)).to eq(@course.max_assignment_types_weighted)
-        expect(assigns(:default_weight)).to eq(@course.default_assignment_weight)
-        expect(assigns(:update_weights)).to be_truthy
-        expect(response).to render_template(:predictor_data)
       end
     end
   end

@@ -304,5 +304,4 @@ describe Badge do
       expect(badge.earned_badge_total_points(student)).to eq(1000)
     end
   end
-
 end

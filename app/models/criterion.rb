@@ -5,8 +5,11 @@ class Criterion < ActiveRecord::Base
   has_many :levels, dependent: :destroy
 
   has_many :criterion_grades
-  belongs_to :full_credit_level, foreign_key: :full_credit_level_id, class_name: "Level"
-  attr_accessible :name, :max_points, :description, :order, :rubric_id, :full_credit_level_id
+  belongs_to :full_credit_level,
+    foreign_key: :full_credit_level_id, class_name: "Level"
+  attr_accessible :description, :full_credit_level_id, :max_points,
+    :meets_expectations_level_id, :meets_expectations_points,
+    :name, :order, :rubric_id
   attr_accessor :add_default_levels
 
   after_initialize :set_defaults
@@ -28,10 +31,42 @@ class Criterion < ActiveRecord::Base
 
   include DisplayHelpers
 
+  # Mangages a unique level per criteria that meets expectations, and
+  # stores the id and points on the Criteria for queries from other levels
+  def update_meets_expectations!(level, state)
+    return false unless levels.include? level
+
+    # Set only this level as 'meets_expectations'
+    if state == true && !level.meets_expectations?
+      self.transaction do
+        level.update(meets_expectations: true)
+        levels.where("id != ?", level.id).update_all(meets_expectations: false)
+        update_attributes(
+          meets_expectations_level_id: level.id,
+          meets_expectations_points: level.points
+        )
+      end
+
+    # Remove 'meets_expectations' from this criterion
+    elsif state == false && level.meets_expectations?
+      self.transaction do
+        level.update_attributes(meets_expectations: false)
+        update_attributes(
+          meets_expectations_level_id: nil,
+          meets_expectations_points: 0
+        )
+      end
+    end
+  end
+
+  def comments_for(student_id)
+    self.criterion_grades.where(student_id: student_id).first.try(:comments)
+  end
+
   protected
 
   def add_default_levels?
-    self.add_default_levels === true
+    self.add_default_levels == true
   end
 
   def set_defaults
@@ -56,10 +91,20 @@ class Criterion < ActiveRecord::Base
   end
 
   def create_full_credit_level
-    levels.create name: "Full Credit", points: max_points, full_credit: true, durable: true, sort_order: 0
+    levels.create(
+      name: "Full Credit",
+      points: max_points,
+      full_credit: true,
+      sort_order: 0
+    )
   end
 
   def create_no_credit_level
-    levels.create name: "No Credit", points: 0, no_credit: true, durable: true, sort_order: 1000
+    levels.create(
+      name: "No Credit",
+      points: 0,
+      no_credit: true,
+      sort_order: 1000
+    )
   end
 end

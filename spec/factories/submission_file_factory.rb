@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory :submission_file do
     association :submission
-    filename "test_file.rb"
-    file { fixture_file("test_image.jpg", "img/jpg") }
+    filename "test_image.jpg"
+    file { Tempfile.new ["test_image", ".jpg"] }
 
     factory :confirmed_submission_file do
       last_confirmed_at Time.now

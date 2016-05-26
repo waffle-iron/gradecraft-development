@@ -92,6 +92,13 @@ module UnlockableCondition
     (!is_unlockable? && visible?)
   end
 
+  def purpose_visible_for_student?(student)
+    (is_unlockable? &&
+      (visible_when_locked? && show_purpose_when_locked? ||
+     is_unlocked_for_student?(student))) ||
+    (!is_unlockable? && visible?)
+  end
+
   def points_visible_for_student?(student)
     (is_unlockable? &&
       (visible_when_locked? && show_points_when_locked? ||

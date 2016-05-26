@@ -1,0 +1,20 @@
+= content_nav_for @assignment, "Group Grades"
+
+%h3.pagetitle= @title
+
+.pageContent
+  = render "layouts/alerts"
+
+  .bold #{term_for :students}
+  %ul
+    - @group.students.each do |s|
+      %li= link_to s.name, student_path(s)
+
+    - if @group.proposals.present?
+      - @group.proposals.last do |prop|
+        = prop.title
+
+  - if @rubric
+    = render "/grades/rubric_edit"
+  - else
+    = render "standard_edit"

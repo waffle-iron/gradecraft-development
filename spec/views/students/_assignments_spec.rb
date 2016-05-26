@@ -3,6 +3,12 @@ require "rails_spec_helper"
 
 describe "students/syllabus/_assignments" do
 
+  let(:user) { double(:user, is_student?: true) }
+  let(:view_context) { double(:view_context, current_user: user) }
+  let(:presenter) { Students::SyllabusPresenter.new({ student: @student,
+    course: @course, assignment_types: @assignment_types,
+    view_context: view_context }) }
+
   before(:each) do
     @course = create(:course)
     @assignment_type_1 = create(:assignment_type, course: @course, max_points: 1000)
@@ -12,10 +18,10 @@ describe "students/syllabus/_assignments" do
     @assignment_types = @course.assignment_types
     @course.assignments << @assignment
     @student = create(:user)
-    assign(:title, "Assignment Types")
     assign(:assignment_types, @assignment_types)
     allow(view).to receive(:current_course).and_return(@course)
     allow(view).to receive(:current_student).and_return(@student)
+    allow(view).to receive(:presenter).and_return presenter
   end
 
   describe "as student" do
@@ -115,7 +121,7 @@ describe "students/syllabus/_assignments" do
     it "shows a button to see more results if the grade is released" do
       create(:grade, course: @course, assignment: @assignment, student: @student, raw_score: 2000, status: "Released")
       render
-      assert_select "a", text: "See Results", count: 1
+      assert_select "a", text: "See Grade", count: 1
     end
 
     it "shows a button to see the group if a group exists" do
@@ -164,7 +170,7 @@ describe "students/syllabus/_assignments" do
       assign(:students, [@student])
       create(:grade, course: @course, instructor_modified: true, assignment: @assignment, student: @student, raw_score: 2000, status: "Released")
       render
-      assert_select "li", text: "Edit Grade", count: 1
+      assert_select "a", text: "Edit Grade", count: 1
     end
 
     it "shows a button to see their submission if one is present" do
@@ -176,6 +182,5 @@ describe "students/syllabus/_assignments" do
       render
       assert_select "a", text: "See Submission", count: 1
     end
-
   end
 end

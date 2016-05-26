@@ -16,6 +16,6 @@
     #tabt1.ui-tabs-panel.ui-widget-content{role: "tabpanel"}
       .ui-tabs-panel#submission.active{role: "tabpanel", "aria-hidden" => false}
         = render partial: "layouts/alerts"
-        = render partial: "submissions/instructor_show", locals: { presenter: presenter }
+        = render partial: "submissions/submission_content", locals: { presenter: presenter }
       .ui-tabs-panel#history{role: "tabpanel", "aria-hidden" => false}
         = history_timeline presenter.submission_grade_history

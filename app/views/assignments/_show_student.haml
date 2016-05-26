@@ -8,19 +8,19 @@
   #tabs.ui-tabs.ui-widget
     %ul.ui-tabs-nav{role: "tablist"}
       %li
-        %a{ "href" => "#tab1"} Description & Downloads
-      - if presenter.rubric_designed? && !presenter.grades_available_for?(current_student) && ( !current_student || presenter.assignment.description_visible_for_student?(current_student) )
+        %a{ "href" => "#tab1"} Description &amp; Downloads
+      - if presenter.show_rubric_preview? current_student
         %li
           %a{ "href" => "#tab2"} Grading Rubric
-      - if presenter.has_submission_for?(current_student)
+      - if presenter.has_submission_for? current_student
         %li
           %a{ :href => "#tab3"} My Submission
         %li
           %a{ href: "#history" } My Submission History
 
-      - if presenter.grades_available_for?(current_student)
+      - if presenter.grades_available_for? current_student
         %li
-          %a{ :href => "#tab4"} My Results
+          %a{ :href => "#tab4"} My Grade
         - if !presenter.hide_analytics?
           %li
             %a{ :href => "#tab5"} Class Analytics
@@ -28,23 +28,22 @@
     #tabt1.ui-tabs-panel.ui-widget-content{role: "tabpanel"}
       #tab1.active
         = render partial: "assignments/description_and_downloads", locals: { presenter: presenter }
-      - if presenter.rubric_designed? && !presenter.grades_available_for?(current_student) && ( !current_student || presenter.assignment.description_visible_for_student?(current_student) )
+      - if presenter.show_rubric_preview? current_student
         #tab2
-          = render partial: "assignments/rubric_preview", locals: { presenter: presenter }
+          = render partial: "rubrics/components/rubric_table", locals: { rubric: presenter.rubric, student: current_student, include_grade_info: false }
       - if presenter.has_submission_for?(current_student)
         #tab3
-          = render partial: "submissions/student_show", locals: { presenter: presenter }
+          = render "submissions/submission_content",
+              presenter: Submissions::ShowPresenter.new(id: presenter.submission_for_assignment(current_student).id,
+                assignment_id: presenter.assignment.id, course: current_course)
         #history
           = history_timeline presenter.submission_grade_history(current_student)
-      - if presenter.grades_available_for?(current_student)
+      - if presenter.grades_available_for? current_student
         #tab4
-          - if presenter.assignment.has_groups?
-            = render partial: "grades/group_show", locals: { presenter: presenter }
-          - else
-            = render partial: "grades/individual_show", locals: { presenter: presenter }
+          = render partial: "grades/grade_content", locals: { grade: presenter.grade_for(current_student) }
         - if !presenter.hide_analytics?
           #tab5
             - if presenter.assignment.has_groups?
-              = render partial: "grades/analytics/group_analytics", locals: { presenter: presenter }
+              = render "grades/analytics/group_analytics", presenter: presenter
             - else
-              = render partial: "grades/analytics/individual_analytics", locals: { presenter: presenter }
+              = render "grades/analytics/individual_analytics", presenter: presenter

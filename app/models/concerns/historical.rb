@@ -48,6 +48,10 @@ module Historical
     self
   end
 
+  def squish_history!(timeout_in_milliseconds=36_000) # 10 minutes
+    PaperTrailVersionSquisher.new(self).squish!(timeout_in_milliseconds)
+  end
+
   private
 
   def history=(history)

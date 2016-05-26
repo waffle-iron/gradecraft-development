@@ -1,0 +1,35 @@
+- if current_user_is_staff?
+  = render partial: "grades/components/edit_button", locals: { grade: grade }
+
+- if grade.excluded_from_course_score?
+  = render partial: "grades/components/excluded", locals: { grade: grade }
+
+- unless grade.group.nil?
+  = render partial: "grades/components/students_in_group", locals: { grade: grade }
+
+- unless grade.assignment.threshold_points.nil?
+  = render partial: "grades/components/threshold", locals: { grade: grade }
+
+= render partial: "grades/components/score", locals: { grade: grade, assignment_type: grade.assignment_type, assignment: grade.assignment }
+
+- if current_user_is_staff?
+  = render partial: "grades/components/status", locals: { grade: grade }
+
+- if grade.adjustment_points != 0
+  = render partial: "grades/components/points_adjustment", locals: { grade: grade }
+
+- if grade.grade_files.present?
+  = render partial: "grades/components/attachments", locals: { grade: grade }
+
+- if grade.feedback.present?
+  = render partial: "grades/components/feedback", locals: { grade: grade }
+
+- if grade.earned_badges.present?
+  = render partial: "grades/components/badges", locals: { grade: grade }
+
+- if grade.assignment.grade_with_rubric?
+  .rubric-container
+    = render partial: "rubrics/components/rubric_table", locals: { rubric: grade.assignment.rubric, student: grade.student, include_grade_info: true }
+
+- if current_user_is_student?
+  = render partial: "grades/components/request_feedback", locals: { grade: grade }

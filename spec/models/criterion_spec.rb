@@ -19,6 +19,32 @@ describe Criterion do
     end
   end
 
+  describe "#update_meets_expectations!" do
+    before do
+      subject.save
+      subject.levels.first.update_attributes(meets_expectations: true)
+    end
+
+    it "manages setting a new level as 'meets expectations'" do
+      subject.update_meets_expectations!(subject.levels.last, true)
+      expect(subject.levels.first.reload.meets_expectations).to eq(false)
+      expect(subject.levels.last.reload.meets_expectations).to eq(true)
+      expect(subject.reload.meets_expectations_level_id).to eq(
+        subject.levels.last.id
+      )
+      expect(subject.meets_expectations_points).to eq(
+        subject.levels.last.points
+      )
+    end
+
+    it "manages removing all 'meets expectations'" do
+      subject.update_meets_expectations!(subject.levels.first, false)
+      expect(subject.levels.first.reload.meets_expectations).to eq(false)
+      expect(subject.reload.meets_expectations_level_id).to eq(nil)
+      expect(subject.meets_expectations_points).to eq(0)
+    end
+  end
+
   describe "#copy" do
     let(:criterion) { build :criterion }
     subject { criterion.copy }
@@ -36,6 +62,19 @@ describe Criterion do
       criterion.save
       expect(subject.levels.count).to eq 2 # default levels already there
       expect(subject.levels.map(&:criterion_id)).to eq [subject.id, subject.id]
+    end
+  end
+
+  describe "#comments_for" do
+
+    it "returns comments for student" do
+      subject.save
+      grade = create :criterion_grade, criterion: subject, comments: "xo"
+      expect(subject.comments_for(grade.student.id)).to eq("xo")
+    end
+
+    it "returns nil when no associated grade" do
+      expect(subject.comments_for(0)).to eq(nil)
     end
   end
 

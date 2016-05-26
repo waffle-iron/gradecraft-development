@@ -1,7 +1,7 @@
 class EarnedBadge < ActiveRecord::Base
-  attr_accessible :score, :feedback, :student, :badge, :student_id, :badge_id, :submission_id,
-    :course_id, :assignment_id, :level_id, :criterion_id, :student_visible, :grade, :_destroy, :course,
-    :grade_id, :feedback
+  attr_accessible :score, :feedback, :student, :badge, :student_id, :badge_id,
+    :submission_id, :course_id, :assignment_id, :level_id, :criterion_id,
+    :student_visible, :grade, :_destroy, :course, :grade_id, :feedback
 
   STATUSES= ["Predicted", "Earned"]
 
@@ -30,6 +30,7 @@ class EarnedBadge < ActiveRecord::Base
   scope :for_course, ->(course) { where(course_id: course.id) }
   scope :for_student, ->(student) { where(student_id: student.id) }
   scope :student_visible, -> { where(student_visible: true) }
+  scope :order_by_created_at, -> { order("created_at ASC") }
 
   def check_unlockables
     if self.badge.is_a_condition?
@@ -45,7 +46,7 @@ class EarnedBadge < ActiveRecord::Base
   def cache_associations
     self.course_id ||= badge.try(:course_id)
     self.score ||= badge.try(:point_total) || 0
-    self.student_visible = grade.is_student_visible? if grade.present?
+    self.student_visible = GradeProctor.new(grade).viewable? if grade.present?
     true
   end
 

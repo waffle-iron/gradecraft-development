@@ -10,7 +10,7 @@
     - if assignments_for_type.select {|a| a.grades.graded_or_released.length > 1}.present?
       %h4.subtitle= assignment_type.name
 
-      %table.nopage_dynatable
+      %table.dynatable
         %caption.sr-only= assignment_type.name
         %thead
           %tr
@@ -18,13 +18,13 @@
             %th{"scope" => "col"} Min
             %th{"scope" => "col"} Max
             %th{"scope" => "col"} Median
-            %th{"scope" => "col", "data-dynatable-column" => "ave"}
+            %th{"scope" => "col"}
               Ave
               %a
                 %i.fa.fa-info-circle
               .display_on_hover.hover-style
                 The average of all grades, including those who earned zero
-            %th{"scope" => "col", "data-dynatable-column" => "aveEarned"}
+            %th{"scope" => "col"}
               Avg Earned
               %a
                 %i.fa.fa-info-circle
@@ -40,17 +40,17 @@
             - if assignment.grades.graded_or_released.present?
               %tr
                 %td= link_to assignment.name, assignment
-                %td= assignment.low_score
-                %td= assignment.high_score
-                %td= assignment.median
-                %td= assignment.average
-                %td= assignment.earned_average
-                %td= assignment.predicted_count
+                %td= points assignment.low_score
+                %td= points assignment.high_score
+                %td= points assignment.median
+                %td= points assignment.average
+                %td= points assignment.earned_average
+                %td= points assignment.predicted_count
                 %td
                   - if assignment.accepts_submissions?
-                    = assignment.submissions.count
-                %th= assignment.grade_count
+                    = points assignment.submissions.count
+                %th= points assignment.grade_count
                 %th
                   %ul.button-bar.right
-                    %li= link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(assignment), class: "button"
-                    %li= link_to glyph("cloud-download") + "Download Grades", export_grades_assignment_path(assignment, format: "csv"), class: "button"
+                    %li= link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(assignment), class: "button"
+                    %li= link_to glyph("cloud-download") + "Download Grades", export_assignment_grades_path(assignment, format: :csv), class: "button"

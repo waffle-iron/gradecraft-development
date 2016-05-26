@@ -1,4 +1,4 @@
-= simple_form_for current_student.grade_for_assignment(assignment), :url => self_log_grades_assignment_path(assignment), :method => :post do |f|
+= simple_form_for student.grade_for_assignment(assignment), :url => self_log_assignment_grades_path(assignment), :method => :post do |f|
   - if ! student.self_reported_done?(assignment)
     - if assignment.has_levels?
       = f.select :raw_score, assignment.assignment_score_levels.map { |l| [l.formatted_name,l.value] }, :prompt => "Select your grade"

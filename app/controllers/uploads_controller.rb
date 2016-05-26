@@ -24,7 +24,7 @@ class UploadsController < ApplicationController
   end
 
   def destroy_upload_with_flash
-    if @upload.destroy # destroy the actual persisted active record object resource
+    if @upload.destroy # destroy the actual persisted active record resource
       flash[:success] = "File was successfully removed from the server and deleted."
     else
       flash[:alert] = "File was deleted from the server but the corresponding record could not be destroyed."

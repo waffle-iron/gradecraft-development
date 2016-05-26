@@ -12,13 +12,13 @@
           .sr-only Select #{term_for :team}
         = select_tag :team_id, options_for_select(@teams.map { |t| [t.name, t.id] }, @team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
 
-  %table.nofeatures_default_last_name_dynatable
+  %table.dynatable
     %caption.sr-only All Awarded Achievements
     %thead
       %tr
         %th{scope: "col"} First Name
         %th{scope: "col"} Last Name
-        %th{scope: "col", "data-dynatable-sorts" => "badgeCount"}= "#{term_for :badges} Earned"
+        %th{scope: "col"}= "#{term_for :badges} Earned"
         %th{:style => "display: none", } Badge Count
         - if current_course.valuable_badges?
           %th{scope: "col"} Total Badge Score

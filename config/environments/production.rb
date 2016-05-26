@@ -7,12 +7,12 @@ GradeCraft::Application.configure do
   config.action_mailer.default_url_options = { :host => "www.gradecraft.com" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :authentication => :plain,
-    :address => "smtp.mandrillapp.com",
-    :port => 587,
-    :domain => "www.gradecraft.com",
-    :user_name => ENV["MANDRILL_USERNAME"],
-    :password => ENV["MANDRILL_PASSWORD"]
+    address: "smtp.sparkpostmail.com",
+    authentication: :plain,
+    enable_starttls_auto: true,
+    password: ENV.fetch("SPARKPOST_SMTP_PASSWORD"),
+    port: 587,
+    user_name: ENV.fetch("SPARKPOST_SMTP_USERNAME")
   }
   config.active_support.deprecation = :notify
   config.assets.compile = false

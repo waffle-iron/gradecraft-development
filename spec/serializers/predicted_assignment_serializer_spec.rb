@@ -14,21 +14,55 @@ describe PredictedAssignmentSerializer do
     it "creates a grade if it does not have one for the assignment" do
       current_time = DateTime.now
       grade = subject.grade
-      expect(Grade.find(grade.id).created_at).to be > current_time
+      expect(Grade.find(grade.attributes[:id]).created_at).to be > current_time
     end
 
     it "returns the grade if one already exists for the user and assignment" do
       existing_grade = Grade.create(assignment: assignment, student: user)
-      expect(subject.grade.id).to eq existing_grade.id
+      expect(subject.grade.attributes[:id]).to eq existing_grade.id
     end
 
     it "returns an instance of a predicted grade" do
       expect(subject.grade).to be_instance_of PredictedGradeSerializer
     end
 
-    it "returns a nil predicted grade if the user cannot create grades" do
+    it "returns a nil predicted grade without a student present" do
       subject = described_class.new assignment, user, NullStudent.new
-      expect(subject.grade.id).to eq 0
+      expect(subject.grade.attributes[:id]).to eq 0
+    end
+  end
+
+  describe "#prediction" do
+    it "creates the predicted earned grade if it doesn't have one" do
+      current_time = DateTime.now
+      prediction = subject.prediction
+      expect(PredictedEarnedGrade.find(prediction[:id]).created_at).to be > current_time
+    end
+
+    it "returns the prediction if one already exists" do
+      existing_prediction = PredictedEarnedGrade.create(assignment_id: assignment.id, student_id: user.id)
+      expect(subject.prediction[:id]).to eq existing_prediction.id
+    end
+
+    it "returns a nil predicted grade without a student present" do
+      subject = described_class.new assignment, user, NullStudent.new
+      expect(subject.prediction[:id]).to eq 0
+    end
+
+
+    describe "predicted_points" do
+      before do
+        PredictedEarnedGrade.create(assignment_id: assignment.id, student_id: user.id, predicted_points: 1000)
+      end
+
+      it "returns the predicted score if the user is the student" do
+        expect(subject.prediction[:predicted_points]).to eq 1000
+      end
+
+      it "returns 0 predicted_points if user is not same as student for grade" do
+        other_user = create(:user)
+        expect((described_class.new assignment, user, other_user).prediction[:predicted_points]).to eq 0
+      end
     end
   end
 
@@ -73,7 +107,8 @@ describe PredictedAssignmentSerializer do
           name
           pass_fail
           point_total
-          position )
+          position
+          threshold_points )
       expect(exposed_attributes & subject.attributes.keys).to eq(exposed_attributes)
     end
 
@@ -103,15 +138,15 @@ describe PredictedAssignmentSerializer do
         end
       end
 
-      describe "has_rubric" do
-        it "is true when assignment has a rubric" do
-          allow(assignment).to receive(:has_rubric?).and_return true
-          expect(subject[:has_rubric]).to eq(true)
+      describe "is_rubric_graded" do
+        it "is true when assignment#grade_with_rubric? is true" do
+          allow(assignment).to receive(:grade_with_rubric?).and_return true
+          expect(subject[:is_rubric_graded]).to eq(true)
         end
 
-        it "is false if assignment has no rubric" do
-          allow(assignment).to receive(:has_rubric?).and_return false
-          expect(subject[:has_rubric]).to eq(false)
+        it "is false if assignment#grade_with_rubric? is false" do
+          allow(assignment).to receive(:grade_with_rubric?).and_return false
+          expect(subject[:is_rubric_graded]).to eq(false)
         end
       end
 
@@ -169,6 +204,18 @@ describe PredictedAssignmentSerializer do
           allow(assignment).to receive(:accepts_submissions?).and_return true
           allow(user).to receive(:submission_for_assignment).and_return nil
           expect(subject[:has_submission]).to eq(false)
+        end
+      end
+
+      describe "has_threshold" do
+        it "is true when the assignment has a threshold" do
+          allow(assignment).to receive(:threshold_points).and_return 100
+          expect(subject[:has_threshold]).to eq(true)
+        end
+
+        it "is false when the assignment threshold is zero" do
+          allow(assignment).to receive(:threshold_points).and_return 0
+          expect(subject[:has_threshold]).to eq(false)
         end
       end
 

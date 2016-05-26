@@ -1,8 +1,12 @@
 require "active_record_spec_helper"
 require "toolkits/historical_toolkit"
 require "toolkits/sanitization_toolkit"
+require "support/uni_mock/rails"
 
 describe Submission do
+  include UniMock::StubRails
+
+  before { stub_env "development" }
   subject { build(:submission) }
 
   describe "validations" do
@@ -36,10 +40,13 @@ describe Submission do
     end
 
     it "creates a version when the attachment is updated" do
-      subject.submission_files.create(filename: "test",
-                                      filepath: "polsci101/submissionfile/",
-                                      file: fixture_file("test_image.jpg", "img/jpg"))
-      expect(subject.submission_files[0].versions.count).to eq 1
+      # directly create the submission file with the submission_id to avoid an
+      # update action. Creating the submission_file, then updating it with the
+      # submission_id requires a create, then an update, which creates two
+      # versions instead of one.
+      #
+      subject.submission_files.create attributes_for(:submission_file)
+      expect(subject.submission_files.first.versions.count).to eq 1
     end
 
     it "creates a version when the comment is updated" do
@@ -62,7 +69,7 @@ describe Submission do
   end
 
   it "can be saved with only an attached file" do
-    subject.submission_files.new(filename: "test", filepath: "polsci101/submissionfile/", file: fixture_file("test_image.jpg", "img/jpg"))
+    subject.submission_files << build(:submission_file)
     subject.save!
     expect expect(subject.errors.size).to eq(0)
   end
@@ -70,7 +77,7 @@ describe Submission do
   it "can have an an attached file, comment, and link" do
     subject.text_comment = "I volunteer! I volunteer! I volunteer as tribute!"
     subject.link = "http://www.amazon.com/dp/0439023521"
-    subject.submission_files.new(filename: "test", filepath: "polsci101/submissionfile/", file: fixture_file("test_image.jpg", "img/jpg"))
+    subject.submission_files << build(:submission_file)
     subject.save!
     expect expect(subject.errors.size).to eq(0)
   end
@@ -103,144 +110,6 @@ describe Submission do
       expect(subject.submission_files.length).to eq 2
       expect(subject.submission_files[0].filename).to eq "test_file.txt"
       expect(subject.submission_files[1].filename).to eq "test_image.jpg"
-    end
-  end
-
-  describe "#updatable_by?(user)" do
-    it "returns true for the student whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment, student: student)
-      expect(submission.updatable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment)
-      expect(submission.updatable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any student in a group whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment, group: group)
-      expect(submission.updatable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student in other groups whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment)
-      expect(submission.updatable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any staff user" do
-      professor = create(:user)
-      course = create(:course)
-      create :professor_course_membership, user: professor, course: course
-      submission = create(:submission, course: course)
-      expect(submission).to be_updatable_by professor
-    end
-  end
-
-  describe "#destroyable_by?(user)" do
-    it "returns true for the student whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment, student: student)
-      expect(submission.destroyable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment)
-      expect(submission.destroyable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any student in a group whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment, group: group)
-      expect(submission.destroyable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student in other groups whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment)
-      expect(submission.destroyable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any staff user" do
-      professor = create(:user)
-      course = create(:course)
-      create :professor_course_membership, user: professor, course: course
-      submission = create(:submission, course: course)
-      expect(submission).to be_destroyable_by professor
-    end
-  end
-
-  describe "#viewable_by?(user)" do
-    it "returns true for the student whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment, student: student)
-      expect(submission.viewable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Individual")
-      submission = create(:submission, assignment: assignment)
-      expect(submission.viewable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any student in a group whose submission it is" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment, group: group)
-      expect(submission.viewable_by?(student)).to eq(true)
-    end
-
-    it "returns false for any student in other groups whose submission it is not" do
-      student = create(:user)
-      assignment = create(:assignment, grade_scope: "Group")
-      group = create(:group)
-      group.students << student
-      assignment.groups << group
-
-      submission = create(:submission, assignment: assignment)
-      expect(submission.viewable_by?(student)).to eq(false)
-    end
-
-    it "returns true for any staff user" do
-      professor = create(:user)
-      course = create(:course)
-      create :professor_course_membership, user: professor, course: course
-      submission = create(:submission, course: course)
-      expect(submission).to be_viewable_by professor
     end
   end
 
@@ -302,6 +171,42 @@ describe Submission do
     end
   end
 
+  describe ".ungraded" do
+    let(:course) { subject.course }
+    before do
+      Submission.destroy_all
+      subject.save
+    end
+
+    it "returns the submissions that do not have any grades" do
+      expect(Submission.ungraded).to eq [subject]
+    end
+
+    it "returns the submissions that have a grade but it's in progress" do
+      create :grade, course: course, assignment: subject.assignment,
+        student: subject.student, submission: subject, status: "In Progress"
+      expect(Submission.ungraded).to eq [subject]
+    end
+
+    it "does not return submissions that have been graded or released" do
+      create :grade, course: course, assignment: subject.assignment,
+        student: subject.student, submission: subject, status: "Graded"
+      expect(Submission.ungraded).to be_empty
+    end
+
+    it "handles additional parameters" do
+      expect(subject.course.submissions.ungraded).to eq [subject]
+    end
+
+    it "returns the group submissions that do not have a grade" do
+      group = create :group
+      create :grade, course: course, group: group, submission: subject,
+        status: "Graded"
+      subject.update_attributes group_id: group.id, student_id: nil
+      expect(Submission.ungraded).to eq [subject]
+    end
+  end
+
   describe ".resubmitted" do
     it "returns the submissions that have been submitted after they were graded" do
       grade = create(:grade, submission: subject, status: "Graded", graded_at: 1.day.ago)
@@ -322,6 +227,21 @@ describe Submission do
       subject.submitted_at = 2.days.ago
       subject.save
       expect(Submission.resubmitted).to be_empty
+    end
+
+    it "returns one submission for a group resubmissions" do
+      student1 = create(:user)
+      student2 = create(:user)
+      group = create(:group, assignments: [subject.assignment])
+      group.students << [student1, student2]
+      grade1 = create(:grade, submission: subject, student: student1,
+                      status: "Graded", graded_at: 1.day.ago)
+      grade2 = create(:grade, submission: subject, student: student2,
+                      status: "Graded", graded_at: 1.day.ago)
+      subject.submitted_at = DateTime.now
+      subject.group_id = group.id
+      subject.save
+      expect(Submission.resubmitted).to eq [subject]
     end
   end
 
@@ -440,14 +360,5 @@ describe Submission do
 
       expect(submission.has_multiple_components?).to eq(false)
     end
-  end
-
-  describe "#check_unlockables" do
-    # if self.assignment.is_a_condition?
-    #   unlock_conditions = UnlockCondition.where(condition_id: self.assignment.id, condition_type: "Assignment").each do |condition|
-    #     unlockable = condition.unlockable
-    #     unlockable.check_unlock_status(student)
-    #   end
-    # end
   end
 end

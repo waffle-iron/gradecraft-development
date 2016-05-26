@@ -51,12 +51,12 @@
                     %td.foobers= "#{term_for :pass}/#{term_for :fail}"
                   - else
                     %td.doobers= points assignment.point_total
-                  %td= "Yes" if assignment.rubric and assignment.rubric.designed?
+                  %td= "Yes" if assignment.grade_with_rubric?
                   %td
                     .right
                       %ul.button-bar
-                        - if ! ( assignment.rubric and assignment.rubric.designed? and assignment.use_rubric? )
-                          %li= link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(assignment), class: "button"
+                        - if ! assignment.grade_with_rubric?
+                          %li= link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(assignment), class: "button"
                         %li= link_to glyph(:edit) + "Edit", edit_assignment_path(assignment), class: "button"
                         %li= link_to glyph(:copy) + "Copy", copy_assignments_path(id: assignment), class: "button", :method => :copy
                         %li= link_to glyph(:trash) + "Delete", assignment_path(assignment), data: { confirm: "Are you sure?", method: :delete }, class: "button"

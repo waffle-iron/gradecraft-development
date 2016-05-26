@@ -1,6 +1,6 @@
+# Unlock States are used to store whether or not a student has achieved the
+# necessary Unlock Conditions to be able to do whatever is locked
 class UnlockStatesController < ApplicationController
-
-  # Unlock States are used to ...
 
   before_filter :ensure_staff?
   before_filter :save_referer, only: [:manually_unlock]

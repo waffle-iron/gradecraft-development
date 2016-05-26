@@ -7,7 +7,10 @@ class CourseUserLogin
 
   scope_by :course_id, :user_id
 
-  increment_keys "%{granular_key}.total" => lambda { |event, granularity, interval| self.frequency(interval, event.last_login_at, event.created_at) },
+  increment_keys "%{granular_key}.total" => lambda {
+    |event, granularity, interval| self.frequency(interval, event.last_login_at,
+      event.created_at)
+    },
                  "%{granular_key}.count" => 1
 
   ## No 'all_time' key since frequency for all-time would be 0
@@ -64,7 +67,8 @@ class CourseUserLogin
   def self.incr(event)
     super
     # TODO: calculage cached average
-    # This is not yet possible in an update command without first performing a separate find() command.
+    # This is not yet possible in an update command without first performing a
+    # separate find() command.
     # See open MongoDB support request:
     # https://jira.mongodb.org/browse/SERVER-458
   end

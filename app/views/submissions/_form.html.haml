@@ -37,5 +37,5 @@
 
   .submit-buttons
     %ul
-      %li= f.button :submit, "#{presenter.submission.persisted? ? 'Update Submission' : "Submit #{term_for :assignment}"}"
+      %li= f.button :submit, "#{presenter.submission.persisted? ? (presenter.submission.will_be_resubmitted? ? "Resubmit" : "Update Submission") : "Submit #{term_for :assignment}"}"
       %li= link_to glyph("times-circle") + "Cancel", assignment_path(presenter.assignment), class: "button"

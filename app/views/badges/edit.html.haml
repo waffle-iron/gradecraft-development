@@ -2,20 +2,7 @@
 
 %h3.pagetitle= @title
 
-.context_menu
-  %ul
-    %li
-      %a{:href => badge_path(@badge) }
-        = glyph(:eye)
-        See
-    %li
-      %a{:href => new_badge_earned_badge_path(badge_id: @badge) }
-        = glyph(:star)
-        Award
-    %li
-      %a{:href => mass_award_badge_path(@badge) }
-        = glyph(:check)
-        Quick Award
+= render partial: "badges/context_menu", locals: { badge: @badge, actions: [:see, :award, :quick_award]}
 
 .pageContent
   = render "form"

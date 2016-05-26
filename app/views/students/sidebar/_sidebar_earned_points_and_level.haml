@@ -7,7 +7,7 @@
     / Display current level if it is present
     %br
     You have achieved the
-    %span.bold #{current_student.grade_level_for_course(current_course)} level
+    %span.bold= link_to "#{current_student.grade_level_for_course(current_course)} level", course_progress_path
   - cache multi_cache_key :student_sidebar_total_score, current_student, current_course do
     - scores = total_scores_for_chart current_student, current_course
     #data-predictor{"data-predictor" =>  scores.to_json}

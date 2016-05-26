@@ -7,7 +7,8 @@ class CoursePrediction
   scope_by :course_id
 
   increment_keys "%{granular_key}.count" => 1
-  # "%{granular_key}.total" => lambda{ |event| event.score.to_f / event.possible.to_f },
+  # "%{granular_key}.total" => lambda{ |event| event.score.to_f /
+  # event.possible.to_f },
 
   # course_id: 1,
   # all_time: %,
@@ -26,7 +27,8 @@ class CoursePrediction
   def self.incr(event)
     super
     # TODO: Increment cached average
-    # This is not yet possible in an update command without first performing a separate find() command.
+    # This is not yet possible in an update command without first performing
+    # a separate find() command.
     # See open MongoDB support request:
     # https://jira.mongodb.org/browse/SERVER-458
   end

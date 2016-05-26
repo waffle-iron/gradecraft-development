@@ -1,0 +1,6 @@
+.bold= "Earned #{ term_for :badges }:"
+%ul
+  - grade.earned_badges.each do |earned_badge|
+    %li
+      %img{ src: earned_badge.icon, width: 80 }
+      = link_to earned_badge.name, earned_badge.badge

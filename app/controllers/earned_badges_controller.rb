@@ -1,9 +1,11 @@
-class EarnedBadgesController < ApplicationController
+require_relative "../services/creates_earned_badge"
 
-  # Earned badges are to badges what grades are to assignments - the record of how what and how a student performed
+class EarnedBadgesController < ApplicationController
+  # Earned badges are to badges what grades are to assignments - the record of
+  # how what and how a student performed
 
   before_filter :ensure_staff?
-  before_action :find_badge, only: [:index, :show, :new, :edit, :create, :update, :destroy ]
+  before_action :find_badge, except: [:mass_edit, :mass_earn]
   before_action :find_earned_badge, only: [:show, :edit, :update, :destroy ]
 
   def index
@@ -27,19 +29,15 @@ class EarnedBadgesController < ApplicationController
   end
 
   def create
-    @earned_badge = current_course.earned_badges.new(params[:earned_badge])
-    @earned_badge.badge =  current_course.badges.find_by_id(params[:badge_id])
-    @earned_badge.student =  current_course.students.find_by_id(params[:student_id])
-    @earned_badge.student_visible = true
+    result = Services::CreatesEarnedBadge.award params[:earned_badge]
 
-    if @earned_badge.save
-      if @badge.point_total?
-        # @mz TODO: add specs
-        ScoreRecalculatorJob.new(user_id: @earned_badge.student_id, course_id: current_course.id).enqueue
-      end
-      NotificationMailer.earned_badge_awarded(@earned_badge.id).deliver_now
-      redirect_to badge_path(@badge), notice: "The #{@badge.name} #{term_for :badge} was successfully awarded to #{@earned_badge.student.name}"
+    if result.success?
+      redirect_to badge_path(result.earned_badge.badge),
+        notice: "The #{result.earned_badge.badge.name} #{term_for :badge} was successfully awarded to #{result.earned_badge.student.name}"
     else
+      @title = "Award #{@badge.name}"
+      @earned_badge = result.earned_badge
+      @students = current_course.students
       render action: "new"
     end
   end
@@ -47,11 +45,12 @@ class EarnedBadgesController < ApplicationController
   def update
     if @earned_badge.update_attributes(params[:earned_badge])
       if @badge.point_total?
-        # @mz TODO: add specs
-        ScoreRecalculatorJob.new(user_id: @earned_badge.student_id, course_id: current_course.id).enqueue
+        ScoreRecalculatorJob.new(user_id: @earned_badge.student_id,
+                                 course_id: current_course.id).enqueue
       end
       expire_fragment "earned_badges"
-      redirect_to badge_path(@badge), notice: "#{@earned_badge.student.name}'s #{@badge.name} #{term_for :badge} was successfully updated"
+      redirect_to badge_path(@badge),
+        notice: "#{@earned_badge.student.name}'s #{@badge.name} #{term_for :badge} was successfully updated"
     else
       render action: "edit"
     end
@@ -78,12 +77,12 @@ class EarnedBadgesController < ApplicationController
     # otherwise build a new one only if it hasn't been earned
     else
       @earned_badges = @students.map do |student|
-        @badge.earned_badges.where(student_id: student).first || @badge.earned_badges.new(student: student, badge: @badge)
+        @badge.earned_badges.where(student_id: student).first ||
+          @badge.earned_badges.new(student: student, badge: @badge)
       end
     end
   end
 
-  # ATTN
   def mass_earn
     @badge = current_course.badges.find(params[:id])
     @valid_earned_badges ||= parse_valid_earned_badges
@@ -100,7 +99,8 @@ class EarnedBadgesController < ApplicationController
     @student_name = "#{@earned_badge.student.name}"
     @earned_badge.destroy
     expire_fragment "earned_badges"
-    redirect_to @badge, notice: "The #{@badge.name} #{term_for :badge} has been taken away from #{@student_name}."
+    redirect_to @badge,
+      notice: "The #{@badge.name} #{term_for :badge} has been taken away from #{@student_name}."
   end
 
   private
@@ -134,7 +134,8 @@ class EarnedBadgesController < ApplicationController
 
   def update_student_point_totals
     @valid_earned_badges.each do |earned_badge|
-      ScoreRecalculatorJob.new(user_id: earned_badge.student.id, course_id: current_course.id).enqueue
+      ScoreRecalculatorJob.new(user_id: earned_badge.student.id,
+        course_id: current_course.id).enqueue
       logger.info "Updated student scores to include EarnedBadge ##{earned_badge[:id]}"
     end
   end
@@ -148,10 +149,11 @@ class EarnedBadgesController < ApplicationController
 
   def handle_mass_update_redirect
     if @valid_earned_badges.any?
-      redirect_to badge_path(@badge), notice: "The #{@badge.name} #{term_for :badge} was successfully awarded #{@valid_earned_badges.count} times"
+      redirect_to badge_path(@badge),
+        notice: "The #{@badge.name} #{term_for :badge} was successfully awarded #{@valid_earned_badges.count} times"
     else
-      redirect_to mass_award_badge_path(id: @badge), notice: "No earned badges were sucessfully created."
+      redirect_to mass_award_badge_path(id: @badge),
+        notice: "No earned badges were sucessfully created."
     end
   end
-
 end

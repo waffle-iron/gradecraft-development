@@ -6,7 +6,8 @@ class UsersController < ApplicationController
 
   respond_to :html, :json
 
-  before_filter :ensure_staff?, except: [:activate, :activated, :edit_profile, :update_profile]
+  before_filter :ensure_staff?,
+    except: [:activate, :activated, :edit_profile, :update_profile]
   before_filter :ensure_admin?, only: [:all]
   skip_before_filter :require_login, only: [:activate, :activated]
 
@@ -79,7 +80,10 @@ class UsersController < ApplicationController
     @user.destroy
 
     respond_to do |format|
-      format.html { redirect_to users_url, notice: "#{@name} was successfully deleted" }
+      format.html {
+        redirect_to users_url,
+        notice: "#{@name} was successfully deleted"
+      }
     end
   end
 
@@ -108,11 +112,12 @@ class UsersController < ApplicationController
     FlaggedUser.toggle! current_course, current_user, @user.id
   end
 
-  # We don't allow students to edit their info directly - this is a mediated view
+  # We don't allow students to edit their info directly
   def edit_profile
     @title = "Edit My Profile"
     @user = current_user
-    @course_membership = @user.course_memberships.where(course_id: current_course).first
+    @course_membership =
+      @user.course_memberships.where(course_id: current_course).first
   end
 
   def update_profile
@@ -124,10 +129,12 @@ class UsersController < ApplicationController
     end
 
     if @user.update_attributes(params[:user])
-      redirect_to dashboard_path, notice: "Your profile was successfully updated!"
+      redirect_to dashboard_path,
+        notice: "Your profile was successfully updated!"
     else
       @title = "Edit My Profile"
-      @course_membership = @user.course_memberships.where(course_id: current_course).first
+      @course_membership =
+        @user.course_memberships.where(course_id: current_course).first
       render :edit_profile
     end
   end

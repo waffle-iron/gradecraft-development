@@ -1,5 +1,14 @@
 %section.pilot
-  %h1.bold Are you an instructor at UM interested in using GradeCraft? 
-  %p Tell us a little bit about your course and we'll be in touch shortly to get you set up.
-
-  <iframe src="https://docs.google.com/a/umich.edu/forms/d/1AzqyS-vDUxvyohO_5mYOYRYqvJkA9_o74_ZPokRVwew/viewform?embedded=true" width="730" height="900" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+  .student-pilot
+    .pilot-text
+      %h1.bold Are you a student in a GradeCraft course? 
+      %p 
+        Please try logging in via 
+        %a{ :href => 'https://umich.instructure.com/', :title => ""} Canvas  
+        by clicking the GradeCraft link in the left sidebar or reach out to your instructor. 
+  .instructor-pilot
+    .pilot-text
+      %h1.bold Are you an instructor at UM interested in using GradeCraft? 
+      %p 
+        %a{ :href => 'https://docs.google.com/a/umich.edu/forms/d/1AzqyS-vDUxvyohO_5mYOYRYqvJkA9_o74_ZPokRVwew/viewform?embedded=true', :title => "" } Tell us a little bit about your course
+        and we'll be in touch shortly to get you set up.

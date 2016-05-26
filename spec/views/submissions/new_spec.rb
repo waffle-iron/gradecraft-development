@@ -4,7 +4,7 @@ include CourseTerms
 
 describe "submissions/new" do
 
-  let(:presenter) { NewSubmissionPresenter.new({ course: @course, assignment_id: @assignment.id,
+  let(:presenter) { Submissions::NewPresenter.new({ course: @course, assignment_id: @assignment.id,
                                                  view_context: ActionController::Base.new.view_context })
                                                }
 
@@ -23,13 +23,5 @@ describe "submissions/new" do
   it "renders successfully" do
     render
     assert_select "h3", text: "Submit #{@assignment.name} (#{@assignment.point_total} points)", count: 1
-  end
-
-  it "renders the breadcrumbs" do
-    render
-    assert_select ".content-nav", count: 1
-    assert_select ".breadcrumbs" do
-      assert_select "a", count: 4
-    end
   end
 end

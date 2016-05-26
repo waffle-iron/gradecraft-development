@@ -21,11 +21,16 @@ describe RubricsController do
 
     describe "GET design" do
       it "shows the design form" do
-        skip "implement"
         get :design, { assignment_id: @assignment.id, rubric: @rubric}
-        expect(assigns(:title)).to eq("Create a New assignment Type")
-        expect(assigns(:assignment_type)).to be_a_new(AssignmentType)
+        expect(assigns(:title)).to eq("Design Rubric for #{@assignment.name}")
         expect(response).to render_template(:design)
+      end
+    end
+
+    describe "GET export" do
+      it "retrieves the export download" do
+        get :export, assignment_id: @assignment.id, format: :csv
+        expect(response.body).to include("Criteria ID,Criteria Description")
       end
     end
   end

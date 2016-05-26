@@ -3,8 +3,8 @@ require "rails_spec_helper"
 include CourseTerms
 
 describe "assignments/individual/_table_body" do
-
-  let(:presenter) { AssignmentPresenter.new({ assignment: @assignment, course: @course }) }
+  let(:presenter) { Assignments::Presenter.new({ assignment: @assignment,
+                                                 course: @course }) }
 
   before(:each) do
     @course = create(:course)
@@ -13,7 +13,8 @@ describe "assignments/individual/_table_body" do
     @course.assignments << @assignment
     student = create(:user)
     student.courses << @course
-    @grade = create(:grade, course: @course, assignment: @assignment, student: student)
+    @grade = create(:grade, course: @course, assignment: @assignment,
+                    student: student)
     allow(view).to receive(:current_course).and_return(@course)
     allow(view).to receive(:presenter).and_return presenter
   end

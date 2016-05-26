@@ -16,12 +16,13 @@
 
   %br
 
-  %table.nofeatures_default_due_date_dynatable{"aria-describedby" => "ungradedTableCaption"}
+  %table.dynatable{"aria-describedby" => "ungradedTableCaption"}
     %thead
       %tr
         %th{scope: "col", :width => "10%"} Assignment
         %th{scope: "col", :width => "7%"} Name
-        %th{"data-dynatable-sorts" => "dueDate"} Date Submitted
+        %th{"data-dynatable-sorts" => "submittedAt"} Date Submitted
+        %th{:style => "display: none"} Submitted At
         %th Comment
         - if current_course.has_teams?
           %th{scope: "col", :width => "15%"}= "#{term_for :team}"
@@ -37,6 +38,7 @@
             - elsif submission.assignment.has_groups?
               = link_to submission.group.try(:name), group_path(submission.group)
           %td= submission.submitted_at
+          %td{:style => "display: none"}= submission.submitted_at.to_formatted_s(:db) if submission.submitted_at.present?
           %td= raw sanitize_external_links submission.text_comment
           - if current_course.has_teams?
             %td
@@ -50,4 +52,4 @@
                   %li= link_to glyph(:check) + "Grade", edit_assignment_grade_path(assignment_id: submission.assignment.id, student_id: submission.student.try(:id)), class: "button"
                 - else
                   %li= link_to glyph(:eye) + "See Submission",assignment_submission_path(submission.assignment, id: submission.id), class: "button"
-                  %li= link_to glyph(:check) + "Grade", group_grade_assignment_path(submission.assignment, group_id: submission.group), class: "button"
+                  %li= link_to glyph(:check) + "Grade", grade_assignment_group_path(submission.assignment, submission.group), class: "button"

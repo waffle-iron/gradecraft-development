@@ -4,7 +4,7 @@
     .hide-for-medium.hide-for-large.center= image_tag "gradecraft_logo.png", :width => "180"
     %h1.center A learning management system that supports gameful courses
     %h3.center Encourage students to focus on the craft of learning
-  .feature-section.white.gameful
+  .feature-section.white.gameful.clearfix
     %h2.center What is Gameful?
     .section-container
       .quarter
@@ -62,5 +62,41 @@
       .center
         = link_to "See More Features", features_path, class: "outline-button"
         .clear
+
+  .feature-section.white.gameful.pedagogy.clearfix
+    %h2.center Learn More About Gameful Pedagogy
+    .section-container
+      .quarter
+        .circle.what-is-gameful
+          = image_tag "book.png", :width => "75"
+        %h4 What is Gameful?
+        %p Learn more about the core elements of gameful learning
+        = link_to "http://gamefulpedagogy.com/what-is-gameful", :target => "_blank" do
+          Read more
+          = glyph("long-arrow-right")
+      .quarter
+        .circle.getting-started
+          = image_tag "getting-started.png", :width => "100"
+        %h4 Getting Started
+        %p Learn how to implement gameful design in your course
+        = link_to "http://gamefulpedagogy.com/getting-started", :target => "_blank" do
+          Get Started
+          = glyph("long-arrow-right")
+      .quarter
+        .circle.faq
+          = image_tag "faq.png", :width => "100"
+        %h4 FAQs
+        %p Frequently asked questions about gameful pedagogy
+        = link_to "http://gamefulpedagogy.com/faqs", :target => "_blank" do
+          Find your question
+          = glyph("long-arrow-right")
+      .quarter
+        .circle.example-syllabi
+          = image_tag "example-syllabi.png", :width => "100"
+        %h4 Example Syllabi
+        %p Example syllabi from courses using gameful pedagogy
+        = link_to "http://gamefulpedagogy.com/example-syllabi", :target => "_blank" do
+          View examples
+          = glyph("long-arrow-right")
 
 = render "newsletter_signup"

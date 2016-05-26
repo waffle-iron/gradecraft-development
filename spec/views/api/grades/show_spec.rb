@@ -33,4 +33,10 @@ describe "api/grades/show" do
     json = JSON.parse(response.body)
     expect(json["meta"]["grade_status_options"]).to eq(@grade_status_options)
   end
+
+  it "adds the threshold_points to meta data" do
+    render
+    json = JSON.parse(response.body)
+    expect(json["meta"]["threshold_points"]).to eq(@grade.assignment.threshold_points)
+  end
 end

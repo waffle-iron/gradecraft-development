@@ -21,8 +21,8 @@ gem 'archive-zip', '~> 0.7.0'
 gem 'autonumeric-rails'
 gem 'aws-sdk', '~> 2'
 gem 's3_direct_upload'
-gem 'canable'
-gem 'carrierwave'
+gem 'cancancan'
+gem 'carrierwave', '~> 0.10.0'
 gem 'carrierwave_backgrounder', '0.4.2'
 gem 'coffee-rails'
 gem "compass-rails"
@@ -38,15 +38,10 @@ gem 'dotenv-rails'
 gem 'fast_blank'
 gem 'fog'
 gem 'font-awesome-rails'
-
-# add intelligent app-wide eager loading by default to remove n+1 loading issues
-# TODO: max needs to test this in conjunction with the Bullet gem to ensure
-# gem 'goldiloader'
-
 gem 'haml'
 gem 'ims-lti', git: 'https://github.com/venturit/ims-lti.git', branch: 'master'
 gem 'jbuilder'
-gem 'jquery-rails', '~> 2.0'
+gem 'jquery-rails'
 
 gem 'light-service'
 
@@ -63,7 +58,7 @@ gem 'mini_magick'
 gem 'moped', '2.0.4', git: 'https://github.com/wandenberg/moped.git', branch: 'operation_timeout'
 gem 'mongoid', '~> 4.0.2'
 gem 'ng-rails-csrf'
-gem 'nokogiri', '1.6.0'
+gem 'nokogiri'
 gem 'oauth', git: 'https://github.com/venturit/oauth-ruby.git', branch: 'master'
 gem 'oink'
 gem 'oj'
@@ -100,6 +95,10 @@ gem 'rollbar'
 gem 'sampler'
 gem 'sanitize'
 gem 'sassc-rails'
+
+# secure crypt hashing library stronger than bcrypt or PBDBF2
+gem 'scrypt'
+
 gem 'select2-rails'
 gem 'simple_form'
 gem 'sorcery'
@@ -131,6 +130,7 @@ group :development, :test do
   gem 'pry-stack_explorer'
   gem 'pry-byebug'
   gem 'zeus'
+  gem 'better_errors'
 end
 
 group :test do

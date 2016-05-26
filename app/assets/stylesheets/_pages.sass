@@ -4,25 +4,51 @@
 .page
   .hero-section
     margin: 0
-    background:rgba(0,0,0,.1)
+    background:rgba(46,112,190,.5)
     background-position: top center
     background-repeat: no-repeat
-    height: 100px
-    padding: 40px 0 0
+    position: relative
 
     h1
-      background-color: $color-white
-      color: $color-black
+      color: $color-white
       text-align: center
-      font-size: 2.2rem
-      font-weight: lighter
-      width: 50%
+      font-size: 2.5rem
+      padding: 1.5em 0 2em 0
+
+    .public-subnav 
+      position: absolute
+      bottom: 9
+
+      li
+        display: inline
+        text-transform: uppercase
+
+        span
+          background-color: rgba(255,255,255,.4)
+          color: $color-white
+          padding: 0.75em 1em
+
+        a
+          color: $color-white
+          padding: 0.75em 1em
+          text-decoration: none
+          &:hover
+            background-color: rgba(255,255,255,.4)
+
+    ul
+      list-style: none
+      padding-left: 0
+      text-align: center
       margin: 0 auto
-      border-radius: 5rem
+      width: 100%
+
 
   .main-section
     background-color: $color-white
     padding: 1rem
+
+    h2
+      margin: 1em 0 0 0
 
     ul
       padding-left: 0
@@ -33,20 +59,13 @@
     li
       margin-bottom: 1rem
 
-    .one-third
-      width: 20%
-      text-align: right
-      float: left
-
-    .two-thirds
-      border-left: 1px solid $color-grey-6
-      padding-left: 1rem
-      width: 75%
-      margin-left: 22%
-
     .date
       text-transform: uppercase
       font-size: .8rem
+
+    .main-section-content
+      width: 75%
+      margin: 0 auto
 
 .article
   margin-bottom: 1.5rem
@@ -56,18 +75,27 @@
 
 .role-title
   text-transform: uppercase
-  font-size: 1.2rem
-  margin-bottom: .5rem
+  margin: 1em 0
 
 .logged-out .page .hero-section, .logged-out .features .hero-section
   margin: 2.5rem 0 0
 
 @media (max-width: $media-small-max)
-  .page .hero-section
-    padding: 50px 0 0
-    height: auto !important
+  .page 
+    .hero-section 
+      h1
+        padding: 1em 0
+        font-size: 1.75rem
 
-    h1
-      width: 100%
-      border-radius: 0 !important
-      background-color: $color-grey-6
+      .public-subnav
+        display: none
+
+    .main-section
+      padding: 1.25rem
+
+      .main-section-content
+        width: 100%
+
+        h2
+          font-size: 1.25rem
+          margin-bottom: .5rem

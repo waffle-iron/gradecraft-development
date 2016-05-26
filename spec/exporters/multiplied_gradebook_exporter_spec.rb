@@ -1,4 +1,5 @@
 require "active_record_spec_helper"
+require "./app/exporters/gradebook_exporter"
 require "./app/exporters/multiplied_gradebook_exporter"
 
 describe MultipliedGradebookExporter do

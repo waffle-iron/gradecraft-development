@@ -1,0 +1,16 @@
+= link_to glyph("file-excel-o") + "Download Rubric", export_assignment_rubric_path(presenter.assignment.id, format: :csv)
+%table#rubric-table
+  %thead
+    %tr
+      %td.criterion.heading
+        Criterion:&nbsp;Max&nbsp;points
+
+      %td.level.heading(colspan="#{rubric.max_level_count}")
+        Level: Points Awarded
+
+      - if include_grade_info
+        %td.comments.heading
+          Comments
+
+  %tbody
+    = render partial: "rubrics/components/criteria", locals: { rubric: rubric, student: student, include_grade_info: include_grade_info }

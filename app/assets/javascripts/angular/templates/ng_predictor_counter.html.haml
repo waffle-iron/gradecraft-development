@@ -3,6 +3,6 @@
     .switch-up-button{'ng-click'=>'increment()'}
     .switch-down-button{'ng-class'=>'{"disabled": atMin()}', 'ng-click'=>'decrement()'}
 .time-earned-prediction
-  {{target.prediction.times_earned}} x {{target.point_total}}
+  {{textForSwitch()}}
 .badge-total-prediction
-  {{target.prediction.times_earned * target.point_total}}
+  {{textForTotal()}}

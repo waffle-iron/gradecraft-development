@@ -3,24 +3,24 @@
   $scope.assignmentMode = true
   $scope.loading = true
 
+  $scope.init = (student_id)->
+    $scope.student_id = student_id
+    $scope.services().then(()->
+      $scope.renderGradeLevelGraphics()
+      $scope.loading = false
+    )
+
   $scope.services = ()->
-    promises = [PredictorService.getGradeLevels(),
-                PredictorService.getAssignments(),
-                PredictorService.getAssignmentTypes(),
-                PredictorService.getAssignmentTypeWeights(),
-                PredictorService.getBadges(),
-                PredictorService.getChallenges()]
+    promises = [PredictorService.getGradeSchemeElements(),
+                PredictorService.getAssignments($scope.student_id),
+                PredictorService.getAssignmentTypes($scope.student_id),
+                PredictorService.getBadges($scope.student_id),
+                PredictorService.getChallenges($scope.student_id)]
     return $q.all(promises)
-
-
-  $scope.services().then(()->
-    $scope.renderGradeLevelGraphics()
-    $scope.loading = false
-  )
 
   $scope.assignments = PredictorService.assignments
   $scope.assignmentTypes = PredictorService.assignmentTypes
-  $scope.gradeLevels = PredictorService.gradeLevels
+  $scope.gradeSchemeElements = PredictorService.gradeSchemeElements
   $scope.badges = PredictorService.badges
   $scope.weights = PredictorService.weights
   $scope.challenges = PredictorService.challenges
@@ -36,17 +36,12 @@
   $scope.offset = (val)->
     $scope.yOffset > val
 
-  $scope.passFailPrediction = (grade)->
-    prediction = if grade.predicted_score > 0 then PredictorService.termFor.pass else PredictorService.termFor.fail
-
   $scope.assignmentTypeAtMax = (assignmentType)->
     if $scope.assignmentTypePointExcess(assignmentType) > 0
       return true
     else
       return false
 
-# TODO: score will be changed to points_earned, this should be changed on the JSON data
-# and all queries to grade.score and challenge_grade.score in the predictor
   $scope.articleGraded = (assignment)->
     if assignment.grade.score == null
       return false
@@ -59,10 +54,15 @@
     else
       return true
 
+  $scope.predictionBelowThreshold = (article)->
+    article.has_threshold && article.prediction.predicted_points < article.threshold_points
+
   $scope.articleNoPoints = (assignment)->
     if assignment.pass_fail && assignment.grade.pass_fail_status != "Pass"
       return true
-    else if assignment.grade.score == null || assignment.grade.score == 0
+    else if assignment.grade.score == null || assignment.grade.score == 0 || assignment.grade.is_excluded
+      return true
+    else if $scope.predictionBelowThreshold(assignment)
       return true
     else
       return false
@@ -74,16 +74,16 @@
   # Assignments with Score Levels: Returns the Level Name if predicted score in range
   $scope.levelNameForAssignmentScore = (assignment)->
     if $scope.hasLevels(assignment)
-      closest = $scope.closestScoreLevel(assignment.score_levels,assignment.grade.predicted_score)
-      if $scope.inSnapRange(assignment,closest,assignment.grade.predicted_score)
+      closest = $scope.closestScoreLevel(assignment.score_levels,assignment.prediction.predicted_points)
+      if $scope.inSnapRange(assignment,closest,assignment.prediction.predicted_points)
         return closest.name
     return ""
 
   # Assignments with Score Levels: Returns the Level Name if predicted score in range
   $scope.levelNameForChallengeScore = (challenge)->
     if $scope.hasLevels(challenge)
-      closest = $scope.closestScoreLevel(challenge.score_levels,challenge.prediction.points_earned)
-      if $scope.inSnapRange(challenge,closest,challenge.prediction.points_earned)
+      closest = $scope.closestScoreLevel(challenge.score_levels,challenge.prediction.predicted_points)
+      if $scope.inSnapRange(challenge,closest,challenge.prediction.predicted_points)
         return closest.name
     return ""
 
@@ -119,9 +119,10 @@
     _.each(assignments, (assignment)->
       # use raw score to keep weighting calculation on assignment type level
       if assignment.grade.final_points != null
-        total += assignment.grade.final_points
+        if ! assignment.grade.is_excluded
+          total += assignment.grade.final_points
       else if ! assignment.pass_fail && ! assignment.closed_without_sumbission && includePredicted
-        total += assignment.grade.predicted_score
+        total += assignment.prediction.predicted_points
     )
     total
 
@@ -132,7 +133,7 @@
       if assignmentType.student_weight > 0
         points = points * assignmentType.student_weight
       else
-        points = points * $scope.weights.default_weight
+        points = points * $scope.weights.default_assignment_weight
     points
 
   # FIX THIS ONE
@@ -170,9 +171,13 @@
   $scope.badgesPointTotal = ()->
     total = 0
     _.each($scope.badges,(badge)->
-        total += badge.prediction.times_earned * badge.point_total
+        total += badge.prediction.predicted_times_earned * badge.point_total
       )
     total
+
+  $scope.badgePointsDisplay = (badge)->
+   return "earned" if badge.total_earned_points == 0
+   badge.total_earned_points
 
   # Total points possible to earn from challenges
   $scope.maxChallengePoints = ()->
@@ -189,7 +194,7 @@
         if challenge.grade.score > 0
           total += challenge.grade.score
         else
-          total += challenge.prediction.points_earned
+          total += challenge.prediction.predicted_points
       )
     total
 
@@ -220,7 +225,7 @@
   $scope.predictedGradeLevel = ()->
     allPointsPredicted = $scope.allPointsPredicted()
     predictedGrade = null
-    _.each($scope.gradeLevels.grade_scheme_elements,(gse)->
+    _.each($scope.gradeSchemeElements,(gse)->
       if allPointsPredicted > gse.low_range
         if ! predictedGrade || predictedGrade.low_range < gse.low_range
           predictedGrade = gse
@@ -231,10 +236,7 @@
       return ""
 
   $scope.badgeCompleted = (badge)->
-    if (badge.point_total == badge.total_earned_points && ! badge.can_earn_multiple_times)
-      return true
-    else
-      return false
+    ! badge.can_earn_multiple_times && badge.earned_badge_count > 0
 
   # We keep the predictor open on closed assignments IF the student has a
   # a submission
@@ -282,15 +284,17 @@
 
       stop: (event, ui)->
         articleType = ui.handle.parentElement.dataset.articleType
-        article_id = ui.handle.parentElement.dataset.id
         value = ui.value
 
-        if articleType == 'assignment'
-          article.grade.predicted_score = value
-          PredictorService.postPredictedGrade(article_id,value)
+        if articleType == 'assignment' and $scope.predictionBelowThreshold(article)
+          article.prediction.predicted_points = 0
+          PredictorService.postPredictedGrade(article.prediction.id, 0)
+        else if articleType == 'assignment'
+          article.prediction.predicted_points = value
+          PredictorService.postPredictedGrade(article.prediction.id, value)
         else
-          article.prediction.points_earned = value
-          PredictorService.postPredictedChallenge(article_id,value)
+          article.prediction.predicted_points = value
+          PredictorService.postPredictedChallenge(article.prediction.id,value)
     }
 
 # WEIGHTS
@@ -304,7 +308,8 @@
 # GRAPHICS RENDERING
 
   $scope.GraphicsStats = ()->
-    totalPoints = $scope.gradeLevels.total_points
+    # add 10% to the graph above the highest grade
+    totalPoints = PredictorService.totalPoints() * 1.1
     width = parseInt(d3.select("#predictor-graphic").style("width")) - 20
     height = parseInt(d3.select("#predictor-graphic").style("height"))
     stats = {
@@ -330,13 +335,13 @@
 
   # Loads the grade points values and corresponding grade levels name/letter-grade into the predictor graphic
   $scope.renderGradeLevelGraphics = ()->
-    grade_scheme_elements = $scope.gradeLevels.grade_scheme_elements
+    gradeSchemeElements = $scope.gradeSchemeElements
     svg = d3.select("#svg-grade-levels")
     stats = $scope.GraphicsStats()
     padding = stats.padding
     scale = stats.scale
     axis = d3.svg.axis().scale(scale).orient("bottom")
-    g = svg.selectAll('g').data(grade_scheme_elements).enter().append('g')
+    g = svg.selectAll('g').data(gradeSchemeElements).enter().append('g')
             .attr("transform", (gse)->
               "translate(" + (scale(gse.low_range) + padding) + "," + 25 + " )")
             .on("mouseover", (gse)->
@@ -355,7 +360,7 @@
       .attr("d", "M3,2.492c0,1.392-1.5,4.48-1.5,4.48S0,3.884,0,2.492c0-1.392,0.671-2.52,1.5-2.52S3,1.101,3,2.492z")
       .attr("class",(gse)-> "grade_scheme-pointer-" + gse.low_range)
       .attr("transform","scale(2)")
-    txt = d3.select("#svg-grade-level-text").selectAll('g').data(grade_scheme_elements).enter()
+    txt = d3.select("#svg-grade-level-text").selectAll('g').data(gradeSchemeElements).enter()
             .append('g')
             .attr("class", (gse)->
               "grade_scheme-label-" + gse.low_range)

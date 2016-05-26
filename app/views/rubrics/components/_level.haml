@@ -1,0 +1,6 @@
+%td.level.level-level{class: ("meets-expectations" if level.meets_expectations || level.above_expectations?)}
+  = render partial: "rubrics/components/level_heading", locals: { level: level }
+  = render partial: "rubrics/components/level_badges", locals: { level: level }
+
+  - if include_grade_info
+    = render partial: "rubrics/components/level_grade_analysis", locals: { level: level, student: student }

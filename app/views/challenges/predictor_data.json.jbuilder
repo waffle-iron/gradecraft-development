@@ -5,7 +5,9 @@ json.challenges @challenges do |challenge|
   # boolean states for icons
   json.has_info !challenge.description.blank?
 
-  json.score_levels challenge.challenge_score_levels.map {|csl| {name: csl.name, value: csl.value}}
+  json.score_levels challenge.challenge_score_levels.map {
+    |csl| {name: csl.name, value: csl.value}
+  }
 
   json.prediction challenge.prediction
 

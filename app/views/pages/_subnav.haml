@@ -1,5 +1,13 @@
-%li= link_to_unless_current "Our Team", our_team_path
-%li= link_to_unless_current "Research", research_path
-%li= link_to_unless_current "Press & Awards", press_path
-%li= link_to_unless_current "Brand Guidelines", brand_and_style_path
+%li
+  = link_to_unless_current "Our Team", our_team_path do |name|
+    - "<span class='active'>#{name}</span>"
+%li
+  = link_to_unless_current "Research", research_path do |name|
+    - "<span class='active'>#{name}</span>"
+%li
+  = link_to_unless_current "Press & Awards", press_path do |name|
+    - "<span class='active'>#{name}</span>"
+%li
+  = link_to_unless_current "Brand Guidelines", brand_and_style_path do |name|
+    - "<span class='active'>#{name}</span>"
 //%li= link_to_unless_current "Media"

@@ -23,15 +23,16 @@ $( "#tabs" ).tabs({
   }
 });
 
- $('.froala').editable({
+ $('.froala').froalaEditor({
+  key: '6Ud1QBRVCDLPAZMBQ==',
   inlineMode: false,
-  minHeight: 280,
-  buttons: [
-    'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript',
-    'superscript', 'fontFamily', 'fontSize', 'sep', 'inlineStyle', 'blockStyle',
-    'sep', 'formatBlock', 'align', 'insertOrderedList', 'insertUnorderedList',
+  heightMin: 200,
+  toolbarButtons: [
+    'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough',
+    'fontFamily', 'fontSize', 'color', 'sep', 'blockStyle', 'emoticons',
+    'insertTable', 'sep', 'formatBlock', 'align', 'insertOrderedList',
     'outdent', 'indent', 'insertHorizontalRule', 'createLink', 'undo', 'redo',
-    'removeFormat', 'selectAll'
+    'clearFormatting', 'selectAll', 'html'
   ]
 })
 
@@ -97,3 +98,13 @@ $(document).find("[data-behavior~=multi-select]").select2({
 
 // Initializing highcharts table data, currently used to display team charts
 $('table.highchart').highchartTable();
+
+//Hide and show course-info-card in header
+$(".course-info-btn").click(function(){
+    $(".course-info-card").toggle();
+});
+
+//Toggle public page mobile menu
+$(".btn-public-nav").click(function(){
+    $(".public-nav").slideToggle();
+});

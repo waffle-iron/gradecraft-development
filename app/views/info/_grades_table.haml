@@ -7,13 +7,13 @@
     %h4.assignment_name
       = link_to assignment.name, assignment
       - if assignment.is_individual?
-        = link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(assignment), class: "button"
+        = link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(assignment), class: "button"
       - else
         = link_to glyph(:check) + "Grade", assignment, class: "button"
 
-    = form_tag edit_status_grades_assignment_path(assignment), method: :get do
+    = form_tag edit_status_assignment_grades_path(assignment), method: :get do
 
-      %table.nofeatures_default_last_name_dynatable
+      %table.dynatable
         %thead
           %tr
             - if assignment.is_individual?
@@ -23,7 +23,7 @@
                 %th{scope: "col", :width => "15%"}= "#{term_for :team}"
             - elsif assignment.has_groups?
               %th{scope: "col"} Group
-            %th{scope: "col", :width => "8%", "data-dynatable-sorts" => "numericScore"} Score
+            %th{scope: "col", :width => "8%"} Score
             %th{scope: "col"} Feedback
             %th{scope: "col", "data-dynatable-no-sort" => "true", :width => "20%" }
               %span.sr-only Actions
@@ -49,12 +49,11 @@
                 %td
                   .right
                     %ul.button-bar
+                      %li= link_to glyph(:eye) + "See Grade", grade_path(grade), class: "button"
                       - if assignment.is_individual?
-                        %li= link_to glyph(:eye) + "See Grade", assignment_grade_path(assignment, student_id: student.id), class: "button"
                         %li= link_to glyph(:edit) + "Edit Grade", edit_assignment_grade_path(assignment_id: assignment.id, student_id: student.id), class: "button"
                       - elsif assignment.has_groups?
-                        %li= link_to glyph(:eye) + "See Grade", assignment_grade_path(assignment, group_id: group.id), class: 'button'
-                        %li= link_to glyph(:check) + "Edit Grade", group_grade_assignment_path(assignment, group_id: group.id), class: "button"
+                        %li= link_to glyph(:check) + "Edit Grade", grade_assignment_group_path(assignment, group), class: "button"
                 %td.center= check_box_tag "grade_ids[]", grade.id, false, data: { behavior: "toggle-disable-list-command", commands: "[data-behavior='selected-#{grade_type}-grades-command']" }
 
       .submit-buttons

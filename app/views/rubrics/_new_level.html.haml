@@ -22,7 +22,8 @@
   .update-badges
     %button.close-modal(ng-click="level.closeBadges()") Update Badges
 
-%button.delete(type="button" ng-click="level.delete($index)" ng-hide="level.durable") X
-.messages(ng-show="level.fullCredit") Full Credit Level
-.messages(ng-show="level.noCredit") Zero Credit Level
-.messages(ng-hide="level.durable") Score Level
+
+%button.meets-expectations-status(type="button" ng-class="{'no-expectation': !level.meetExpectationSet(),'show': level.meetsExpectations || level.showExpectationStatus()}") {{level.label()[0]}}
+%button.meets-expectations-toggle(type="button" ng-class="{'remove': level.meetsExpectations}" ng-click="level.toggleMeetsExpectations()") {{level.label()[1]}}
+%button.delete(type="button" ng-click="level.delete($index)" ng-hide="level.required") X
+

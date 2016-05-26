@@ -11,11 +11,11 @@
     %section
 
       %h4.uppercase= "#{@student.first_name}'s Submission"
-      = render partial: "submissions/instructor_show",
-          locals: { presenter: ShowSubmissionPresenter.new(id: @submission.id,
+      = render partial: "submissions/submission_content",
+          locals: { presenter: Submissions::ShowPresenter.new(id: @submission.id,
             assignment_id: @assignment.id, course: current_course) }
 
-  - if @rubric && @rubric.designed? and @assignment.use_rubric
+  - if @assignment.grade_with_rubric?
     = render "rubric_edit"
   - else
     = render "standard_edit"

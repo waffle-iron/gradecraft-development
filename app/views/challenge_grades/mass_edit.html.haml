@@ -7,7 +7,7 @@
 
   #massGrade
     = simple_form_for @challenge, method: :put, :url => mass_edit_challenge_path(@challenge) do |f|
-      %table.responsive.dynatable
+      %table.dynatable
         - @challenge_grades.each_with_index do |cg, i|
           %tr
             %td{:style => "text-align: right"}

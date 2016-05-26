@@ -1,0 +1,10 @@
+%p
+  %span.smallcaps Submitted:
+  %span.submission-date= presenter.submission.submitted_at
+
+  // Late alert if submitted after due date
+  - if presenter.submission.late?
+    %span.label.alert Late!
+
+  - if presenter.submission.resubmitted?
+    %span.label.alert Resubmitted!

@@ -12,6 +12,7 @@ describe "api/badges/index" do
 
   before(:each) do
     allow(view).to receive(:current_course).and_return(@world.course)
+    allow(view).to receive(:current_user).and_return(double(:user, is_staff?: false, id: 555))
   end
 
   it "responds with an array of badges" do
@@ -20,11 +21,19 @@ describe "api/badges/index" do
     expect(json["data"].length).to eq(1)
   end
 
-  it "does not include badges invisible to students" do
-    allow(@badge).to receive(:visible_for_student?).and_return(false)
+  it "does not include invisible badges for students" do
+    allow(@badge).to receive(:visible?).and_return(false)
     render
     json = JSON.parse(response.body)
     expect(json["data"].length).to eq(0)
+  end
+
+  it "does include invisible badges for staff" do
+    allow(@badge).to receive(:visible?).and_return(false)
+    allow(view).to receive(:current_user).and_return(double(:gsi, is_staff?: true))
+    render
+    json = JSON.parse(response.body)
+    expect(json["data"].length).to eq(1)
   end
 
   it "adds the icon url to the badges" do

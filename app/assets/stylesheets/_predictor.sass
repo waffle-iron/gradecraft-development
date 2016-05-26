@@ -1,6 +1,5 @@
 @import color
 @import layout
-@import fonts
 @import animation
 
 $predictor-font-size-1 : 1.5rem
@@ -30,7 +29,7 @@ $predictor-font-size-5 : .55rem
   background-color: $color-white
   z-index: 100
   position: fixed
-  top: 29px
+  top: 45px
 
 #predictor-graphic
   width: 100%
@@ -262,6 +261,7 @@ article.predictor-article
 
 .predictor-article-main
   padding-top: 8px
+  margin-top: -7px
 
 article.predictor-article.status-late
   background-color: $color-yellow-1
@@ -321,6 +321,13 @@ article.predictor-article.status-graded.status-no-points
   font-size: $predictor-font-size-2
   color: $color-blue-2
 
+.article-graded.excluded
+  .grade
+    color: $color-red-1
+  .excluded
+    color: $color-red-1
+    text-align: center
+
 .badge-complete .value
   padding-top: 30px
 
@@ -360,6 +367,9 @@ article.predictor-article
       margin-left: -12px
       background: $color-blue-1
       border-radius: 1rem
+
+article.predictor-article .ui-slider.below-threshold .ui-slider-range
+  background-color: $color-red-1
 
 /* Binary Switch */
 
@@ -426,7 +436,9 @@ article.predictor-article
     background-color: transparent
   .time-earned-prediction
     font-size: $predictor-font-size-2
-    padding: 10px 0 0 4px
+    line-height: 1.5rem
+    text-align: center
+    padding: 10px 12px 0 20px
   .badge-total-prediction
     font-size: $predictor-font-size-1
     clear: both
@@ -512,7 +524,7 @@ article.predictor-article
     width: 100%
 
 // medium
-@media (min-width: $media-small-max) and (max-width: $media-medium-max)
+@media (min-width: $media-small-max) and (max-width: $media-medium-max + 5rem)
   article.predictor-article
     width: 48%
   .predictor-section-title-predicted-points
@@ -528,7 +540,7 @@ article.predictor-article
     width: 100%
 
 // large
-@media (min-width: $media-medium-max) and (max-width: $media-large-max)
+@media (min-width: $media-medium-max + 5rem) and (max-width: $media-large-max)
   article.predictor-article
     width: 19%
   #predictor-main-content.with-sidebar
@@ -541,6 +553,5 @@ article.predictor-article
     width: 16%
   #predictor-main-content.with-sidebar
     #predictor-graphic
-      width: 700px
     article.predictor-article
       width: 19%

@@ -4,7 +4,7 @@ describe "students/leaderboard" do
   include CourseTerms
 
   let(:course) { create :course }
-  let(:presenter) { StudentLeaderboardPresenter.new(course: course) }
+  let(:presenter) { Students::LeaderboardPresenter.new(course: course) }
 
   before(:each) do
     @students = course.students

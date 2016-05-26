@@ -1,8 +1,13 @@
 require "active_record_spec_helper"
 require "toolkits/historical_toolkit"
 require "toolkits/sanitization_toolkit"
+require_relative "../support/uni_mock/rails"
 
 describe Grade do
+  include UniMock::StubRails
+
+  before { stub_env "development" }
+
   subject { build(:grade) }
 
   describe "constants" do
@@ -59,12 +64,16 @@ describe Grade do
   it_behaves_like "a historical model", :grade, raw_score: 1234
   it_behaves_like "a model that needs sanitization", :feedback
 
-  describe "versioning", versioning: true do
-    it "ignores changes to predicted_score" do
+  describe "#squish_history!", versioning: true do
+    it "squishes two previous changes into one" do
       subject.save!
-      subject.update_attributes predicted_score: 12000
-      expect(subject.versions.count).to eq 1
-      expect(subject.versions.first.event).to eq "create"
+      subject.update_attributes raw_score: 13_000
+      subject.squish_history!
+      subject.update_attributes feedback: "This is a change"
+      subject.squish_history!
+      expect(subject.versions.count).to eq 2
+      expect(subject.versions.last.changeset).to have_key :feedback
+      expect(subject.versions.last.changeset).to have_key :raw_score
     end
   end
 
@@ -72,6 +81,48 @@ describe Grade do
     it "converts raw_score from human readable strings" do
       subject.update(raw_score: "1,234")
       expect(subject.raw_score).to eq(1234)
+    end
+
+    it "is converts blank string to nil" do
+      subject.update(raw_score: "")
+      expect(subject.raw_score).to eq(nil)
+    end
+  end
+
+  describe ".not_released" do
+    it "returns all grades that are graded but require a release" do
+      assignment = create :assignment, release_necessary: true
+      not_released_grade = create :grade, assignment: assignment, status: "Graded"
+      create :grade, assignment: assignment, status: "Released"
+      create :grade, status: "Graded"
+
+      expect(described_class.not_released).to eq [not_released_grade]
+    end
+  end
+
+  describe ".released" do
+    it "returns all the grades that are released" do
+      released_grade = create :grade, status: "Released"
+      create :grade, status: "In Progress"
+
+      expect(described_class.released).to eq [released_grade]
+    end
+  end
+
+  describe ".student_visible" do
+    it "returns all grades that were released or were graded but no release was necessary" do
+      graded_grade = create :grade, status: "Graded"
+      released_grade = create :grade, status: "Released"
+      assignment = create :assignment, release_necessary: true
+      create :grade, assignment: assignment, status: "Graded"
+
+      expect(described_class.student_visible).to eq [graded_grade, released_grade]
+    end
+  end
+
+  describe ".releasable_through" do
+    it "returns assignment" do
+      expect(described_class.releasable_relationship).to eq :assignment
     end
   end
 
@@ -84,6 +135,12 @@ describe Grade do
     it "is the sum of raw_score and adjustment_points" do
       subject.update(raw_score: "1234", adjustment_points: -234)
       expect(subject.final_score).to eq(1000)
+    end
+
+    it "is 0 if the score is below the threshold" do
+      subject.assignment.update(threshold_points: 1001)
+      subject.update(raw_score: 1000)
+      expect(subject.final_score).to eq(0)
     end
   end
 
@@ -184,17 +241,6 @@ describe Grade do
     it "creates a grade for assignment and student if none exists" do
       expect { Grade.find_or_create_grades(world.assignment.id, ids) }.to \
         change{ Grade.count }.by(ids.length)
-    end
-  end
-
-  describe "#add_grade_files" do
-    it "adds a file from upload" do
-      student = create(:user)
-      assignment = create(:assignment)
-      grade = create(:grade, student: student, assignment: assignment)
-      grade_file = fixture_file("Too long, strange characters, and Spaces (In) Name.jpg", "img/jpg")
-      grade.add_grade_files(grade_file)
-      expect(grade.grade_files.count).to eq(1)
     end
   end
 end

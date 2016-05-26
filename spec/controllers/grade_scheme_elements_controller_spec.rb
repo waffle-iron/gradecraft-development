@@ -52,25 +52,6 @@ describe GradeSchemeElementsController do
         expect(response.status).to eq(500)
       end
     end
-
-    describe "GET student predictor data" do
-      it "returns grade scheme elements with total points as json" do
-        @grade_scheme_element.update(low_range: 1000)
-        get :predictor_data, format: :json
-        expect(assigns(:grade_scheme_elements)).to eq([@grade_scheme_element])
-        expect(assigns(:total_points)).to eq(1100)
-        expect(response).to render_template(:predictor_data)
-      end
-
-      it "returns the total points in the course if no grade scheme elements are present" do
-        @grade_scheme_element.destroy
-        @assignment = create(:assignment, course: @course, point_total: 2000)
-        get :predictor_data, format: :json
-        expect(@course.total_points).to eq(2000)
-        expect(assigns(:total_points)).to eq(2000)
-        expect(response).to render_template(:predictor_data)
-      end
-    end
   end
 
   context "as student" do
@@ -79,26 +60,7 @@ describe GradeSchemeElementsController do
       @student.courses << @course
     end
     before(:each) do
-      @grade_scheme_element = create(:grade_scheme_element, low_range: 1000, course: @course)
       login_user(@student)
-    end
-
-    describe "GET student predictor data" do
-      it "returns grade scheme elements with total points as json" do
-        get :predictor_data, format: :json
-        expect(assigns(:grade_scheme_elements)).to eq([@grade_scheme_element])
-        expect(assigns(:total_points)).to eq(1100)
-        expect(response).to render_template(:predictor_data)
-      end
-
-      it "returns the total points in the course if no grade scheme elements are present" do
-        @grade_scheme_element.destroy
-        @assignment = create(:assignment, course: @course, point_total: 2000)
-        get :predictor_data, format: :json
-        expect(@course.total_points).to eq(2000)
-        expect(assigns(:total_points)).to eq(2000)
-        expect(response).to render_template(:predictor_data)
-      end
     end
 
     describe "protected routes" do

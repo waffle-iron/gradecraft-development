@@ -27,6 +27,18 @@
           = f.text_field :point_total
 
     .form-item
+      - if f.object.pass_fail?
+        .pass-fail-contingent.hidden
+          = f.label :threshold_points, "Points Threshold"
+          = f.text_field :threshold_points
+          .form_label If you set a points threshold above zero, any student earning fewer points will receive no points for the assignment.
+      - else
+        .pass-fail-contingent
+          = f.label :threshold_points, "Points Threshold"
+          = f.text_field :threshold_points
+          .form_label If you set a points threshold above zero, any student earning fewer points will receive no points for the assignment.
+
+    .form-item
       = f.input :open_at, as: :string, :include_blank => true, :input_html => { class: "datetimepicker" }
 
     .form-item
@@ -56,6 +68,12 @@
     .textarea
       .form_label This will be shown to students on their dashboard, and when they submit their assignment.
       = f.text_area :description, class: "froala"
+
+  %section
+    %h4 Assignment Purpose
+    .textarea
+      .form_label This will be shown to students on their dashboard, and when they submit their assignment.
+      = f.text_area :purpose, class: "froala"
 
   %section
     %h4= "Advanced Settings"
@@ -160,6 +178,10 @@
         .checkbox
           = f.label :show_description_when_locked, :label => "Show Description when Locked"
           = f.check_box :show_description_when_locked
+      %li.locked-display
+        .checkbox
+          = f.label :show_purpose_when_locked, :label => "Show Purpose when Locked"
+          = f.check_box :show_purpose_when_locked
 
     .unlock-conditions
       %p.hint Unlocks allow you to direct the sequence of content in your course. What do students need to do in order to unlock this assignment?

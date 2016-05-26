@@ -38,9 +38,11 @@ class CoursesController < ApplicationController
         duplicated.course_memberships.create(user: current_user, role: current_role)
       end
       session[:course_id] = duplicated.id
-      redirect_to course_path(duplicated.id), notice: "#{course.name} successfully copied"
+      redirect_to course_path(duplicated.id),
+        notice: "#{course.name} successfully copied"
     else
-      redirect_to courses_path, alert: "#{course.name} was not successfully copied"
+      redirect_to courses_path,
+        alert: "#{course.name} was not successfully copied"
     end
   end
 
@@ -56,7 +58,10 @@ class CoursesController < ApplicationController
         end
         session[:course_id] = @course.id
         bust_course_list_cache current_user
-        format.html { redirect_to course_path(@course), notice: "Course #{@course.name} successfully created" }
+        format.html {
+          redirect_to course_path(@course),
+          notice: "Course #{@course.name} successfully created"
+        }
       else
         format.html { render action: "new" }
       end
@@ -70,7 +75,10 @@ class CoursesController < ApplicationController
     respond_to do |format|
       if @course.update_attributes(params[:course])
         bust_course_list_cache current_user
-        format.html { redirect_to @course, notice: "Course #{@course.name} successfully updated" }
+        format.html {
+          redirect_to @course,
+          notice: "Course #{@course.name} successfully updated"
+        }
       else
         format.html { render action: "edit" }
       end
@@ -113,15 +121,19 @@ class CoursesController < ApplicationController
     @course.destroy
 
     respond_to do |format|
-      format.html { redirect_to courses_url, notice: "Course #{@name} successfully deleted" }
+      format.html {
+        redirect_to courses_url,
+        notice: "Course #{@name} successfully deleted"
+      }
     end
   end
 
   def export_earned_badges
     course = current_course
     respond_to do |format|
-      format.csv { send_data EarnedBadgeExporter.new.earned_badges_for_course course.earned_badges }
+      format.csv {
+        send_data EarnedBadgeExporter.new.earned_badges_for_course course.earned_badges
+      }
     end
   end
-
 end

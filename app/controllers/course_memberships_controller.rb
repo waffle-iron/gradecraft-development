@@ -5,7 +5,8 @@ class CourseMembershipsController < ApplicationController
   before_filter :ensure_staff?
 
   def create
-    @course_membership = current_course.course_memberships.create(params[:course_membership])
+    @course_membership =
+      current_course.course_memberships.create(params[:course_membership])
     @course_membership.save
 
     respond_with @course_membership
@@ -18,8 +19,10 @@ class CourseMembershipsController < ApplicationController
     Services::CancelsCourseMembership.for_student course_membership
 
     respond_to do |format|
-      format.html { redirect_to students_path, notice: "#{@name} was successfully removed from course." }
+      format.html {
+        redirect_to students_path,
+        notice: "#{@name} was successfully removed from course."
+      }
     end
   end
-
 end

@@ -7,7 +7,8 @@ class LevelBadgesController< ApplicationController
 
   def create
     @level_badge = LevelBadge.create params[:level_badge]
-    respond_with @level_badge, layout: false, serializer: ExistingLevelBadgeSerializer
+    respond_with @level_badge, layout: false,
+      serializer: ExistingLevelBadgeSerializer
   end
 
   def destroy

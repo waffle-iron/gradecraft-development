@@ -22,7 +22,7 @@
 
         .badge-complete{'ng-if'=>'badgeCompleted(badge)'}
           .value
-            {{badge.total_earned_points}}
+            {{badgePointsDisplay(badge)}}
 
         .badge-predicted{'ng-if'=>'!badgeCompleted(badge)'}
 

@@ -13,6 +13,7 @@
     .ui-tabs-panel
       padding: 0
       float: left
+      width: 100%
 
     ul
       width: 210px
@@ -28,7 +29,7 @@
         padding: 0
 
   .hero-section
-    background:rgba(0,0,0,0.1)
+    background:rgba(46,112,190,0.3)
     padding: 1rem 0 1rem
 
     h1
@@ -36,8 +37,7 @@
       color: $color-white
       font-weight: lighter
       width: 50%
-      height: 150px
-      margin: 2rem auto 1rem
+      margin: 2rem auto 2.75rem
 
     h3
       font-size: 1.1rem
@@ -49,23 +49,28 @@
     .promo-text
       color: $color-white
 
-  .double-height-feature-section
-    height: 75% !important
-
   .feature-section
-    height: 50%
     padding: 2rem
+    display: -webkit-box
+    display: -webkit-flex
+    display: -ms-flexbox
+    display: flex
+    -webkit-box-align: center
+    -webkit-align-items: center
+    -ms-flex-align: center
+    align-items: center
+    
+    &.double-height-feature-section
+      display: block
 
     .image-container
-      width: 100%
-      padding-top: 2%
-
     img
-      position: relative
-      height: 90%
+      width: 100%
+      max-width: 350px
+      height: auto
 
       &.center-image
-        height: 40%
+        width: 100%
 
     &.white
       background-color: $color-white
@@ -74,11 +79,17 @@
       background-color: lighten($color-blue-4, 20%)
 
     .text
-      line-height: 2.25rem
-      font-size: 1.25rem
+      line-height: 1.75rem
+      font-size: 1.1rem
+      
+      &.right
+        -webkit-box-ordinal-group: 2
+        -webkit-order: 1
+        -ms-flex-order: 1
+        order: 1
 
     h2
-      font-size: 2rem
+      font-size: 1.75rem
       color: $color-blue-3
       margin-bottom: 1rem
 
@@ -94,9 +105,12 @@
       text-align: left
 
     .half
-      width: calc(50% - 6rem)
-      margin: 0 2rem 0 3rem !important
-      position: relative
+      padding: 0 2rem 0 3rem
+      box-sizing: border-box
+      -webkit-box-flex: 1
+      -webkit-flex: 1
+      -ms-flex: 1
+      flex: 1
 
     .whole
       margin 0 auto
@@ -105,37 +119,6 @@
 
       p
         width: 75%
-        font-size: 1.5rem
-
-@media (max-width: $media-small-max)
-  .features
-    .hero-section
-      margin-top: 4rem
-
-      h1
-        margin-top: 0rem
-        margin-bottom: 6rem
-
-    .feature-section
-      height: auto !important
-
-      .image-container
-        margin: 1rem auto !important
-        padding: 0 !important
-
-      img, .text, .center-image
-        margin: 0 auto !important
-        padding: 0 !important
-        max-width: 100%
-        height: auto !important
-
-      .half
-        width: 100% !important
-
-      .whole
-        p
-          width: 100%
-          font-size: 1rem
 
 @media (max-width: $media-medium-max)
   .logged-out .features
@@ -145,16 +128,13 @@
       h1
         margin-top: 2rem
         font-size: 1.5rem !important
-        height: 50px !important
-        padding-bottom: 1rem
+        margin: 1.5rem auto
 
       .promo-text
         font-size: .8rem
 
   .features
     .feature-section
-      h2
-        line-height: 2.5rem
 
       img
         margin-top: 1%
@@ -169,3 +149,37 @@
         p
           width: 100%
           font-size: 1rem !important
+
+@media (max-width: $media-small-max)
+  .features
+    .hero-section
+      margin-top: 4rem
+
+      h1
+        width: 100%
+
+    .feature-section
+      height: auto !important
+      display: block
+      padding: 1em
+
+      h2
+        font-size: 1.25rem
+        margin-bottom: .5rem
+
+      .image-container
+        margin: 1rem auto !important
+        padding: 0 !important
+
+      img, .text, .center-image
+        margin: 0 auto !important
+        padding: 0 !important
+        height: auto !important
+
+      .half
+        width: 100% !important
+
+      .whole
+        p
+          width: 100%
+          font-size: 1rem

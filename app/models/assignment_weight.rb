@@ -1,8 +1,6 @@
 class AssignmentWeight < ActiveRecord::Base
   attr_accessible :student, :student_id, :assignment, :assignment_id, :weight
 
-  include Canable::Ables
-
   belongs_to :student, class_name: "User", touch: true
   belongs_to :assignment_type
   belongs_to :assignment, touch: true
@@ -16,23 +14,7 @@ class AssignmentWeight < ActiveRecord::Base
   scope :for_course, ->(course) { where(course_id: course.id) }
   scope :for_student, ->(student) { where(student_id: student.id) }
 
-  def updatable_by?(user)
-    permissions_check(user)
-  end
-
-  def destroyable_by?(user)
-    permissions_check(user)
-  end
-
-  def viewable_by?(user)
-    permissions_check(user)
-  end
-
   private
-
-  def permissions_check(user)
-    self.student_id == user.id
-  end
 
   def cache_associations
     self.assignment_type_id ||= assignment.try(:assignment_type_id)

@@ -2,7 +2,7 @@ Dear #{ @professor.first_name },
 
 Your requested export for #{ @course.assignment_term.downcase} "#{ @assignment.name }" was successfully created for course #{ @course.name }.
 
-You can download your completed ZIP archive here: #{ @submissions_export.presigned_s3_url }. This link will expire after one week.
+You can download your completed ZIP archive here: #{ secure_download_url(@secure_token) }. This link will expire after one week.
 
 Alternatively you can download the submissions archive on the submissions downloads page here: #{ exports_url }.
 

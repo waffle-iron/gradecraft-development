@@ -20,6 +20,10 @@
     float: left
     margin-left: rem-calc(16)
     margin: 0
+    
+    i
+      display: none
+      
 
   /* Individual Tabs */
   .navbar-nav
@@ -44,6 +48,9 @@
 
     li a:hover, li:hover a
       color: $color-black
+    
+    h5, hr
+      display: none
 
 /* Setting the active tab and hover color */
 .navbar-nav li.active, .sub-nav .navbar-nav li:hover
@@ -59,18 +66,6 @@ li .announcement-notification-badge
 li a.notification-right
   padding: 1rem 0 1rem 1rem !important
 
-/* Reducing padding and font size for small screens */
-@media (max-width: $media-medium-max)
-  .student .offscreen-sidebar
-    text-transform: capitalize
-    li
-      border-bottom: 1px solid $color-blue-4
-      color: $color-white
-      background-color: $color-blue-2
-      padding: .5rem
-      display: block
-    li a
-      color: $color-white
-    ul li:hover
-      background-color: $color-blue-3
-      color: $color-white
+@media (min-width: $media-small-max)
+  i
+    display: inline

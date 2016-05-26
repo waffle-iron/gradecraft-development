@@ -13,7 +13,7 @@
       %li= link_to course.name, course
 
   %h4 Recently Graded
-  %table.nofeatures_dynatable
+  %table.dynatable
     %thead
       %tr
         %th Assignment
@@ -35,4 +35,4 @@
           %td
             %ul.button-bar
               %li= link_to glyph(:edit) + "Edit", edit_assignment_grade_path(grade.assignment, student_id: grade.student.id), class: "button"
-              %li= link_to glyph(:trash) + "Delete", remove_grades_assignment_path(assignment_id: grade.assignment.id, id: grade.id), class: "button", data: { confirm: "Are you sure?" }, :method => :post
+              %li= link_to glyph(:trash) + "Delete", remove_grade_path(grade), class: "button", data: { confirm: "Are you sure?" }, :method => :post

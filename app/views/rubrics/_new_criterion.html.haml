@@ -1,5 +1,5 @@
 %input(type="text" ng-model="criterion.name" name="name" placeholder="Criterion Name" value="{{criterion.name}}" required ng-blur="criterion.modify(criterionForm)" ng-Maxlength=30 ng-change="criterion.change()" maxlength=30)
-%input.points(type="number" ng-model="criterion.max_points" name="maxPoints" placeholder="Max Points" value="{{criterion.max_points}}" required integer min=0 ng-blur="criterion.modify(criterionForm)" ng-change="criterion.change()")
+%input.points(type="number" ng-model="criterion.max_points" name="maxPoints" placeholder="Max Points" required integer min=0 ng-blur="criterion.modify(criterionForm)" ng-change="criterion.change()")
 
 %textarea(ng-model="criterion.description" placeholder="Description" value="{{criterion.description}}" ng-change="criterion.change()" ng-blur="criterion.update()")
   -#

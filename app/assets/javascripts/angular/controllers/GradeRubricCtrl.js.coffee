@@ -23,6 +23,10 @@
   $scope.pointsPossible = ()->
     RubricService.pointsPossible()
 
+  $scope.thresholdPoints = ()->
+    RubricService.thresholdPoints()
+
+
   # distill key/value pairs for criterion ids and relative order
   $scope.pointsAssigned = ()->
     points = 0
@@ -37,8 +41,27 @@
   $scope.pointsAdjusted = ()->
     $scope.adjustmentPoints() != 0
 
+  # sum of points from selected levels
+  $scope.pointsAllocated = ()->
+    points = 0
+    angular.forEach($scope.criteria, (criterion, index)->
+      if criterion.selectedLevel
+        points += criterion.selectedLevel.points
+    )
+    points
+
+  $scope.finalPoints = ()->
+    finalPoints = $scope.pointsAllocated() + $scope.adjustmentPoints()
+    if $scope.isBelowThreshold() then 0 else finalPoints
+
+  $scope.isBelowThreshold = ()->
+    $scope.thresholdPoints() > $scope.pointsAllocated() + $scope.adjustmentPoints()
+
+  $scope.pointsBelowThreshold = ()->
+    $scope.thresholdPoints() - $scope.pointsAllocated() - $scope.adjustmentPoints()
+
   $scope.pointsDifference = ()->
-    $scope.pointsPossible() - $scope.pointsGiven()
+    $scope.pointsPossible() - $scope.pointsAllocated()
 
   $scope.pointsRemaining = ()->
     pointsRemaining = $scope.pointsDifference()
@@ -46,10 +69,10 @@
 
   # Methods for identifying point deficit/overage
   $scope.pointsMissing = ()->
-    $scope.pointsDifference() > 0 and $scope.pointsGiven() > 0
+    $scope.pointsDifference() > 0 and $scope.pointsAllocated() > 0
 
   $scope.pointsSatisfied = ()->
-    $scope.pointsDifference() == 0 and $scope.pointsGiven() > 0
+    $scope.pointsDifference() == 0 and $scope.pointsAllocated() > 0
 
   $scope.pointsOverage = ()->
     $scope.pointsDifference() < 0
@@ -62,7 +85,6 @@
         levels.push criterion.selectedLevel
     )
     levels
-
 
   # count how many levels have been selected in the UI
   $scope.selectedLevelIds = ()->
@@ -80,18 +102,6 @@
       criterionIds.push criterion.id
     )
     criterionIds
-
-  # count how many points have been given from those levels
-  $scope.pointsGiven = ()->
-    points = 0
-    angular.forEach($scope.criteria, (criterion, index)->
-      if criterion.selectedLevel
-        points += criterion.selectedLevel.points
-    )
-    points
-
-  $scope.finalPoints = ()->
-    $scope.pointsGiven() + $scope.adjustmentPoints()
 
   $scope.gradedCriteria = ()->
     criteria = []
@@ -185,10 +195,10 @@
 
   $scope.gradeParams = ()->
     {
-      raw_score: $scope.pointsGiven(),
+      raw_score: $scope.pointsAllocated(),
       feedback: $scope.grade.feedback,
       status:   $scope.grade.status,
-      adjustment_points: $scope.grade.adjustment_points,
+      adjustment_points: $scope.grade.adjustment_points || 0,
       adjustment_points_feedback: $scope.grade.adjustment_points_feedback
     }
 
@@ -212,22 +222,23 @@
 
   $scope.froalaOptions = {
     inlineMode: false,
-    minHeight: 100,
-    buttons: [
-      "bold", "italic", "underline", "strikeThrough",
-      "insertOrderedList", "insertUnorderedList"
+    heightMin: 120,
+    toolbarButtons: [
+      'bold', 'italic', 'underline', 'strikeThrough',
+      'sep', 'formatBlock', 'insertOrderedList', 'insertUnorderedList',
+      'insertHorizontalRule', 'insertLink'
     ]
   }
 
   $scope.froalaSummaryOptions = {
     inlineMode: false,
-    minHeight: 100,
-    buttons: [
-      'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript',
-      'superscript', 'fontFamily', 'fontSize', 'sep', 'inlineStyle', 'blockStyle',
-      'sep', 'formatBlock', 'align', 'insertOrderedList', 'insertUnorderedList',
+    heightMin: 200,
+    toolbarButtons: [
+      'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough',
+      'fontFamily', 'fontSize', 'color', 'sep', 'blockStyle', 'emoticons',
+      'insertTable', 'sep', 'formatBlock', 'align', 'insertOrderedList',
       'outdent', 'indent', 'insertHorizontalRule', 'createLink', 'undo', 'redo',
-      'removeFormat', 'selectAll'
+      'clearFormatting', 'selectAll', 'html'
     ]
   }
 ]

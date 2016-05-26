@@ -1,0 +1,6 @@
+%p
+  %span.smallcaps Attachments:
+  %ul
+    - presenter.submission.submission_files.each do |sf|
+      %li
+        = external_link_to sf.filename, sf.url

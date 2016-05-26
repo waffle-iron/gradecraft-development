@@ -3,9 +3,9 @@ class Group < ActiveRecord::Base
 
   APPROVED_STATUSES = ["Pending", "Approved", "Rejected"]
 
-  attr_accessible :name, :approved, :assignment_id, :assignment_ids, :student_ids,
-    :assignment_groups_attributes, :group_membership_attributes, :text_feedback,
-    :proposals_attributes, :proposal, :approved
+  attr_accessible :name, :approved, :assignment_id, :assignment_ids,
+    :student_ids, :assignment_groups_attributes, :group_membership_attributes,
+    :text_feedback, :proposals_attributes, :proposal, :approved
 
   attr_reader :student_tokens
 
@@ -31,7 +31,8 @@ class Group < ActiveRecord::Base
 
   validates_presence_of :name, :approved
 
-  validate :max_group_number_not_exceeded, :min_group_number_met, :unique_assignment_per_group_membership, :assignment_group_present
+  validate :max_group_number_not_exceeded, :min_group_number_met,
+    :unique_assignment_per_group_membership, :assignment_group_present
 
   scope :approved, -> { where approved: "Approved" }
   scope :rejected, -> { where approved: "Rejected" }
@@ -59,27 +60,29 @@ class Group < ActiveRecord::Base
 
   private
 
-  # Checking to make sure any constraints the instructor has set up around min/max group members are honored
+  # Checking to make sure any constraints the instructor has set up around
+  # min/max group members are honored
   def min_group_number_met
-    if self.students.to_a.count < course.min_group_size
+    if self.students.to_a.size < course.min_group_size
       errors.add :base, "You don't have enough group members."
     end
   end
 
   def max_group_number_not_exceeded
-    if self.students.to_a.count > course.max_group_size
+    if self.students.to_a.size > course.max_group_size
       errors.add :base, "You have too many group members."
     end
   end
 
   # Checking to make sure the group is actually working on an assignment
   def assignment_group_present
-    if self.assignment_groups.to_a.count == 0
+    if self.assignment_groups.to_a.size == 0
       errors.add :base, "You need to check off which #{(course.assignment_term).downcase} your #{(course.group_term).downcase} will work on."
     end
   end
 
-  # We need to make sure students only belong to one group working on a single assignment
+  # We need to make sure students only belong to one group working on a
+  # single assignment
   def unique_assignment_per_group_membership
     assignments.each do |a|
       students.each do |s|

@@ -1,0 +1,13 @@
+%li
+  = link_to "U-M Login", saml_init_path 
+
+%li
+  = link_to "GradeCraft Login", new_user_session_path
+
+%li
+  = link_to_unless_current "Features", features_path do |name|
+    - "<span class='active'>#{name}</span>"
+
+= render :partial => "pages/subnav"
+
+%li= link_to "Blog", "http://blog.gradecraft.com", :target => "_blank"

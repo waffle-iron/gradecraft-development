@@ -12,7 +12,7 @@
 
   .predictor-article-main
 
-    .article-graded{'ng-if' => 'articleGraded(assignment)'}
+    .article-graded{'ng-if' => 'articleGraded(assignment)', 'ng-class'=>'{"excluded" : assignment.grade.is_excluded}'}
       .grade{'ng-if' => 'assignment.pass_fail == false'}
         {{assignment.grade.final_points | number}} / {{assignment.point_total | number}}
       .grade{'ng-if' => 'assignment.pass_fail == true'}
@@ -20,17 +20,20 @@
           {{termFor["pass"]}} / {{termFor["fail"]}}
         .status{{'ng-if'=>'assignment.grade.pass_fail_status'}}
           {{termFor[assignment.grade.pass_fail_status]}}
+      .excluded{{'ng-if'=>'assignment.grade.is_excluded'}}
+        This grade has been excluded
 
     .article-predicted{'ng-if' => '! articleGraded(assignment)'}
       %div{'ng-if' => 'assignment.predictor_display_type == "slider"'}
-        .slider{'ui-slider'=>'slider(assignment)','min'=>'0', 'max'=>'{{assignment.point_total}}', 'ng-model'=>'assignment.grade.predicted_score', 'data'=>{'id'=>'{{assignment.id}}','article-type'=>'assignment'}}
+        .slider{'ui-slider'=>'slider(assignment)','min'=>'0', 'max'=>'{{assignment.point_total}}', 'ng-model'=>'assignment.prediction.predicted_points', 'data'=>{'id'=>'{{assignment.id}}','article-type'=>'assignment', 'ng-class'=>'{"below-threshold" : predictionBelowThreshold(assignment)}'}}
 
         .grade{'ng-if' => '! hasLevels(assignment)'}
-          {{assignment.grade.predicted_score | number}} / {{assignment.point_total | number}}
+          .value
+            {{assignment.prediction.predicted_points | number}} / {{assignment.point_total | number}}
 
         .grade{'id'=>'assignment-{{assignment.id}}-level',  'ng-if' => 'hasLevels(assignment)'}
           .value
-            {{assignment.grade.predicted_score | number}} / {{assignment.point_total | number}}
+            {{assignment.prediction.predicted_points | number}} / {{assignment.point_total | number}}
           .name
             {{levelNameForAssignmentScore(assignment)}}
 
@@ -39,5 +42,3 @@
 
       %div{'ng-if' => 'assignment.predictor_display_type == "checkbox" && !assignment.pass_fail == true'}
         .predictor-binary-switch{'target'=>'assignment','target-type'=>'assignment','off-value'=>'0','on-value'=>'assignment.point_total'}
-
-

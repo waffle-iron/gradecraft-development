@@ -3,7 +3,8 @@ class AssignmentType < ActiveRecord::Base
 
   acts_as_list scope: :course
 
-  attr_accessible :max_points, :name, :description, :student_weightable, :position
+  attr_accessible :max_points, :name, :description, :student_weightable,
+    :position
 
   belongs_to :course, touch: true
   has_many :assignments, -> { order("position ASC") }, dependent: :destroy
@@ -24,7 +25,8 @@ class AssignmentType < ActiveRecord::Base
   end
 
   def weight_for_student(student)
-    # return a standard multiplier of 1 if the assignment type is not student weightable
+    # return a standard multiplier of 1 if the assignment type is not student
+    # weightable
     return 1 unless student_weightable?
 
     # find the assignment weight for the student if it's present
@@ -35,7 +37,8 @@ class AssignmentType < ActiveRecord::Base
     max_points.present?
   end
 
-  # Getting the assignment types max value if it's present, else returning the summed total of assignment points
+  # Getting the assignment types max value if it's present, else returning the
+  # summed total of assignment points
   def total_points
     if max_points.present?
       max_points

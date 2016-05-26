@@ -1,0 +1,10 @@
+-if level.earned_for?(student.id)
+  - if current_user_is_staff?
+    .earned_level #{student.first_name} earned this level
+  - elsif current_user_is_student?
+    .earned_level I earned this level
+
+- if !level.hide_analytics?
+  - unless level.criterion_grades(current_user).empty?
+    .students-padding
+    .graded-students= "#{pluralize(level.criterion_grades(current_user).size, 'student')} earned this level"

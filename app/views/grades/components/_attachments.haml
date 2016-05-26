@@ -1,0 +1,5 @@
+%h4.uppercase Attachments from Grader
+%ul#uploaded_files
+  - grade.grade_files.each do |gf|
+    %li
+      = link_to gf.filename, gf.url, :target => "_blank"

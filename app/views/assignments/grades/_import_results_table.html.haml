@@ -1,0 +1,16 @@
+%table.dynatable
+  %thead
+    %tr
+      %th First Name
+      %th Last Name
+      %th Email
+      %th{ "data-dynatable-sorts" => "rawScore" } Score
+      %th Feedback
+  %tbody
+    - grades.each do |grade|
+      %tr
+        %td= link_to grade.student.first_name, student_path(grade.student)
+        %td= link_to grade.student.last_name, student_path(grade.student)
+        %td= link_to grade.student.email, student_path(grade.student)
+        %td= grade.raw_score
+        %td= grade.feedback

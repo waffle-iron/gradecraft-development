@@ -12,7 +12,7 @@
     .form-item
       - if @challenge.release_necessary?
         = f.label :status
-        = f.select :status, Grade::STATUSES
+        = f.select :status, ChallengeGrade::STATUSES
         .form_label= "Can the #{term_for :team} see this grade?"
       - else
         = f.input :status, as: :hidden, :input_html => { :value => "Graded" }

@@ -164,6 +164,30 @@ describe ResqueJob::Base, type: :vendor_library do
     end
   end
 
+  describe "#enqueue_with_fallback" do
+    subject { ResqueJob::Base.new subject_attrs }
+    let(:subject_attrs) { { any_attr: 10, some_attr: true } }
+
+    context "Resque reaches Redis correctly and no error is thrown" do
+      it "enqueues the job" do
+        expect(subject).to receive(:enqueue)
+        subject.enqueue_with_fallback
+      end
+    end
+
+    context "Resque can't reach Redis and throws an error" do
+      before do
+        allow(subject).to receive(:enqueue).and_raise "FAKE RSPEC ERROR: " \
+          "Could not connect to Redis: getaddrinfo socket error."
+      end
+
+      it "calls the ResqueJob::Base.perform directly" do
+        expect(subject.class).to receive(:perform).with subject_attrs
+        subject.enqueue_with_fallback
+      end
+    end
+  end
+
   # test whether @ivars are properly inheritable after extending the
   # InheritableIvars module, pulled in from shared examples in the
   # InheritableIvarsToolit. Defined in:

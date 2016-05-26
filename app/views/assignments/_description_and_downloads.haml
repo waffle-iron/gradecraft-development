@@ -5,10 +5,13 @@
     - else
       .italic= "#{points presenter.assignment.point_total} points possible"
 
+    - if presenter.assignment.threshold_points?
+      .italic= "#{points presenter.assignment.threshold_points} points threshold"
+
   .italic= "Opens: #{presenter.assignment.open_at}" if presenter.assignment.open_at?
   .italic= "Due: #{presenter.assignment.due_at}" if presenter.assignment.due_at?
 
-  - if current_student.present? && presenter.assignment.accepts_submissions? &&  (presenter.assignment.is_unlocked_for_student?(current_student) || (presenter.assignment.has_groups? && presenter.assignment.is_unlocked_for_group?(current_student.group_for_assignment(presenter.assignment))))
+  - if presenter.assignment_accepting_submissions?(current_student)
     .no-bullet= render "students/submissions", assignment: presenter.assignment
 
   - if presenter.student_logged?(current_user)
@@ -68,10 +71,15 @@
       - presenter.assignment.unlock_keys.each do |key|
         %li= link_to key.key_description_sentence, key.unlockable
 
-  - if presenter.assignment.description.present? && ( !current_student || presenter.assignment.description_visible_for_student?(current_student))
+  - if presenter.assignment_has_viewible_description?(current_user)
     %hr.dotted
     %h4.uppercase Guidelines:
     %p= raw presenter.assignment.description
+
+  - if presenter.assignment_has_viewible_purpose?(current_user)
+    %hr.dotted
+    %h4.uppercase Purpose:
+    %p= raw presenter.assignment.purpose
 
   - if presenter.assignment.assignment_type.description.present?
     %hr.dotted

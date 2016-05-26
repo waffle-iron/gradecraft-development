@@ -15,7 +15,8 @@ a.site-title
   &.navbar
     width: 100%
 
-.layout-right-flyout, .layout-left-flyout
+/* In app mobile left flyout menu styles */
+.layout-left-flyout
   height: 100%
   position: fixed
   visibility: hidden
@@ -23,7 +24,7 @@ a.site-title
   z-index: 0
   top: 0
   transition: visibility 0 linear .2s
-  background-color: $color-blue-2
+  background-color: $color-grey-6
   transition: visibility 0 linear .2s
   -webkit-perspective: 1000
   -webkit-backface-visibility: hidden
@@ -32,36 +33,23 @@ a.site-title
     list-style-type: none
     margin: 0
     padding: 0
-
-.layout-right-flyout
-  right: 0
+  a
+    display: block
 
 .layout-left-flyout
   left: 0
 
-.layout-right-flyout.isCbFlyNavRightActive, .layout-left-flyout.isCbFlyNavLeftActive
+.layout-left-flyout.isCbFlyNavLeftActive
   visibility: visible
   transition: z-index 0 linear .2s
-  z-index: 10
-
-.cbFlyNavRight-wrap
-  display: block
-  position: relative
-  height: 100%
-  overflow: hidden
-  width: 270px
-  -webkit-perspective: 1000
-  -webkit-backface-visibility: hidden
-  -webkit-transform-style: preserve-3d
-  > nav
-    transform: translateY(0)
-    transition: transform 0 ease-in-out
+  z-index: 1000
 
 .cbFlyNavLeft-wrap
   display: block
+  box-sizing: border-box
   position: relative
   height: 100%
-  overflow: hidden
+  overflow: scroll
   width: 250px
   -webkit-perspective: 1000
   -webkit-backface-visibility: hidden
@@ -79,18 +67,13 @@ a.site-title
   transition: transform .2s ease-in-out
   -webkit-backface-visibility: hidden
 
-.layout-right-content.isCbFlyNavRightActive
-  top: -2rem !important
-  transform: translate3d(-270px,0,0)
-  position: relative
-
 .layout-right-content.isCbFlyNavLeftActive
   top: -2rem !important
   transform: translate3d(250px,0,0)
   position: relative
 
 .nav-flyout-navmask, .nav-flyout-contentmask, .nav-flyout-navmask-left, .nav-flyout-contentmask-left
-  position: absolute
+  position: fixed
   top: 0
   bottom: 0
   left: 0
@@ -98,6 +81,8 @@ a.site-title
 
 .nav-flyout-contentmask, .nav-flyout-contentmask-left
   z-index: 1
+  height: 100vh
+  background-color: rgba(0,0,0, .7)
 
 .nav-flyout-navmask, .nav-flyout-navmask-left
   right: 180px
@@ -108,9 +93,8 @@ a.site-title
 .navbar ul
   list-style-type: none
 
-.btn-navbar-right
+.btn-navbar-left
   position: absolute
-  right: 0
   top: 7px
   font-size: 1.1rem
   width: 35px
@@ -119,18 +103,12 @@ a.site-title
   display: block
   z-index: 1
   color: $color-green-2
+  &:hover
+    color: $color-green-2
+    text-decoration: none
 
 .btn-navbar-left
-  position: absolute
   left: 0
-  top: 7px
-  font-size: 1.1rem
-  width: 35px
-  height: 40px
-  padding: 4px 0 0 10px
-  display: block
-  z-index: 1
-  color: $color-green-2
 
 /* Navbar Styles */
 .navbar
@@ -175,13 +153,32 @@ ul.subnav.logged-out
   .button:hover
     background-color: $color-blue-1
 
+.the-nav .nav-pill.right.public-nav
+  margin-top: .4em
+  display: none
+  span
+    padding: .5rem
+    color: $color-blue-4
+    border-bottom: 2px solid $color-blue-4
+
+.the-nav > .nav > li
+  display: inline-block
+  margin-bottom: 0
+  position: relative
+  font-size: .9rem
+
+.gc-mark
+  display: none
+
+.btn-public-nav
+  display: none
+
 .offscreen-sidebar
   display: none
 
 .isCbFlyNavLeftActive .offscreen-sidebar
   margin-right: 0
   display: block
-  padding-right: 1rem
 
 /* Large Screen Styles*/
 @media (min-width: $media-medium-max)
@@ -207,17 +204,15 @@ ul.subnav.logged-out
     margin: 0
     padding-left: 0
     line-height: normal
-  .the-nav > .nav > li
-    display: inline-block
-    margin-bottom: 0
-    position: relative
-    font-size: .9rem
+    .my-account
+      min-width: 120px
+
   .the-nav > .nav > li .caret
     margin-top: 8px
     margin-left: 2px
     border-top-color: $color-grey-8
     border-bottom-color: $color-grey-8
-  .the-nav > .nav > li a
+  .nav > li a
     display: block
     padding: .5rem
     color: $color-blue-4
@@ -235,6 +230,7 @@ ul.subnav.logged-out
 
   .logged-in .the-nav > .nav > li a
     padding-top: .85rem
+    padding-bottom: .75rem
 
   /* Active State */
   .the-nav > .nav > li:hover > a
@@ -265,71 +261,71 @@ ul.subnav.logged-out
       min-width: 260px
   .nav > li > .subnav > li
     margin-bottom: 0
+    padding: 0
+  .nav > li > .subnav > li.not-a-link
+    padding: 6px 10px
   .nav > li > .subnav > li a
     color: $color-black
     padding: 6px 10px
     transition: all .2s
-  .nav > li > .subnav > li:hover a
+  .nav > li > .subnav > li a:hover
     background: $color-blue-2
     color: $color-white
+
   .nav > li > .subnav > li:last-of-type a:hover
     border-bottom-left-radius: $global-radius
     border-bottom-right-radius: $global-radius
 
 /* Mobile Styles */
 @media (max-width: $media-medium-max)
-  .navbar .nav-collapse
+  .logged-in .navbar .nav-collapse
     display: none
-
-  .mobile-nav
-    padding-left: .25rem
-    margin: 0 auto
-    text-align: center
-
-    .login-buttons
-      padding: .25rem 0 !important
-      margin: 0 !important
-      a.button
-        padding-right: .2rem !important
-        font-size: .6rem
 
   .nav.nav-pill
     padding: 0
-    margin: .75rem
+    margin: 0
+  
+  .nav > li a
+    display: block
+    padding: .5rem
+    color: $color-blue-4
+    text-decoration: none
 
   ul.subnav
     margin: 0
     padding: 0
     font-size: .9rem
-    background: $color-blue-4
-    li a
+    background: $color-grey-6
+    li
       padding: 5px 10px
       display: block
+      color: $color-grey-3
       &:hover
-        background-color: $color-blue-2
-        color: $color-white
+        color: $color-blue-3
+        text-decoration: none
 
   li.dropdown a.section-title
-    display: block
-    background: $color-blue-1
-    color: $color-white
-    padding: 5px 10px
+    color: $color-blue-3
 
   .layout-left-flyout
-    padding: .25rem
-    width: 15.25rem
-
+    width: 250px
+    li
+      padding: .2em
     li, li a
-      color: $color-white
-      height: 1.5rem
+      color: $color-grey-2
       text-transform: capitalize
-      padding: .15rem
       font-size: 1rem
-      &:hover, &.active
-        color: $color-yellow-1
+      font-weight: 300
+      &.active
+        background-color: $color-blue-3
+        color: $color-white
+    a
+      &:hover
+        color: $color-blue-3
+        text-decoration: none
 
     h5
-      color: $color-yellow-1
+      color: $color-blue-3
       text-transform: uppercase
       font-size: 1rem
       padding: .25rem 0 .25rem .5rem
@@ -337,37 +333,113 @@ ul.subnav.logged-out
       font-weight: normal
 
     hr
-      border-bottom-color: $color-blue-4
-      border-top-color: $color-blue-4
+      border: none
+      border-bottom: 1px dashed $color-grey-5
       margin: .5rem 0
-
-  li.course-site
-    background-color: darken($color-blue-1, 20%)
-    width: 16rem
-    padding: .5rem .75rem
-    height: 2.75rem
-    font-size: 2rem
+      width: 100%
 
     a
-      color: $color-green-2
+      color: $color-blue-4
+    
+    .course-site
+      background-color: $color-blue-1
+      color: $color-white
+      padding: .5rem .75rem
+      font-size: 1rem
 
-  .navbar .mobile-nav
-    padding-top: .5rem
-    padding-left: .5rem
+@media (max-width: $media-small-max)
+  .navbar > .mobile-nav > .right
+    width: 100%
+    margin-right: 0
+  
+  .login-buttons
     margin: 0 auto
+    width: 100%
+    float: none
+    display: none
+
+  .the-nav .nav-pill.right.public-nav
+    display: none
+    background-color: $color-blue-4
+    position: fixed
+    top: 45px
+    width: 100%
     text-align: center
+    padding: 1em 0
+    margin: 0
+    li
+      margin: .25em 0
+      display: block
+      span, a
+        padding: .5em
+        display: block
+        font-size: 1.1em
+        color: $color-grey-2
+      span
+        background-color: rgba(255,255,255,.7)
 
-    .nav.nav-pill
-      width: 100% !important
-      text-align: center
+  .gc-mark
+    display: inline-block
 
-      li
-        display: inline
-        a
-          color: $color-blue-4
+  .logo-home
+    display: none
 
-    .site-title
-      padding: 0
+  .btn-public-nav
+    display: inline-block
+    float: right
+    color: $color-blue-4
+    margin-top: 1em
+    margin-right: 1em
+    &:hover
+      color: $color-blue-4
 
-    .right
-      margin-right: 1rem
+.noscroll
+  overflow: hidden
+
+.course-info-btn
+  text-decoration: none
+  position: relative
+  color: $color-blue-4
+  &:hover
+    text-decoration: none
+
+.course-info-card
+  display: none
+  position: absolute
+  top: 3.1em
+  right: -11.5em
+  font-weight: 300
+  background-color: $color-white
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)
+  width: 400px
+  padding: 1em
+
+  & > li
+    list-style: none
+    padding: .25em 0em
+    color: $color-grey-3
+    .logged-in .the-nav > .nav & > a
+      padding: 0em
+      color: $color-blue-3
+
+.course-info-card:after, 
+.course-info-card:before
+  bottom: 100%
+  left: 50%
+  border: solid transparent
+  content: " "
+  height: 0
+  width: 0
+  position: absolute
+  pointer-events: none
+
+.course-info-card:after
+  border-color: rgba(255, 255, 255, 0)
+  border-bottom-color: $color-white
+  border-width: 8px
+  margin-left: -8px
+
+.course-info-card:before 
+  border-color: rgba(238, 238, 238, 0)
+  border-width: 16px
+  margin-left: -16px

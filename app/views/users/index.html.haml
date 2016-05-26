@@ -14,7 +14,7 @@
           .sr-only Select #{term_for :team}
         = select_tag :team_id, options_for_select(@teams.map { |t| [t.name, t.id] }, @team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
 
-  %table.nofeatures_default_last_name_dynatable
+  %table.dynatable
     %thead
       %tr
         %th First Name

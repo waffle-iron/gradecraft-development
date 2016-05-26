@@ -3,7 +3,7 @@
 %h3.pagetitle= presenter.title
 
 // Button bar at the top of the page
-= render partial: "buttons", locals: { presenter: presenter }
+= render "buttons", presenter: presenter
 
 .pageContent
   = render "layouts/alerts"
@@ -13,8 +13,8 @@
       %li
         %a{ "href" => "#tab"} Grades
       %li
-        %a{ "href" => "#tabt2"} Description & Downloads
-      - if presenter.rubric_designed?
+        %a{ "href" => "#tabt2"} Description &amp; Downloads
+      - if presenter.grade_with_rubric?
         %li
           %a{ "href" => "#tabt3"} Grading Rubric
       - if presenter.has_grades?
@@ -24,19 +24,19 @@
     #tabt1.ui-tabs-panel.ui-widget-content{role: "tabpanel"}
       .ui-tabs-panel#tab.active{role: "tabpanel", "aria-hidden" => false }
         - if presenter.group_assignment?
-          = render partial: "assignments/group/group_show", locals: { presenter: presenter }
+          = render "assignments/group/group_show", presenter: presenter
         - else
-          = render partial: "assignments/individual/individual_show", locals: { presenter: presenter }
+          = render "assignments/individual/individual_show", presenter: presenter
       .ui-tabs-panel#tabt2{role: "tabpanel", "aria-hidden" => false }
-        = render partial: "assignments/description_and_downloads", locals: { presenter: presenter }
+        = render "assignments/description_and_downloads", presenter: presenter
 
-      - if presenter.rubric_designed?
+      - if presenter.grade_with_rubric?
         .content#tabt3{role: "tabpanel", "aria-hidden" => false }
-          %br
-          = render partial: "assignments/rubric_preview", locals: { presenter: presenter }
+          .tab-container
+            = render partial: "rubrics/components/rubric_table", locals: { rubric: presenter.rubric, presenter: presenter, student: nil, include_grade_info: false }
       - if presenter.has_grades?
         .ui-tabs-panel#tabt4{role: "tabpanel", "aria-hidden" => false }
           - if presenter.group_assignment?
-            = render partial: "grades/analytics/group_analytics", locals: { presenter: presenter }
+            = render "grades/analytics/group_analytics", presenter: presenter
           - else
-            = render partial: "grades/analytics/instructor_analytics", locals: { presenter: presenter }
+            = render "grades/analytics/instructor_analytics", presenter: presenter

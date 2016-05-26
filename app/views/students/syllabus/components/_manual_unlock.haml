@@ -1,0 +1,2 @@
+- if presenter.locked?(assignment)
+  %li= link_to glyph("unlock-alt") + "Unlock", manually_unlock_unlock_state_path(student_id: presenter.student.id, assignment_id: assignment.id), :method => :post, class: "button"

@@ -20,7 +20,7 @@ feature "editing a badge" do
       expect(current_path).to eq badges_path
 
       within(".pageContent") do
-        click_link "Fancy Badge"
+        first(:link, "Fancy Badge").click
       end
 
       expect(current_path).to eq badge_path(badge.id)

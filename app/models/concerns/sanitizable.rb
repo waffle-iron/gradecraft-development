@@ -13,7 +13,8 @@ module Sanitizable
 
     def clean_html_before_save(attribute)
       before_save do
-        self.send("#{attribute}=", Sanitize.clean(self.send(attribute), Sanitize::Config::BASIC))
+        self.send("#{attribute}=", Sanitize.clean(self.send(attribute),
+          Sanitize::Config::RELAXED))
       end
     end
   end

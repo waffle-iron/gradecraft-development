@@ -12,7 +12,7 @@ json.data @criteria do |criterion|
       json.points level.points
       json.full_credit !!level.full_credit
       json.no_credit !!level.no_credit
-      json.durable !!level.durable
+      json.meets_expectations level.meets_expectations
       # TODO: change Angular to handle array of badge ids: [1,2,5] and refactor
       json.level_badges level.level_badges do |level_badge|
         json.id level_badge.id

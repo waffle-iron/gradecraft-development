@@ -6,12 +6,12 @@ h1, h2, h3, h4, h5
   margin: 0
   padding: 0
   clear: both
-  font-family: 'Light-Weight'
+  font-weight: 300
 
 body
   font-size: 0.9rem
   line-height: 1.6
-  font-family: 'Standard-Weight'
+  font-family: 'Open Sans', sans-serif
 
 .bold
   font-weight: bold !important
@@ -54,6 +54,10 @@ body
 
 a
   text-decoration: none
+  color: $color-blue-3
+  
+.assignment_type a, table a
+  text-decoration: none
   color: $color-blue-2
 
 a:hover
@@ -61,8 +65,7 @@ a:hover
   text-decoration: underline
 
 hr
-  border-color: $color-grey-3
-  border-width: 1px 0 0
+  border: 1px solid $color-grey-3
   margin: 1.5rem auto
 
 .label.alert.round
@@ -111,6 +114,10 @@ h4.assignment_name
 
 .assignment-type-name
   display: inline
+
+/** Instructor and student-view assignment types accordion **/
+.assignment_type h3, .assignment-type-name
+  font-weight: 400
 
 h5.section-title
   font-size: 1.3rem

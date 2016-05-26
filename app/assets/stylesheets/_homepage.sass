@@ -9,32 +9,42 @@
 
   .hero-section
     background:rgba(255,255,255,0.5)
-    height: 300px
-    padding: 10px 0 0
 
     h1
       text-transform: none
       font-size: 2rem
       color: $color-grey-3
       width: 70%
-      margin: 90px auto 0
+      margin: 0 auto
+      padding: 3em 0 1em 0
 
     h3
       font-size: .9rem
       color: $color-grey-4
       text-transform: none !important
       width: 80%
-      margin: 20px auto
+      margin: 0 auto
+      padding-bottom: 4em
 
   .section-container
     margin: 0 auto
     padding: 0 50px
+    max-width: 1200px
 
   .gameful
     height: 400px
 
   .feature-overview
     height: auto
+
+    i
+      float: left
+      margin-top: -.25rem
+      display: inline
+      font-size: 2.5rem
+      padding-right: .25rem
+
+      color: $color-blue-3
 
   .feature-section
     padding: 2rem 2rem 4rem
@@ -76,15 +86,6 @@
     h4
       margin-bottom: .5rem
 
-    i
-      float: left
-      margin-top: -.25rem
-      display: inline
-      font-size: 2.5rem
-      padding-right: .25rem
-
-      color: $color-blue-3
-
     .half
       width: 50%
 
@@ -94,6 +95,32 @@
       width: 23%
       margin: 0 1% 0 1%
       text-align: center
+      
+      .circle
+        width: 150px
+        height: 150px
+        border-radius: 50%
+        margin: 0 auto
+        position: relative
+        
+        &.what-is-gameful
+          background-color: $color-blue-3
+        
+        &.getting-started
+          background-color: #B8E986
+          
+        &.faq
+          background-color: $color-blue-4
+          
+        &.example-syllabi
+          background-color: #feb130
+        
+        img
+          position: absolute
+          top: 50%
+          left: 50%
+          margin-right: -50%;
+          transform: translate(-50%, -50%)
 
       h4
         margin-top: .75rem
@@ -101,44 +128,69 @@
         font-size: 120%
 
       p
-        margin: 0
+        margin: 0 0 1em 0
         line-height: 150%
         font-size: .8rem
 
+    &.pedagogy p
+      padding: 0 1em
+
 a.outline-button
+  border-radius: .2rem
+  border: 1px solid $color-blue-3
+  color: $color-blue-3
+  padding: .5rem
   position: relative
   top: 1rem
-  border: 2px solid $color-blue-3
-  color: $color-blue-3
-  border-radius: .5rem
-  padding: .5rem
+  &:hover
+    background-color: $color-blue-3
+    color: white
+    text-decoration: none
 
 @media (max-width: $media-medium-max)
   .homepage
     .hero-section
       h1
-        font-size: 1.5rem
+        font-size: 1.75rem
 
     .section-container
       padding: 0 .5rem
 
-    .feature-overview
+    .feature-section
       h2
         margin-bottom: 2rem !important
+
+@media (max-width: 800px)
+  .homepage
+    .feature-section
+      height: auto
+      padding: 2rem 0 4rem
+
+@media (max-width: 700px)
+  .homepage
+    .feature-section
+      .quarter
+        width: 50%
+        margin: 0 auto
+        box-sizing: border-box
+        padding: 1em
 
 @media (max-width: $media-small-max)
   .homepage
     .hero-section
-      height: 250px
+      margin-top: 40px
+      padding: .5rem
 
       img
-        padding-top: 3rem
+        padding-top: 1.5rem
 
       h1
-        padding: 2rem 0 0
-        margin: 0 auto
+        padding: 1.5rem 0
         font-size: 1.3rem
-        width: 90%
+        width: 100%
+      h3
+        padding-bottom: 1rem
+        width: 100%
 
     .section-container
       padding: 0 !important
@@ -179,12 +231,12 @@ a.outline-button
       h2
         padding: 1rem .25rem 0
 
-    .quarter
-      width: calc(100% - 2rem) !important
-      clear: both
-      margin: 0
-      background-color: $color-white
-      padding: 0 1rem 1rem
+      .quarter
+        width: 100%
+        clear: both
+        margin: 0 auto
+        background-color: $color-white
+        padding: 0 1rem 1rem
 
       p
         margin: 0
@@ -192,10 +244,3 @@ a.outline-button
     .logo
       padding-top: 2rem
       margin: 0 auto
-
-
-@media (max-width: $media-xsmall-max)
-  .hero-section
-    height: 280px !important
-    h1
-      padding: 1rem 0 0 !important

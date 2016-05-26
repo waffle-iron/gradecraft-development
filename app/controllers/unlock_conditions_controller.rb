@@ -1,11 +1,15 @@
-class UnlockConditionsController < ApplicationController
+# Unlock Conditions are used to declare a sequence of assignments or badges
+# that must be completed at different levels before something else can be
+# done. Unlock States store whether or not a student has met the necessary
+# conditions
 
-  # Unlock Conditions are used to ...
+class UnlockConditionsController < ApplicationController
 
   before_filter :ensure_staff?
 
   def create
-    @unlock_condition = current_course.unlock_condition.new(params[:unlock_condition])
+    @unlock_condition =
+      current_course.unlock_condition.new(params[:unlock_condition])
     @unlock_condition.save
   end
 

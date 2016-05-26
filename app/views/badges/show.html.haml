@@ -1,126 +1,42 @@
-= content_nav_for @badge
+= content_nav_for presenter.badge
 
-%h3.pagetitle= @title
+%h3.pagetitle= presenter.title
 
-.context_menu
-  %ul
-    %li
-      %a{:href => new_badge_path }
-        %i.fa.fa-plus.fa-fw
-        New #{(term_for :badge).titleize}
-    %li
-      %a{:href => edit_badge_path(@badge) }
-        %i.fa.fa-edit.fa-fw
-        Edit
-    %li
-      %a{:href => new_badge_earned_badge_path(badge_id: @badge) }
-        %i.fa.fa-star.fa-fw
-        Award
-    %li
-      %a{:href => mass_award_badge_path(@badge) }
-        %i.fa.fa-check.fa-fw
-        Quick Award
+= render partial: "badges/context_menu", locals: { badge: presenter.badge, actions: [:new, :edit, :award, :quick_award] } if current_user_is_staff?
 
 .pageContent
   = render "layouts/alerts"
 
-  - if current_course.has_teams?
+  - if current_course.has_teams? && current_user_is_staff?
     .team-filter
-      = form_tag badge_path(@badge), name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
+      = form_tag badge_path(presenter.badge), name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
         %label.sr-only{:for => "team_id"}
           Select #{term_for :team}
-        = select_tag :team_id, options_for_select(@teams.map { |t| [t.name, t.id] }, @team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
+        = select_tag :team_id, options_for_select(presenter.teams.map { |t| [t.name, t.id] }, presenter.team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
 
-  //badge icon, total awarded, and points
-  .badge-card
-    .card-ribbon
-      .badge-table.hexagon.awarded
-        %img.earned{:src => @badge.icon, :alt => @badge.name }
-        .ribbon
-          .ribbon-stitches-top
-          .ribbon-content
-            .badge-name= @badge.name
-          .ribbon-stitches-bottom
-        .ribbon-ends
-        .gold-stars
-          %i.fa.fa-star.fa-fw
-            .earned-count= @badge.earned_badges.count
-          .badges-earned.blue
-      .badge-details
-        - if @badge.point_total?
-          .points="#{@badge.point_total} Points"
-        - if @badge.description?
-          .feedback= raw @badge.description
-        - if @badge.is_unlockable?
-          %li
-            %a
-              %i.fa.fa-lock
-              Unlock Requirements
-            .display_on_hover.hover-style
-              %ul
-                - @badge.unlock_conditions.each do |condition|
-                  %li= "#{condition.name} must be #{condition.condition_state}"
-        - if @badge.is_a_condition?
-          %li
-            %a
-              %i.fa.fa-key
-              Unlock Keys
-            .display_on_hover.hover-style
-              %ul
-                - @badge.unlock_keys.each do |key|
-                  %li= "#{key.unlockable.name} is unlocked by #{key.condition_state} #{key.condition.name}"
+  .badge-container
+    .badge-icon
+      = render partial: "badges/components/icon", locals: { badge: presenter.badge }
+    .badge-description
+      = render partial: "badges/components/description", locals: { badge: presenter.badge, title: presenter.badge.name }
+      .count
+        Times Earned:
+        %span
+          = render partial: "badges/components/count", locals: { badge: presenter.badge, count: presenter.earned_badges.count }
+      = render partial: "badges/components/hover_icons", locals: { badge: presenter.badge }
 
-
-  - if @badge.badge_files.present?
+  - if presenter.badge.badge_files.present?
     %p
       %b Attachments:
       %ul
-        - @badge.badge_files.each do |bf|
+        - presenter.badge.badge_files.each do |bf|
           %li
             = link_to bf.filename, bf.url
             - if current_user_is_staff?
               = link_to "(Remove)", remove_uploads_path({ :model => "BadgeFile", :upload_id => bf.id } )
   .clear
 
-  - if current_user_is_staff?
-    %table.nofeatures_default_last_name_dynatable
-      %thead
-        %tr
-          - if @badge.is_unlockable?
-            %th
-          %th First Name
-          %th Last Name
-          %th{ :width => 200} Feedback
-          - if @badge.can_earn_multiple_times
-            %th Count
-          - if @badge.is_unlockable?
-            %th{ :width => 70}
-          %th{ :width => 230}
-      %tbody
-        - @students.each do |student|
-          %tr
-            - if @badge.is_unlockable?
-              %td
-                - if @badge.is_unlocked_for_student?(student)
-                  %i.fa.fa-unlock-alt
-                - else
-                  %i.fa.fa-lock
-            %td= link_to student.first_name, student_path(student)
-            %td= link_to student.last_name, student_path(student)
-            %td{ :width => 80}
-              - @badge.earned_badges.where(student_id: student.id).each do |badge|
-                %div{ :width => 80}= raw badge.feedback
-            - if @badge.can_earn_multiple_times
-              %td= @badge.earned_badge_count_for_student(student)
-            - if @badge.is_unlockable?
-              %td
-                - if ! @badge.is_unlocked_for_student?(student)
-                  = link_to glyph(:lock) + "Unlock", manually_unlock_unlock_state_path(student_id: student.id, badge_id: @badge.id), :method => :post, class: "button"
-            %td
-              .right
-                - @badge.earned_badges.where(student_id: student.id).each do |badge|
-                  %ul.button-bar
-                    %li= link_to glyph(:star) + "Awarded #{badge.created_at.strftime("%b %d")}", badge_earned_badge_path(@badge, badge.id), class: "button"
-                    %li= link_to glyph(:edit) + "Edit", edit_badge_earned_badge_path(@badge, badge.id), class: "button"
-                    %li= link_to glyph(:trash) + "Delete", badge_earned_badge_path(@badge, badge), class: "button", :method => :delete, data: { confirm: "Are you sure you want to delete this award?" }
-                  .clear
+  - if current_user_is_staff? && ! presenter.view_student_context?
+    = render partial: "badges/all_students_earned_badges_table", locals: { presenter: presenter }
+  - else
+    = render partial: "badges/student_earned_badges", locals: { presenter: presenter }

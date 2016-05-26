@@ -9,7 +9,6 @@
   color: $color-white
   opacity: .9
   float: left
-  border-left: 1px dashed $color-blue-2
 
   .avatar
     text-align: center
@@ -29,6 +28,9 @@
 
   a
     color: $color-blue-4
+    font-weight: 300
+    &:hover
+      color: $color-green-2
 
   hr
     margin: .25rem 0
@@ -42,7 +44,7 @@
   .form_label
     color: $color-green-2
     font-style: normal
-    font-family: 'Light-Weight'
+    font-weight: 300
 
   .todo li
     list-style-type: none
@@ -58,11 +60,6 @@
       margin-bottom: 0
     .button:hover
       background-color: $color-blue-4
-
-    .assignment-name
-      font-family: 'Light-Weight'
-      a:hover
-        color: $color-green-2
 
   ul.block-grid
     margin: 0.5rem auto !important

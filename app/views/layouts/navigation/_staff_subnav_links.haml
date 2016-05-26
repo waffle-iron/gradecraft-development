@@ -50,7 +50,7 @@
 %hr
 
 %h5 Coursework
-%li= link_to_unless_current glyph(:bars) + "#{term_for :assignments}", assignments_path
+%li= link_to_unless_current glyph('file-text') + "#{term_for :assignments}", assignments_path
 - if current_course.has_badges?
   %li= link_to_unless_current glyph(:shield) + "#{term_for :badges}", badges_path
 - if current_course.team_challenges?
@@ -96,7 +96,7 @@
 %h5 Course Setup
 %li= link_to_unless_current glyph(:cog) + "Options", edit_course_path(current_course)
 %li= link_to_unless_current glyph(:book) + "#{term_for :assignment_types}", assignment_types_path
-%li= link_to_unless_current glyph(:sliders) + "Predictor Preview", predictor_path
+%li= link_to_unless_current glyph(:tasks) + "Predictor Preview", predictor_path
 %li= link_to_unless_current glyph("level-up") + "Grading Scheme", grade_scheme_elements_path
 %li= link_to_unless_current glyph(:bullhorn) + "Announcements", announcements_path
 %li= link_to_unless_current glyph(:calendar) + "Calendar Events", events_path

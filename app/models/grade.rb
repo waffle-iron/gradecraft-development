@@ -1,24 +1,18 @@
 class Grade < ActiveRecord::Base
-  include Canable::Ables
+  include GradeStatus
   include Historical
   include MultipleFileAttributes
   include Sanitizable
 
-  has_paper_trail ignore: [:predicted_score]
-
-  attr_accessible :assignment, :assignments_attributes, :assignment_id,
-    :assignment_type_id, :course_id, :feedback, :final_score, :grade_file,
-    :grade_file_ids, :grade_files_attributes, :graded_by_id, :group, :group_id,
-    :group_type, :instructor_modified, :pass_fail_status, :point_total,
-    :adjustment_points, :adjustment_points_feedback, :predicted_score,
-    :raw_score, :status, :student, :student_id, :submission,
-    :_destroy, :submission_id, :task, :task_id, :team_id, :earned_badges,
-    :earned_badges_attributes, :feedback_read, :feedback_read_at,
-    :feedback_reviewed, :feedback_reviewed_at, :is_custom_value, :graded_at,
-    :excluded_from_course_score, :excluded_date, :excluded_by
-
-  STATUSES = ["In Progress", "Graded", "Released"]
-  UNRELEASED_STATUSES = ["In Progress", "Graded"]
+  attr_accessible :_destroy, :adjustment_points, :adjustment_points_feedback,
+    :assignment, :assignment_id, :assignment_type_id, :assignments_attributes,
+    :course_id, :earned_badges, :earned_badges_attributes, :excluded_by,
+    :excluded_date, :excluded_from_course_score, :feedback, :feedback_read,
+    :feedback_read_at, :feedback_reviewed, :feedback_reviewed_at, :final_score,
+    :grade_file, :grade_file_ids, :grade_files_attributes, :graded_at,
+    :graded_by_id, :group, :group_id, :group_type, :instructor_modified,
+    :is_custom_value, :pass_fail_status, :point_total, :raw_score, :student,
+    :student_id, :submission, :submission_id, :task, :task_id, :team_id
 
   belongs_to :course, touch: true
   belongs_to :assignment, touch: true
@@ -33,15 +27,17 @@ class Grade < ActiveRecord::Base
   has_many :earned_badges, dependent: :destroy
 
   has_many :badges, through: :earned_badges
-  accepts_nested_attributes_for :earned_badges, reject_if: proc { |a| (a["score"].blank?) }, allow_destroy: true
+  accepts_nested_attributes_for :earned_badges,
+    reject_if: proc { |a| (a["score"].blank?) }, allow_destroy: true
 
   before_validation :cache_associations
   before_save :calculate_points
   before_save :zero_points_for_pass_fail
   after_save :check_unlockables
 
-  multiple_files :grade_files
   clean_html :feedback
+  multiple_files :grade_files
+  releasable_through :assignment
 
   has_many :grade_files, dependent: :destroy
   accepts_nested_attributes_for :grade_files
@@ -54,25 +50,15 @@ class Grade < ActiveRecord::Base
   after_destroy :save_student_and_team_scores
 
   scope :completion, -> { where(order: "assignments.due_at ASC", joins: :assignment) }
-  scope :graded, -> { where status: "Graded" }
-  scope :in_progress, -> { where status: "In Progress" }
-  scope :released, -> { joins(:assignment).where("status = 'Released' OR (status = 'Graded' AND NOT assignments.release_necessary)") }
-  scope :no_status, -> { instructor_modified.where(status: ["", nil])}
-  scope :graded_or_released, -> { where(status: ["Graded", "Released"])}
-  scope :not_released, -> { joins(:assignment).where(assignments: { release_necessary: true }).where(status: "Graded") }
+
   scope :excluded_from_course_score, -> { where excluded_from_course_score: true }
   scope :included_in_course_score, -> { where excluded_from_course_score: false }
+  scope :no_status, -> { instructor_modified.where(status: ["", nil])}
   scope :instructor_modified, -> { where instructor_modified: true }
   scope :positive, -> { where("score > 0")}
-  scope :predicted_to_be_done, -> { where("predicted_score > 0")}
   scope :for_course, ->(course) { where(course_id: course.id) }
   scope :for_student, ->(student) { where(student_id: student.id) }
   scope :not_nil, -> { where.not(score: nil)}
-
-  # @mz todo: add specs
-  scope :student_visible, -> { joins(:assignment).where(student_visible_sql) }
-
-  # validates_numericality_of :raw_score, integer_only: true
 
   def self.find_or_create(assignment_id,student_id)
     Grade.find_or_create_by(student_id: student_id, assignment_id: assignment_id)
@@ -85,26 +71,12 @@ class Grade < ActiveRecord::Base
     Grade.where(student_id: student_ids, assignment_id: assignment_id)
   end
 
-  def add_grade_files(*files)
-    files.each do |f|
-      grade_files << GradeFile.create(file: f, filename: f.original_filename[0..49], grade_id: self.id)
-    end
-  end
-
   def feedback_read!
     update_attributes feedback_read: true, feedback_read_at: DateTime.now
   end
 
   def feedback_reviewed!
     update_attributes feedback_reviewed: true, feedback_reviewed_at: DateTime.now
-  end
-
-  def is_graded?
-    self.status == "Graded"
-  end
-
-  def in_progress?
-    self.status == "In Progress"
   end
 
   # Handle raw score attributes with commas (ex "300,000")
@@ -135,8 +107,10 @@ class Grade < ActiveRecord::Base
     final_score || raw_score
   end
 
-  def predicted_score
-    self[:predicted_score] || 0
+  def predicted_points
+    PredictedEarnedGrade.where(
+      student_id: self.student.id,
+      assignment_id: self.assignment.id).first.try(:predicted_points) || 0
   end
 
   def assignment_weight
@@ -146,19 +120,6 @@ class Grade < ActiveRecord::Base
   def has_feedback?
     feedback.present?
   end
-
-  def is_released?
-    status == "Released"
-  end
-
-  def is_student_visible?
-    is_released? || (is_graded? && !assignment.release_necessary)
-  end
-
-  def status_is_graded_or_released?
-    is_graded? || is_released?
-  end
-  alias graded_or_released? status_is_graded_or_released?
 
   # @mz todo: port this over to cache_team_and_student_scores once
   # related methods have tests
@@ -170,7 +131,7 @@ class Grade < ActiveRecord::Base
     end
   end
 
-  # @mz todo: add specs
+  # @mz TODO: add specs
   def cache_student_and_team_scores
     { cached_student_score: cache_student_score,
       cached_team_score: cache_team_score,
@@ -207,7 +168,8 @@ class Grade < ActiveRecord::Base
   # totaled points (adds adjustment, without weighting)
   def calculate_final_score
     return nil unless raw_score.present?
-    raw_score + adjustment_points
+    final_score = raw_score + adjustment_points
+    final_score > assignment.threshold_points ? final_score : 0
   end
 
   # points with student's weighting
@@ -222,10 +184,6 @@ class Grade < ActiveRecord::Base
     self.point_total = calculate_point_total
     self.final_score = calculate_final_score
     self.score = calculate_score
-  end
-
-  def self.student_visible_sql
-    ["status = 'Released' OR (status = 'Graded' AND assignments.release_necessary = ?)", false]
   end
 
   def save_student
@@ -253,9 +211,6 @@ class Grade < ActiveRecord::Base
       self.raw_score = 0
       self.final_score = 0
       self.point_total = 0
-
-      # use 1 for pass, 0 for fail
-      self.predicted_score = 1 if self.predicted_score > 1
     end
   end
 
@@ -269,13 +224,13 @@ class Grade < ActiveRecord::Base
     @team ||= student.team_for_course(course)
   end
 
-  # @mz todo: add specs
+  # @mz TODO: add specs
   def cache_student_score
     @student = self.student
     @student_update_successful = @student.cache_course_score(self.course.id)
   end
 
-  # @mz todo: add specs, improve the syntax here
+  # @mz TODO: add specs, improve the syntax here
   def cache_team_score
     if course.has_teams? && student.team_for_course(course).present?
       @team = cached_student_team

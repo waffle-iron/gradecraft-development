@@ -4,8 +4,9 @@ $global-radius: $px-3
 
 // Media Query Sizes
 $media-xsmall-max:  20rem
-$media-small-max:   50rem // 640px
-$media-medium-max:  63rem // 1024px
+$media-small-max:   40rem // 640px
+$media-medium-max:  64rem // 1024px
+$media-large-min:  64.0625rem // 1025px
 $media-large-max:   90rem // 1440px
 $media-xlarge-max:  120rems
 
@@ -44,7 +45,7 @@ $media-xlarge-max:  120rems
   .hide-for-medium
     display: none
 
-@media (min-width: $media-medium-max)
+@media (min-width: $media-large-min)
   .hide-for-large
     display: none
 

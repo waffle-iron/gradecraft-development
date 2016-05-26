@@ -14,7 +14,8 @@ describe StudentsController do
   context "as a professor" do
     before(:all) do
       @professor = create(:user)
-      CourseMembership.create user: @professor, course: @course, role: "professor"
+      CourseMembership.create \
+        user: @professor, course: @course, role: "professor"
     end
     before(:each) { login_user(@professor) }
 
@@ -42,7 +43,6 @@ describe StudentsController do
     describe "GET show" do
       it "shows the student page" do
         get :show, {id: @student.id}
-        expect(assigns(:student)).to eq(@student)
         expect(response).to render_template(:show)
       end
     end
@@ -60,7 +60,8 @@ describe StudentsController do
         @student.courses << @course
         @student_2 = create(:user)
         @student_2.courses << @course
-        @flagged_student = create(:flagged_user, flagger: @professor, course: @course, flagged: @student)
+        @flagged_student = create \
+          :flagged_user, flagger: @professor, course: @course, flagged: @student
       end
 
       it "shows the students the current user has flagged" do
@@ -105,15 +106,6 @@ describe StudentsController do
       end
     end
 
-    describe "GET badges" do
-      it "shows the student facing badge page" do
-        allow(controller).to receive(:current_student).and_return(@student)
-        get :badges, id: @student.id
-        expect(assigns(:title)).to eq("badges")
-        expect(response).to render_template(:badges)
-      end
-    end
-
     describe "GET predictor" do
       it "shows the grade predictor page" do
         get :predictor, id: 10
@@ -124,7 +116,8 @@ describe StudentsController do
     describe "GET grade_index" do
       it "shows the grade index page" do
         get :grade_index, student_id: @student.id
-        allow(StudentsController).to receive(:current_student).and_return(@student)
+        allow(StudentsController).to \
+          receive(:current_student).and_return(@student)
         expect(response).to render_template(:grade_index)
       end
     end
@@ -166,14 +159,6 @@ describe StudentsController do
         get :course_progress, id: 10
         expect(assigns(:title)).to eq("Your Course Progress")
         expect(response).to render_template(:course_progress)
-      end
-    end
-
-    describe "GET badges" do
-      it "shows the student facing badge page" do
-        get :badges
-        expect(assigns(:title)).to eq("badges")
-        expect(response).to render_template(:badges)
       end
     end
 

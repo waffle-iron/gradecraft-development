@@ -1,7 +1,8 @@
 class StudentsController < ApplicationController
   respond_to :html, :json
 
-  before_filter :ensure_staff?, except: [:timeline, :predictor, :course_progress, :badges, :teams, :syllabus ]
+  before_filter :ensure_staff?,
+    except: [:timeline, :predictor, :course_progress, :badges, :teams, :syllabus ]
   before_filter :save_referer, only: [:recalculate]
 
   # Lists all students in the course,
@@ -27,18 +28,22 @@ class StudentsController < ApplicationController
 
   # Course wide leaderboard - excludes auditors from view
   def leaderboard
-    render :leaderboard, StudentLeaderboardPresenter.build(course: current_course, team_id: params[:team_id])
+    render :leaderboard, Students::LeaderboardPresenter.build(course: current_course, team_id: params[:team_id])
   end
 
   # Students' primary page: displays all assignments and
   # team challenges in course
   def syllabus
-    @assignment_types = current_course.assignment_types.includes(:assignments)
-    @assignments = current_course.assignments
-    @student = current_student
+    render :syllabus, Students::SyllabusPresenter.build({
+      student: current_student,
+      assignment_types: current_course.assignment_types.includes(:assignments),
+      course: current_course,
+      view_context: view_context
+    })
   end
 
-  # Course timeline, displays all assignments that are determined by the instructor to belong on the timeline + team challenges if present
+  # Course timeline, displays all assignments that are determined by the
+  # instructor to belong on the timeline + team challenges if present
   def timeline
     if current_user_is_student?
       redirect_to dashboard_path
@@ -49,11 +54,13 @@ class StudentsController < ApplicationController
   # Displaying student profile to instructors
   def show
     self.current_student = current_course.students.where(id: params[:id]).first
-    @student = current_student
-    @student.team_for_course(current_course) if current_course.has_teams?
-    @assignments = current_course.assignments
-    @assignment_types = current_course.assignment_types
     @display_sidebar = true
+    render :show, Students::SyllabusPresenter.build({
+      student: self.current_student,
+      assignment_types: current_course.assignment_types.includes(:assignments),
+      course: current_course,
+      view_context: view_context
+    })
   end
 
   # AJAX endpoint for student name search
@@ -77,21 +84,12 @@ class StudentsController < ApplicationController
     @team = current_student.team_for_course(current_course)
   end
 
-  def badges
-    @title = "#{term_for :badges}"
-    @earned_badges = current_student.student_visible_earned_badges(current_course).includes(:badge_files)
-    @unearned_badges = current_student.student_visible_unearned_badges(current_course).includes(:badge_files, :unlock_conditions, :unlock_keys)
-    @badges = [] << @earned_badges.collect(&:badge) << @unearned_badges
-
-    @badges = @badges.flatten.uniq.sort_by(&:position)
-    @earned_badges_by_badge_id ||= earned_badges_by_badge_id
-    @display_sidebar = true
-  end
-
   # Display the grade predictor
   #   students - style blocks to fill entire page, render layout with no sidebar
-  #   staff - render standard laout with sidebar
+  #   staff - render standard layout with sidebar
   def predictor
+    # id is used for api routes
+    @student_id = current_student.id if current_student && current_user_is_staff?
     if current_user_is_student?
       @fullpage = true
       render layout: "predictor"
@@ -107,23 +105,10 @@ class StudentsController < ApplicationController
   def recalculate
     @student = current_course.students.find_by(id: params[:student_id])
 
-    # @mz todo: add specs
+    # @mz TODO: add specs
     ScoreRecalculatorJob.new(user_id: @student.id, course_id: current_course.id).enqueue
 
     flash[:notice]="Your request to recalculate #{@student.name}'s grade is being processed. Check back shortly!"
     redirect_to session[:return_to] || student_path(@student)
-  end
-
-  private
-
-  def earned_badges_by_badge_id
-    @earned_badges.inject({}) do |memo, earned_badge|
-      if memo[earned_badge.badge.id]
-        memo[earned_badge.badge.id] << earned_badge
-      else
-        memo[earned_badge.badge.id] = [earned_badge]
-      end
-      memo
-    end
   end
 end

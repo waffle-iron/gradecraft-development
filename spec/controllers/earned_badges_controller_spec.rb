@@ -57,15 +57,20 @@ describe EarnedBadgesController do
 
     describe "POST create" do
       it "creates the earned badge with valid attributes" do
-        params = attributes_for(:earned_badge)
-        params[:badge_id] = @badge.id
-        params[:student_id] = @student.id
-        expect{ post :create, badge_id: @badge.id, student_id: @student.id, earned_badge: params }.to change(EarnedBadge.student_visible, :count).by(1)
+        expect{ post :create, badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
+                                              student_id: @student.id,
+                                              student_visible: true,
+                                              feedback: "You did great!" }}.to \
+          change(EarnedBadge.student_visible, :count).by(1)
         expect(response).to redirect_to badge_path(@badge)
       end
 
       it "doesn't create earned badges with invalid attributes" do
-        expect{ post :create, badge_id: @badge.id, earned_badge: attributes_for(:earned_badge, badge_id: @badge.id, student_id: nil) }.to_not change(EarnedBadge,:count)
+        expect{ post :create, badge_id: @badge.id, earned_badge: { badge_id: @badge.id,
+                                                          student_id: nil,
+                                                          student_visible: true,
+                                                          feedback: "You rock!" }}.to_not \
+          change(EarnedBadge,:count)
       end
     end
 
@@ -143,15 +148,14 @@ describe EarnedBadgesController do
 
     describe "POST update" do
       it "updates the earned badge" do
-        params = { feedback: "more feedback" }
+        params = { badge_id: @badge.id, student_id: @student.id, feedback: "great!" }
         post :update, { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
-        expect(@earned_badge.reload.feedback).to eq("more feedback")
+        expect(@earned_badge.reload.feedback).to eq("great!")
         expect(response).to redirect_to(badge_path(@badge))
       end
 
       it "renders the edit template if the update fails" do
-        params = { feedback: "more feedback" }
-        params[:student_id] = nil
+        params = { badge_id: @badge.id, student_id: nil, feedback: "great!" }
         post :update, { id: @earned_badge.id, badge_id: @badge.id, earned_badge: params }
         expect(response).to render_template(:edit)
       end

@@ -4,6 +4,16 @@ include CourseTerms
 
 describe "students/show" do
 
+  let(:presenter) do
+    Students::SyllabusPresenter.new({
+      student: @student,
+      course: @course,
+      assignment_types: @assignment_types,
+      view_context: view_context
+    })
+  end
+  let(:view_context) { double(:view_context) }
+
   before(:all) do
     @course = create(:course)
     @student = create(:user)
@@ -23,11 +33,11 @@ describe "students/show" do
   before(:each) do
     allow(view).to receive(:current_course).and_return(@course)
     allow(view).to receive(:current_student).and_return(@student)
+    allow(view).to receive(:presenter).and_return presenter
   end
 
   it "renders successfully" do
     render
     assert_select "h3", text: "assignments", count: 1
   end
-
 end

@@ -18,7 +18,7 @@
     %h5.section-title
       = link_to assignment.name, assignment
 
-    %table.nofeatures_default_last_name_dynatable{"aria-describedby" => "ungradedTableCaption"}
+    %table.dynatable{"aria-describedby" => "ungradedTableCaption"}
       %thead
         %tr
           - if assignment.is_individual?
@@ -28,7 +28,7 @@
               %th{scope: "col", :width => "15%"}= "#{term_for :team}"
           - elsif assignment.has_groups?
             %th{scope: "col"} Group
-          %th{scope: "col", :width => "7%", "data-dynatable-sorts" => "numericScore"} Current Score
+          %th{scope: "col", :width => "7%"} Current Score
           %th{scope: "col", :width => "7%"} Graded
           %th{scope: "col", :width => "7%"} Resubmitted
           %th{scope: "col", :style => "min-width: 300px" }
@@ -62,4 +62,4 @@
                   %ul.button-bar
                     %li= link_to re.group.name, group_path(re.group)
                     %li= link_to glyph(:eye) + "See Submission", assignment_submission_path(re.assignment.id, id: re.id), class: "button"
-              %td= link_to glyph(:check) + "Grade", group_grade_assignment_path(re.assignment, group_id: re.group), class: "button"
+              %td= link_to glyph(:check) + "Grade", grade_assignment_group_path(re.assignment, re.group), class: "button"

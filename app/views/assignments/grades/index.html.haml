@@ -1,0 +1,31 @@
+= content_nav_for presenter.assignment, "Review Rubric Grades"
+
+%h3.pagetitle= "#{presenter.assignment.name} Review Rubric Grades (#{ points presenter.assignment.point_total } points)"
+
+= render partial: "assignments/buttons", locals: { presenter: presenter }
+
+.pageContent
+  = render "layouts/alerts"
+
+  - if presenter.has_teams? && presenter.assignment.is_individual?
+    .team-filter
+      = form_tag assignment_grades_path(presenter.assignment), name: "see_team", :onchange => ("javascript: document.see_team.submit();"), :method => :get do
+        %label.sr-only{:for => "team_id"}
+          Select #{term_for :team}
+        = select_tag :team_id, options_for_select(presenter.teams.map { |t| [t.name, t.id] }, presenter.team.try(:id)), :prompt => "– Select #{(term_for :team).titleize} –"
+
+  - if presenter.grade_with_rubric?
+    - presenter.students_being_graded.each do |student|
+      - grade_for_assignment = student.grade_for_assignment(presenter.assignment)
+      - if grade_for_assignment.present? && grade_for_assignment.instructor_modified?
+        %h4.uppercase= student.name
+        .left
+          %h5.bold= "#{points grade_for_assignment.score} / #{points presenter.assignment.point_total} points "
+        .right= link_to "Edit #{student.first_name}'s Grade", edit_assignment_grade_path(presenter.assignment, student_id: student.id), class: "button"
+        %br
+        %br
+        .rubric-container= render partial: "grades/components/criterion_grade_results", locals: { presenter: presenter, current_student: student }
+        %br
+        %b= "Feedback from #{ grade_for_assignment.graded_by.name }:" if grade_for_assignment.graded_by.present?
+        %p.summary-comments= raw grade_for_assignment.try(:feedback)
+        %hr

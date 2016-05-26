@@ -5,6 +5,7 @@
     %title
       = "#{@title.titleize} - " if @title
       = current_course.try(:name) || "GradeCraft"
+    = stylesheet_link_tag "application", "https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600"
     = stylesheet_link_tag "application", :media => "all"
     = render "layouts/favicon"
     = csrf_meta_tags

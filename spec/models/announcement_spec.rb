@@ -1,5 +1,6 @@
 require "active_record_spec_helper"
 require "action_mailer"
+require "./app/mailers/application_mailer"
 require "./app/mailers/announcement_mailer"
 
 describe Announcement do
@@ -8,47 +9,6 @@ describe Announcement do
       announcement1 = create :announcement
       announcement2 = create :announcement
       expect(Announcement.all).to eq [announcement2, announcement1]
-    end
-  end
-
-  describe "authorization" do
-    let(:course) { create :course }
-    let(:user) { create :user }
-    subject { build :announcement, course: course }
-
-    it "is viewable by any user associated the course" do
-      expect(user.can_view?(subject)).to be_falsey
-      CourseMembership.create user_id: user.id, course_id: course.id, role: "student"
-      expect(user.can_view?(subject)).to be_truthy
-    end
-
-    it "is creatable by any staff for the course" do
-      expect(user.can_create?(subject)).to be_falsey
-      CourseMembership.create user_id: user.id, course_id: course.id, role: "professor"
-      expect(user.can_create?(subject)).to be_truthy
-    end
-
-    it "is not creatable by a student" do
-      CourseMembership.create user_id: user.id, course_id: course.id, role: "student"
-      expect(user.can_create?(subject)).to be_falsey
-    end
-
-    it "is not creatable by staff in another course" do
-      new_course = create :course
-      CourseMembership.create user_id: user.id, course_id: new_course.id, role: "professor"
-      expect(user.can_create?(subject)).to be_falsey
-    end
-
-    it "is updatable by the author" do
-      expect(user.can_update?(subject)).to be_falsey
-      subject.update_attribute(:author_id, user.id)
-      expect(user.can_update?(subject)).to be_truthy
-    end
-
-    it "is destroyable by the author" do
-      expect(user.can_destroy?(subject)).to be_falsey
-      subject.update_attribute(:author_id, user.id)
-      expect(user.can_destroy?(subject)).to be_truthy
     end
   end
 
@@ -108,7 +68,7 @@ describe Announcement do
         user_id: student.id, role: "student"
     end
 
-    it "sends an email to all the students in the course" do
+    it "sends an email to all the users in the course" do
       delivery = double(:email)
       expect(delivery).to receive(:deliver_now)
       expect(AnnouncementMailer).to receive(:announcement_email).with(subject, student).and_return delivery
@@ -117,7 +77,7 @@ describe Announcement do
   end
 
   describe "#read_count" do
-    it "is the number of students for the course who have not read the announcement" do
+    it "is the number of users for the course who have not read the announcement" do
       announcement = create :announcement
       create :announcement_state, announcement: announcement
       expect(announcement.read_count).to eq 1
@@ -173,11 +133,14 @@ describe Announcement do
       expect(states.count).to eq 1
     end
 
-    it "does not mark as read if the user is not a student" do
+    it "marks as read if the user is not a student" do
       CourseMembership.create course_id: subject.course.id,
         user_id: user.id, role: "professor"
       subject.mark_as_read! user
-      expect(subject.states).to be_empty
+      states = AnnouncementState.where(announcement_id: subject.id,
+                                               user_id: user.id,
+                                                  read: true)
+      expect(states.count).to eq 1
     end
 
     it "does not mark as read if the user is not part of the course" do

@@ -1,11 +1,26 @@
 @import layout
 @import color
 
+// mixin for all level form fields
+@mixin rubric-level-input
+  background-color: $color-white
+  &:hover
+    background-color: $color-white
+
+$below-expectations-color: $color-grey-5
+$below-expectations-selected-color: $color-grey-4
+$meets-expectations-color: $color-green-2
+$meets-expectations-selected-color: $color-green-1
+$no-expectation-color: $color-grey-8
+
 #rubric
   textarea
+    @include rubric-level-input
     width: 11.75rem
     border: 0
     height: 65px
+    resize: none
+    color: $color-black
 
   input
     height: 2rem
@@ -41,7 +56,6 @@
   right: 28px
   z-index: 800
   padding: 1.5rem 1rem .5rem
-  height: 5rem
   border-bottom-left-radius: $global-radius
   border-bottom-right-radius: $global-radius
   background: $color-blue-2
@@ -153,14 +167,39 @@ td.level-td
 
 button.delete
   font-weight: bold
-  background: $color-grey-5
+  background-color: $color-red-1
   position: absolute
-  right: 0
-  top: 0
-  border-radius: 0
-
+  right: -4px
+  top: -6px
+  border-radius: 12px
+  width: 24px
+  height: 24px
   &:hover
-    background: $color-red-1
+    background-color: $color-orange-1
+
+button.meets-expectations-status, button.meets-expectations-toggle
+  font-weight: bold
+  background: $color-green-1
+  position: absolute
+  left: 4%
+  bottom: 2.5%
+  border-radius: 12px
+  width: 92%
+  opacity: 0
+  &:hover
+    opacity: 1
+    //background-color
+
+button.meets-expectations-status.show
+  opacity: 1
+  &:hover
+    opacity: 0
+
+button.meets-expectations-toggle.remove
+  background-color: $color-grey-8
+
+button.meets-expectations-status.no-expectation
+  background-color: $no-expectation-color
 
 .level
   background: $color-grey-5
@@ -169,28 +208,22 @@ button.delete
     width: 180px
 
   &.saved
-    background: $color-green-2
+    background-color: $below-expectations-color
+    &.level-meets-expectations
+      background-color: $meets-expectations-color
 
   .badge-messages
-    clear: right
-    margin-top: 10px
-    font-size: 11px
-    color: $color-grey-2
+    text-align: center
+    font-size: .7rem;
+    font-weight: bold;
 
   .badge-row
     overflow: hidden
-    padding: 5px
     height: 60px
-    &:hover
-      background: $color-green-1
-
-      .badge-messages
-        color: $color-white
-
-      .edit-badges
-        display: block
-        background: $color-green-2
-        color: $color-white
+    margin-top: 7px
+    &.clickable
+      @include rubric-level-input
+      width: 11.75rem
 
   select
     color: $color-grey-2
@@ -207,7 +240,7 @@ button.delete
     color: $color-green-2
 
   input.ng-valid-required
-    background: $color-blue-4
+    @include rubric-level-input
 
     &:disabled
       background: $color-grey-8
@@ -222,7 +255,7 @@ button.delete
 
 .level-badge, .level-badge-image
   font-size: 12px
-  color: white
+  color: $color-white
   padding: 0 0 0 4px
   margin-bottom: 2px
   position: relative
@@ -252,7 +285,6 @@ button.delete
   border-left: 2px solid $color-grey-8
   width: 100%
   overflow-y: scroll
-  s
   height: 280px !important
 
   .order-label
@@ -261,7 +293,7 @@ button.delete
     right: 0
     background: $color-blue-2
     padding: .5rem
-    color: white
+    color: $color-white
     margin-top: 0
     margin-right: 0px
 
@@ -295,7 +327,7 @@ button.delete
   padding: 0
   border-radius: $global-radius
 
-#grade-rubric-table, #rubric-results-table
+#rubric-table
   td
     vertical-align: top
     text-align: left
@@ -324,10 +356,18 @@ button.delete
     font-style: italic
 
   td.level-level
-    border: 1px solid $color-grey-6
+    border: 1px solid $color-grey-7
+    background-color: $color-grey-6
+
+  .level.meets-expectations
+    background-color: $meets-expectations-color
+    border: 1px solid $color-grey-7
 
   .level.selected
-    background-color: $color-green-2
+    background-color: $below-expectations-selected-color
+
+  .level.selected.meets-expectations
+    background-color: $meets-expectations-selected-color
 
   .level-badge-image img
     height: 35px
@@ -358,12 +398,13 @@ button.delete
       margin: 0
       width: 100%
       height: 105%
+      resize: none
+      background: $color-white
 
   h4.notice
     color: $color-green-2
 
-
-.adjustment-points-feedback
+.points-adjustment-feedback
   margin-right: 1rem;
 
 .total-points

@@ -63,6 +63,10 @@ describe NotificationMailer do
       it "doesn't include a template" do
         should_not include "Regents of The University of Michigan"
       end
+
+      it "contains the badges url" do
+        should include badges_url
+      end
     end
 
     describe "html part body" do
@@ -83,6 +87,10 @@ describe NotificationMailer do
 
         it "declares a doctype" do
           should include "DOCTYPE"
+        end
+
+        it "contains the badges url" do
+          should include badges_url
         end
       end
 

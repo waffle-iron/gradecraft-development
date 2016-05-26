@@ -1,12 +1,13 @@
-#----------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
-#                                          CHALLENGE DEFAULT CONFIGURATION                                             #
+#                    CHALLENGE DEFAULT CONFIGURATION                           #
 
-#----------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
-# Add all attributes that will be passed on any challenge creation here, with a default value
-# All assignment types will use defaults when individual attributes aren't supplied
-
+# Add all attributes that will be passed on any challenge creation here, with a
+# default value
+# All assignment types will use defaults when individual attributes aren't
+# supplied
 
 @challenge_default_config = {
   quotes: {
@@ -29,8 +30,8 @@
   }
 }
 
-#----------------------------------------------------------------------------------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 @challenges = {}
 
@@ -77,7 +78,8 @@
 
 @challenges[:invisible] = {
   quotes: {
-    challenge_created: "Please don't ask me what the score is, I'm not even sure what the game is. - Ashleigh Brilliant"
+    challenge_created: "Please don't ask me what the score is, I'm not even \
+sure what the game is. - Ashleigh Brilliant"
   },
   attributes: {
     name: "Invisible Challenge",

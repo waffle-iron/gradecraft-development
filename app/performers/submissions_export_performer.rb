@@ -3,7 +3,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   require "open-uri" # need this for getting the S3 file over http
   include ModelAddons::ImprovedLogging # log errors with attributes
 
-  attr_reader :submissions_export
+  attr_reader :submissions_export, :professor, :course, :errors
 
   def setup
     ensure_s3fs_tmp_dir if use_s3fs?
@@ -67,11 +67,13 @@ class SubmissionsExportPerformer < ResqueJob::Performer
       student_ids: @students.collect(&:id),
       submissions_snapshot: submissions_snapshot,
       export_filename: "#{export_file_basename}.zip",
-      s3_object_key: @submissions_export.build_s3_object_key("#{export_file_basename}.zip"),
       last_export_started_at: Time.now
     }
   end
-  alias attributes base_export_attributes
+
+  def attributes
+    base_export_attributes
+  end
 
   def clear_progress_attributes
     performer_steps.inject({}) do |memo, step|
@@ -297,7 +299,11 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   def student_directory_names
     @student_directory_names ||= @students.inject({}) do |memo, student|
       # check to see whether there are any duplicate student names
-      if @students.to_a.select {|compared_student| student.same_name_as?(compared_student) }.size > 1
+      total_students_with_name = @students.to_a.count do |compared_student|
+        student.same_name_as?(compared_student)
+      end
+
+      if total_students_with_name > 1
         memo[student.id] = student.student_directory_name_with_username
       else
         memo[student.id] = student.student_directory_name
@@ -450,14 +456,15 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def binary_file_error_message(message, student, submission_file, error_io)
-    "#{message}. Student ##{student.id}: #{student.last_name}, #{student.first_name}, " +
-    "SubmissionFile ##{submission_file.id}: #{submission_file.filename}, error: #{error_io}"
+    "#{message}. "\
+    "Student ##{student.id}: #{student.last_name}, #{student.first_name}, " \
+    "SubmissionFile ##{submission_file.id}: #{submission_file.filename}, " \
+    "error: #{error_io}"
   end
 
   def generate_error_log
-    unless @errors.empty?
-      open(error_log_path, "w") {|file| file.puts @errors }
-    end
+    return if errors.empty?
+    open(error_log_path, "w") {|file| file.puts errors }
   end
 
   def error_log_path
@@ -488,7 +495,11 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def deliver_archive_success_mailer
-    @team ? deliver_team_export_successful_mailer : deliver_export_successful_mailer
+    if @team
+      deliver_team_export_successful_mailer
+    else
+      deliver_export_successful_mailer
+    end
   end
 
   def deliver_archive_failed_mailer
@@ -496,19 +507,38 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def deliver_export_successful_mailer
-    ExportsMailer.submissions_export_success(@professor, @assignment, @submissions_export).deliver_now
+    ExportsMailer.submissions_export_success(professor, @assignment, \
+      @submissions_export, secure_token).deliver_now
   end
 
   def deliver_team_export_successful_mailer
-    ExportsMailer.team_submissions_export_success(@professor, @assignment, @team, @submissions_export).deliver_now
+    ExportsMailer.team_submissions_export_success(professor, @assignment, \
+      @team, @submissions_export, secure_token).deliver_now
   end
 
   def deliver_export_failure_mailer
-    ExportsMailer.submissions_export_failure(@professor, @assignment).deliver_now
+    ExportsMailer.submissions_export_failure(@professor, @assignment)
+      .deliver_now
   end
 
   def deliver_team_export_failure_mailer
-    ExportsMailer.team_submissions_export_failure(@professor, @assignment, @team).deliver_now
+    ExportsMailer.team_submissions_export_failure(@professor, @assignment, \
+      @team).deliver_now
+  end
+
+  def secure_token
+    # be sure to add the user_id and course_id here in the event that we'd like
+    # to revoke the secure token later in the event that, say, the staff member
+    # is removed from the course or from the system
+    #
+    # also let's cache this to make sure that there are never any more generated
+    # than absolutely need to be
+    #
+    @secure_token ||= SecureToken.create(
+      user_id: professor[:id],
+      course_id: course[:id],
+      target: submissions_export
+    )
   end
 
   def expand_messages(messages={})

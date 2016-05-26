@@ -42,6 +42,7 @@ describe Services::Actions::BuildsEarnedLevelBadges do
   it "promises the built earned level badges" do
     result = described_class.execute context
     expect(result).to have_key :earned_level_badges
+    expect(result[:earned_level_badges].first.student_visible).to be_truthy
   end
 
   it "builds an earned badge for each record in the params" do
@@ -50,10 +51,14 @@ describe Services::Actions::BuildsEarnedLevelBadges do
       eq(raw_params["level_badges"].length)
   end
 
+  it "transfers the student visible state to the EarnedBadge" do
+    result = described_class.execute context
+  end
+
   # See note above #destroy_exisiting_earned_badges
   # This should not be the expected behavior
   it "clears out old badges" do
-    EarnedBadge.create(badge_id: badge_id, student_id: world.student.id, level_id: level_id)
+    EarnedBadge.create(badge_id: badge_id, student_id: world.student.id, assignment_id: world.assignment.id)
     expect { described_class.execute context }.to change { EarnedBadge.count }.by(-1)
   end
 end

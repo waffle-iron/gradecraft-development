@@ -43,7 +43,9 @@ module ApplicationHelper
     fields = f.fields_for(association, new_object, child_index: id) do |builder|
       render(association.to_s.singularize + "_fields", f: builder)
     end
-    link_to(name, "#", class: "add_fields", data: {id: id, fields: fields.gsub("\n", "")})
+    link_to(name, "#", class: "add_fields", data: {
+      id: id, fields: fields.gsub("\n", "")
+      })
   end
 
   def json_for(target, options = {})
@@ -58,7 +60,9 @@ module ApplicationHelper
   end
 
   def multi_cache_key(category, *args)
-    arguments = args.map { |arg| arg.respond_to?(:cache_key) ? arg.cache_key : arg }
+    arguments = args.map {
+      |arg| arg.respond_to?(:cache_key) ? arg.cache_key : arg
+    }
     "#{category}/#{arguments.join("/")}"
   end
 end

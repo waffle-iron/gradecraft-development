@@ -3,10 +3,11 @@ class Badge < ActiveRecord::Base
   include UnlockableCondition
   include MultipleFileAttributes
 
-  attr_accessible :name, :description, :icon, :visible, :can_earn_multiple_times,
-    :point_total, :earned_badges, :earned_badges_attributes, :badge_file_ids,
-    :badge_files_attributes, :badge_file, :position, :visible_when_locked,
-    :course_id, :course, :show_name_when_locked, :show_points_when_locked, :show_description_when_locked
+  attr_accessible :name, :description, :icon, :visible, :point_total,
+    :can_earn_multiple_times, :earned_badges, :earned_badges_attributes,
+    :badge_file_ids, :badge_files_attributes, :badge_file, :position,
+    :visible_when_locked, :course_id, :course, :show_name_when_locked,
+    :show_points_when_locked, :show_description_when_locked
 
   # grade points available to the predictor from the assignment controller
   attr_accessor :prediction
@@ -65,6 +66,9 @@ class Badge < ActiveRecord::Base
   end
 
   def earned_badge_total_points(student)
-    earned_badges.where(student_id: student, student_visible: true).pluck("score").sum
+    earned_badges.where(
+      student_id: student,
+      student_visible: true
+    ).pluck("score").map(&:to_i).sum
   end
 end

@@ -4,8 +4,9 @@ class World
   end
 
   class Instance
-    attr_reader :assignments, :badges, :courses, :course_memberships, :criteria,
-                :criterion_grades, :grades, :groups, :rubrics, :students, :teams, :users
+    attr_reader :assignments, :badges, :challenges, :courses,
+      :course_memberships, :criteria, :criterion_grades, :grades,
+      :grade_scheme_elements, :groups, :rubrics, :students, :teams, :users
 
     def assignment
       assignments.first
@@ -13,6 +14,10 @@ class World
 
     def badge
       badges.first
+    end
+
+    def challenge
+      challenges.first
     end
 
     def course
@@ -29,6 +34,10 @@ class World
 
     def grade
       grades.first
+    end
+
+    def grade_scheme_element
+      grade_scheme_elements.first
     end
 
     def group
@@ -64,7 +73,11 @@ class World
 
     def create_assignment(attributes={})
       course = attributes.delete(:course) || self.course || FactoryGirl.build(:course)
-      assignments << FactoryGirl.create(:assignment, attributes.merge(course: course))
+      assignment_type = FactoryGirl.create(:assignment_type, course: course)
+      assignments << FactoryGirl.create(:assignment, attributes.merge(
+        course: course,
+        assignment_type: assignment_type
+      ))
       self
     end
 
@@ -72,6 +85,11 @@ class World
       course = attributes.delete(:course) || self.course || FactoryGirl.build(:course)
       badges << FactoryGirl.create(:badge, attributes.merge(course: course))
       self
+    end
+
+    def create_challenge(attributes={})
+      course = attributes.delete(:course) || self.course || FactoryGirl.build(:course)
+      challenges << FactoryGirl.create(:challenge, course: course)
     end
 
     def create_course(attributes={})
@@ -105,6 +123,12 @@ class World
       self
     end
 
+    def create_grade_scheme_element(attributes={})
+      course = attributes.delete(:course) || self.course || FactoryGirl.build(:course)
+      grade_scheme_elements << FactoryGirl.create(:grade_scheme_element_high, attributes.merge(course: course))
+      self
+    end
+
     def create_group(attributes={})
       course = attributes.delete(:course) || self.course
       groups << FactoryGirl.create(:group, attributes.merge(course: course, approved: "Approved"))
@@ -135,11 +159,13 @@ class World
     def initialize
       @assignments = []
       @badges = []
+      @challenges = []
       @courses = []
       @criteria = []
       @criterion_grades = []
       @course_memberships = []
       @grades = []
+      @grade_scheme_elements = []
       @groups = []
       @rubrics = []
       @teams = []

@@ -12,7 +12,8 @@ class EarnedBadgeExporter
   private
 
   def baseline_headers
-    ["First Name", "Last Name", "Uniqname", "Email", "Badge ID", "Badge Name", "Feedback", "Awarded Date"].freeze
+    ["First Name", "Last Name", "Uniqname", "Email", "Badge ID", "Badge Name",
+      "Feedback", "Awarded Date"].freeze
   end
 
   def earned_badge_data(earned_badge)

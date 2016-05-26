@@ -1,10 +1,7 @@
-= content_nav_for @assignment, "See Grade"
+= content_nav_for @grade.assignment, "See Grade"
 
 %h3.pagetitle= @title
 
 .pageContent
-  = render "layouts/alerts"
-  - if @assignment.is_individual?
-    = render partial: "individual_show", locals: { presenter: presenter }
-  - else
-    = render partial: "group_show", locals: { presenter: presenter }
+  = render partial: "layouts/alerts"
+  = render partial: "grade_content", locals: { grade: @grade }

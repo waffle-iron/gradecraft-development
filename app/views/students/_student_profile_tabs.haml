@@ -1,4 +1,5 @@
 %ul
+  %h5 Navigation
   - if current_user_is_staff?
     %li{class: ("active" if current_page?(student_path(current_student))) }
       = link_to_unless_current "#{term_for :assignments}", student_path(current_student)
@@ -6,27 +7,27 @@
       %li{class: ("active" if current_page?(student_course_progress_path(current_student))) }
         = link_to_unless_current "Grading Scheme", student_course_progress_path(current_student)
     %li{class: ("active" if current_page?(student_predictor_path(current_student))) }
-      = link_to_unless_current "Grade Predictor", student_predictor_path(current_student)
+      = link_to_unless_current glyph("tasks") + "Grade Predictor", student_predictor_path(current_student)
     - if current_course.has_badges?
       %li{class: ("active" if current_page?(student_badges_path(current_student))) }
-        = link_to_unless_current "#{term_for :badges}", student_badges_path(current_student)
+        = link_to_unless_current glyph(:shield) + "#{term_for :badges}", student_badges_path(current_student)
     - if current_course.has_teams? && current_course.teams_visible?
       %li{class: ("active" if current_page?(student_teams_path(current_student))) }
-        = link_to_unless_current "#{term_for :teams}", student_teams_path(current_student)
+        = link_to_unless_current glyph(:users) + "#{term_for :teams}", student_teams_path(current_student)
   - else
     - if current_course.use_timeline?
       %li{class: ("active" if current_page?(dashboard_path)) }
-        = link_to_unless_current "Timeline", dashboard_path
+        = link_to_unless_current glyph(:home) + "Timeline", dashboard_path
     %li{class: ("active" if current_page?(syllabus_path)) }
-      = link_to_unless_current "#{term_for :assignments}", syllabus_path
+      = link_to_unless_current glyph('file-text') + "#{term_for :assignments}", syllabus_path
     - if current_course.grade_scheme_elements.present?
       %li{class: ("active" if current_page?(course_progress_path)) }
-        = link_to_unless_current "Grading Scheme", course_progress_path
+        = link_to_unless_current glyph("level-up") + "Grading Scheme", course_progress_path
     %li{class: ("active" if current_page?(predictor_path)) }
-      = link_to_unless_current "Grade Predictor", predictor_path
+      = link_to_unless_current glyph(:tasks) + "Grade Predictor", predictor_path
     - if current_course.has_badges?
-      %li{class: ("active" if current_page?(my_badges_path)) }
-        = link_to_unless_current "#{term_for :badges}", my_badges_path
+      %li{class: ("active" if current_page?(badges_path)) }
+        = link_to_unless_current glyph(:shield) + "#{term_for :badges}", badges_path
     - if current_course.announcements.present?
       %li{class: ("active" if current_page?(announcements_path)) }
         - unread_count = unread_count_for current_student, current_course
@@ -37,4 +38,5 @@
           = link_to_unless_current "Announcements", announcements_path
     - if current_course.has_teams? && current_course.teams_visible?
       %li{class: ("active" if current_page?(my_team_path)) }
-        = link_to_unless_current "#{term_for :teams}", my_team_path
+        = link_to_unless_current glyph(:users) + "#{term_for :teams}", my_team_path
+

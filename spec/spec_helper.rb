@@ -1,6 +1,8 @@
 ENV["RAILS_ENV"] ||= "test"
 
 RSpec.configure do |config|
+  # this should be replaced with #filter_run_when_matching in RSpec ~> v3.5.0
+  # so we don't have to pollute inclusions with :focus on every rspec run
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 

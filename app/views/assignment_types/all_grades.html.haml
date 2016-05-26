@@ -32,14 +32,13 @@
 
   / Gradebook Pattern Table
   #gradebook
-    %table.responsive
+    %table
       %thead
         %tr
-          %th First Name
-          %th Last Name
+          %th Student
           - chronological_assignments = @assignment_type.assignments.chronological
           - for assignment in chronological_assignments.alphabetical
-            %th.sortable{"data-sort" => "int"}= assignment.due_at.strftime("%b %d") if assignment.due_at.present?
+            %th.sortable{"data-sort" => "int"}= assignment.name
       %tbody
         - @students.each do |student|
           %tr
@@ -52,17 +51,20 @@
 
                   - if grade && grade.score == assignment.point_total
                     - i += 1
-                    // Displaying td's colored green if the student earned all points possible on the assignment
+                    // Displaying td's colored green if the student earned all
+                    // points possible on the assignment
                     %td
                       %i.fa.fa-heart.complete
                         = i
                   - elsif grade && grade.score == 0
-                    // Displaying td's colored red if the student earned no points on the assignment (but HAS a grade)
+                    // Displaying td's colored red if the student earned no
+                    // points on the assignment (but HAS a grade)
                     - i = 0
                     %td
                       %i.fa.fa-times.absent
                   - elsif grade && grade.score < assignment.point_total
-                    // Displaying td's colored yellow if the student earned some points on the assignment
+                    // Displaying td's colored yellow if the student earned
+                    // some points on the assignment
                     - i = 0
                     %td
                       %i.fa.fa-heart-o.partial

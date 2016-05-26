@@ -1,0 +1,6 @@
+- presenter.earned_badges.each do |badge|
+  .earned-badge
+    .earned-badge-date
+      = "Awarded #{ badge.created_at.strftime("%b %d") }"
+    .earned-badge-feedback
+      = "Feedback #{ raw badge.feedback }"

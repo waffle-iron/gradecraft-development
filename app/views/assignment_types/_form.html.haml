@@ -1,18 +1,20 @@
 = render partial: "layouts/alerts", locals: { model: @assignment_type, term: term_for(:assignment_type) }
 
 = simple_form_for(@assignment_type) do |f|
-  / First section should cover the simple stuff we need to know about every assignment type
+  / First section should cover the simple stuff we need to know about every
+  / assignment type
 
   %section
     %h4.uppercase Basic Settings
 
     .form-item
-      / Assignment Type name, this will appear as the category heading for both students and staff
+      / Assignment Type name, this will appear as the category heading for
+      / both students and staff
       = f.label :name
       = f.text_field :name
 
     .form-item
-      / What's the maximum number of points a student may earn in this category? This cap needs to be finished
+      / What's the max number of points a student may earn in this category?
       = f.label :max_points, :label => "Maximum Points"
       = f.text_field :max_points, data: {autonumeric: true, "m-dec" => "0"}
       .form_label{id: "txtMaxPoints"} Is there a cap on how many points students can earn through this category (Leave blank if not)? If you fill this in, students will not be able to earn more than this amount.

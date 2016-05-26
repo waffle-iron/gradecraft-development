@@ -1,4 +1,0 @@
-- unless grade.feedback_read?
-  = simple_form_for assignment, url: feedback_read_grades_assignment_path(assignment), method: :post do |f|
-    = hidden_field_tag :grade_id, grade.id
-    = f.submit "I have read this feedback", class: "button"

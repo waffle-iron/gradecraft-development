@@ -1,15 +1,14 @@
 .layout-right-content
   %header
     .navbar.container
-      %nav.the-nav.nav-collapse.hide-for-small.hide-for-medium.clearfix{role: "navigation"}
+      %nav.the-nav.nav-collapse.clearfix{role: "navigation"}
         %ul.nav.nav-pill.left
           %li.course-site
             %a.no-hover.site-title{:href => root_url }
-              = image_tag "gradecraft_logo.png", :width => "150"
-        %ul.nav.nav-pill.right
-          = render "layouts/navigation/login_nav"
-      %nav.mobile-nav.hide-for-large
-        .left
-          %a.no-hover.site-title{:href => root_url }
-            .hide-for-small= image_tag "gradecraft_logo.png", :width => "150"
-        .right= render "layouts/navigation/login_nav"
+              = image_tag "gradecraft_logo.png", :width => "150", :class => "logo-home"
+              = image_tag "GradeCraft_Logo_Mark_RGB.png", :width => "30", :class => "gc-mark"
+        %ul.nav.nav-pill.right.public-nav
+          = render "layouts/navigation/public_nav"
+        = render "layouts/navigation/login_nav"
+        %a.btn-public-nav
+          %i.fa.fa-bars.fa-fw

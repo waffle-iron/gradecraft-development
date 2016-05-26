@@ -1,5 +1,7 @@
 class Team < ActiveRecord::Base
-  attr_accessible :name, :course, :course_id, :student_ids, :score, :students, :leaders, :teams_leaderboard, :in_team_leaderboard, :banner, :rank, :leader_ids
+  attr_accessible :name, :course, :course_id, :student_ids, :score, :students,
+    :leaders, :teams_leaderboard, :in_team_leaderboard, :banner, :rank,
+    :leader_ids
 
   validates_presence_of :course, :name
   validates :name, uniqueness: { case_sensitive: false, scope: :course_id }
@@ -18,10 +20,11 @@ class Team < ActiveRecord::Base
   # Teams design banners that they display on the leadboard
   mount_uploader :banner, ImageUploader
 
-  # Teams don't currently earn badges directly - but they are recognized for the badges their students earn
+  # Teams don't currently earn badges directly - but they are recognized for
+  # the badges their students earn
   has_many :earned_badges, through: :students
 
-  # Teams compete through challenges, which receive points through challenge_grades
+  # Teams compete through challenges, which earn points through challenge_grades
   has_many :challenge_grades
   has_many :challenges, through: :challenge_grades
 
@@ -38,12 +41,12 @@ class Team < ActiveRecord::Base
       .where("LOWER(name) = :name", name: name.downcase).first
   end
 
-  # @mz todo: add specs
+  # @mz TODO: add specs
   def recalculate_student_scores
     student_score_recalculator_jobs.each(&:enqueue)
   end
 
-  # @mz todo: add specs
+  # @mz TODO: add specs
   def student_score_recalculator_jobs
     @student_score_recalculator_jobs ||= students.collect do |student|
       ScoreRecalculatorJob.new(user_id: student.id, course_id: course_id)
@@ -93,11 +96,13 @@ class Team < ActiveRecord::Base
     challenge_grades.student_visible.sum("score") || 0
   end
 
-  # Teams rack up points in two ways, which is used is determined by the instructor in the course settings.
-  # The first way is that the team's score is the average of its students' scores, and challenge grades are
-  # added directly into students' scores
-  # The second way is that the teams compete in team challenges that earn the team points. At the end of the
-  # semester these usually get added back into students' scores - this has not yet been built into GC.
+  # Teams rack up points in two ways, which is used is determined by the
+  # instructor in the course settings.
+  # The first way is that the team's score is the average of its students'
+  # scores, and challenge grades are added directly into students' scores.
+  # The second way is that the teams compete in team challenges that earn
+  # the team points. At the end of the semester these usually get added back
+  # into students' scores - this has not yet been built into GC.
   def cache_score
     if course.team_score_average
       self.score = average_points

@@ -53,6 +53,14 @@ module ResqueJob
       Resque.enqueue(self.object_class, @attrs)
     end
 
+    def enqueue_with_fallback
+      # schedule the event in the background if Resque is available
+      enqueue
+    rescue
+      # otherwise just perform
+      self.class.perform @attrs
+    end
+
     def self.start_message(attrs)
       @start_message || "Starting #{self.job_type} in queue '#{@queue}' with attributes #{attrs}."
     end

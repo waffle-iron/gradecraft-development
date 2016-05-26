@@ -48,23 +48,22 @@ class Course < ActiveRecord::Base
   end
 
   attr_accessible :courseno, :name,
-    :semester, :year, :badge_setting, :team_setting,
-    :team_term, :user_term, :section_leader_term, :group_term,
-    :user_id, :course_id, :homepage_message, :group_setting,
-    :character_names, :team_roles, :character_profiles,
+    :semester, :year, :badge_setting, :team_setting, :instructors_of_record_ids,
+    :team_term, :user_term, :section_leader_term, :group_term, :lti_uid,
+    :user_id, :course_id, :homepage_message, :group_setting, :syllabus,
+    :character_names, :team_roles, :character_profiles, :hide_analytics,
     :total_assignment_weight, :assignment_weight_close_at,
     :assignment_weight_type, :has_submissions, :teams_visible,
-    :weight_term, :max_group_size, :min_group_size,
-    :max_assignment_weight, :assignments, :default_assignment_weight, :accepts_submissions,
-    :tagline, :academic_history_visible, :office, :phone, :class_email,
-    :twitter_handle, :twitter_hashtag, :location, :office_hours, :meeting_times,
-    :use_timeline, :show_see_details_link_in_timeline, :assignment_term,
-    :challenge_term, :badge_term, :grading_philosophy, :team_score_average,
-    :team_challenges, :team_leader_term, :max_assignment_types_weighted,
-    :point_total, :in_team_leaderboard, :grade_scheme_elements_attributes,
-    :add_team_score_to_student, :status, :assignments_attributes,
-    :start_date, :end_date, :pass_term, :fail_term, :syllabus, :hide_analytics,
-    :instructors_of_record_ids, :lti_uid
+    :weight_term, :max_group_size, :min_group_size, :fail_term, :pass_term,
+    :max_assignment_weight, :assignments, :default_assignment_weight,
+    :accepts_submissions, :tagline, :academic_history_visible, :office, :phone,
+    :class_email, :twitter_handle, :twitter_hashtag, :location, :office_hours,
+    :meeting_times, :use_timeline, :show_see_details_link_in_timeline,
+    :assignment_term, :challenge_term, :badge_term, :grading_philosophy,
+    :team_score_average, :team_challenges, :team_leader_term,
+    :max_assignment_types_weighted, :point_total, :in_team_leaderboard,
+    :grade_scheme_elements_attributes, :add_team_score_to_student, :status,
+    :assignments_attributes, :start_date, :end_date
 
   with_options dependent: :destroy do |c|
     c.has_many :student_academic_histories
@@ -225,7 +224,8 @@ class Course < ActiveRecord::Base
     end
   end
 
-  # total number of points 'available' in the course - sometimes set by an instructor as a cap, sometimes just the sum of all assignments
+  # total number of points 'available' in the course - sometimes set by an
+  # instructor as a cap, sometimes just the sum of all assignments
   def total_points
     point_total || assignments.sum("point_total")
   end
@@ -280,15 +280,18 @@ class Course < ActiveRecord::Base
 
   # Descriptive stats of the grades
   def minimum_course_score
-    CourseMembership.where(course: self, auditing: false, role: "student").minimum("score")
+    CourseMembership.where(course: self, auditing: false,
+      role: "student").minimum("score")
   end
 
   def maximum_course_score
-    CourseMembership.where(course: self, auditing: false, role: "student").maximum("score")
+    CourseMembership.where(course: self, auditing: false,
+      role: "student").maximum("score")
   end
 
   def average_course_score
-    CourseMembership.where(course: self, auditing: false, role: "student").average("score").to_i
+    CourseMembership.where(course: self, auditing: false,
+      role: "student").average("score").to_i
   end
 
   def student_count

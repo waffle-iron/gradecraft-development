@@ -1,31 +1,34 @@
 %h3.pagetitle= "Grading Scheme"
 
 .pageContent
-  = render "layouts/alerts"
+  .grading-scheme-bars
+    = render "layouts/alerts"
 
-  - @grade_scheme_elements.each do |element|
-    - if current_student.cached_score_for_course(current_course) < element.low_range
-      .progress.bar_magic.transparent.center
-        .meter
-          %i.fa.fa-lock
-          %span= element.name
-          %span=points element.low_range
-    - elsif current_student.cached_score_for_course(current_course) >= element.high_range
-      .progress.bar_magic.success.center
-        .meter
-          %i.fa.fa-star
-          %span= element.name
-          %span has already been achieved!
-          %span=points element.low_range
-    - else
-      .progress.bar_magic.current.center
-        %span Your rank:
-        %span= element.name
-        %span with
-        %span.underline=points current_student.cached_score_for_course(current_course)
-        %span points.
-        %span.hide-for-small= points element.points_to_next_level(current_student, current_course)
-        %span.hide-for-small= " points to the next level!"
-        .striped{:style => "width: #{element.progress_percent(current_student)}%;"}
+    - @grade_scheme_elements.each do |element|
+      - if current_student.cached_score_for_course(current_course) < element.low_range
+        .progress.bar_magic.transparent.center
+          .meter
+            %i.fa.fa-lock
+            %span= element.name
+            %span=points element.low_range
+      - elsif current_student.cached_score_for_course(current_course) >= element.high_range
+        .progress.bar_magic.success.center
+          .meter
+            %i.fa.fa-star
+            %span= element.name
+            %span has already been achieved!
+            %span=points element.low_range
+      - else
+        .progress.bar_magic.current.center
+          %span.your-rank Your rank:
+          %span.your-rank= element.name
+          .striped-bar-container
+            .striped{:style => "width: #{element.progress_percent(current_student)}%;"}
+          .left.left-points
+            %span Your Points:
+            %span.bold=points current_student.cached_score_for_course(current_course)
+          .right.right-points
+            %span Points to next level:
+            %span.bold= points element.points_to_next_level(current_student, current_course)
 
-  = render partial: "courses/grading_philosophy", locals: { course: current_course }
+    = render partial: "courses/grading_philosophy", locals: { course: current_course }

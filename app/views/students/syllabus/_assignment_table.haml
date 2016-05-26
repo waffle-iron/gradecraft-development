@@ -1,0 +1,48 @@
+%thead
+  %tr
+    %th
+    %th= "#{term_for :assignment}"
+    %th Points
+    %th Due
+    %th
+    %th
+%tbody
+- presenter.assignments_for(assignment_type).each do |assignment|
+  - if presenter.assignment_visible?(assignment)
+    %tr
+      %td= render "students/syllabus/components/assignment_icons", presenter: presenter, assignment: assignment
+      %td= link_to assignment.name, assignment_path(assignment) if presenter.name_visible?(assignment)
+      %td
+        - if presenter.points_visible?(assignment)
+          - if assignment.pass_fail?
+            = render "grades/components/pass_fail", presenter: presenter, assignment: assignment
+          - else
+            // Checking to see if this assignment type is student weightable
+            = render "grades/components/score", grade: presenter.grade_for(assignment), assignment_type: assignment_type, assignment: assignment
+          - if current_user_is_student?
+            = render "grades/components/prediction", grade: presenter.grade_for(assignment)
+      %td= render "students/syllabus/components/due_at", assignment: assignment
+      %td
+        %span
+          - if presenter.open?(assignment)
+            = render partial: "assignments/self_log_form", locals: { student: presenter.student, assignment: assignment }
+      %td
+        .right
+          %ul.button-bar
+            / Grade Management /
+            = render "students/syllabus/components/grade_buttons", presenter: presenter, assignment: assignment
+
+            / Exclude Grade Feature /
+            = render "students/syllabus/components/exclude_buttons", presenter: presenter, assignment: assignment
+
+            / Groups /
+            - if assignment.has_groups?
+              = render "students/syllabus/components/group_buttons", presenter: presenter, assignment: assignment
+
+            / Submissions /
+            - if presenter.submittable?(assignment)
+              = render "students/syllabus/components/submission_buttons", presenter: presenter, assignment: assignment
+
+            / Manual Unlock /
+            - if current_user_is_staff?
+              = render "students/syllabus/components/manual_unlock", presenter: presenter, assignment: assignment

@@ -2,11 +2,20 @@
 # This is used to easily disable Style/* checks
 AllCops:
   DisabledByDefault: true
+  TargetRubyVersion: 2.2
   Exclude:
-    - "db/**/*"
+    - "db/migrate/*"
+    - "db/schema.rb"
     - "config/**/*"
+    - "spec/**/*"
     - "script/**/*"
     - "Vagrantfile"
+    - "spec/**/*"
+    - "lib/**/*"
+    - "bin/**/*"
+    - "Gemfile"
+    - "custom_plan.rb"
+    - "Rakefile"
 
 ################## STYLE #################################
 
@@ -831,6 +840,9 @@ Metrics/CyclomaticComplexity:
 
 Metrics/LineLength:
   Description: 'Limit lines to 80 characters.'
+  Max: 80
+  AllowHeredoc: true
+  AllowURI: true
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#80-character-limits'
   Enabled: false
 

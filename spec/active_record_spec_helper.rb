@@ -1,10 +1,23 @@
+RSpec.configure do |config|
+  # if we're loading more than one spec file just load the rails spec helper to
+  # save us from eternal suffering. However right now we're polluting inclusions
+  # with :focus on every call, and need to either remove config.filter_run from
+  # /spec/spec_helper or implement config.filter_run_when_matching with rspec
+  # v3.5.0.beta2 or greater
+  #
+  inclusions = config.filter_manager.inclusions.rules.keys - [:focus]
+  exclusions = config.filter_manager.exclusions
+  if config.files_to_run.size > 1 && inclusions.empty? && exclusions.empty?
+    require "rails_spec_helper"
+  end
+end
+
 require "spec_helper"
 require "active_record"
 require "active_support/core_ext"
 require "acts_as_list"
 require "aws-sdk"
-# require "aws"
-require "canable"
+require "cancan"
 require "carrierwave"
 require "carrierwave/orm/activerecord"
 require "csv"
@@ -15,6 +28,7 @@ require "sanitize"
 require "sorcery"
 require "yaml"
 require "./lib/display_helpers"
+require "./lib/grade_proctor"
 require "./lib/model_addons/advanced_rescue"
 require "./lib/model_addons/improved_logging"
 require "./lib/s3_manager"
@@ -28,6 +42,7 @@ module CarrierWave
     module Delay; end
   end
 end
+
 class ActiveRecord::Base
   def self.process_in_background(_); end
 end
@@ -73,9 +88,15 @@ CarrierWave::Uploader::Base.descendants.each do |klass|
       File.join(File.dirname(__FILE__), "support/uploads/tmp")
     end
 
-    next if klass == AttachmentUploader
-    def store_dir
-      File.join(File.dirname(__FILE__), "support/uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}")
+    # this will be conditionally used in the uploader to sidestep issues with
+    # testing the output of SomeUploader#store_dir directly
+    def store_dir_prefix
+      case Rails.env
+      when "development"
+        ENV["AWS_S3_DEVELOPER_TAG"]
+      when "test"
+        "#{File.dirname(__FILE__)}/support"
+      end
     end
   end
 end
@@ -83,6 +104,7 @@ end
 FactoryGirl::SyntaxRunner.send(:include, FileHelpers)
 
 RSpec.configure do |config|
+
   config.include FileHelpers
   config.include FactoryGirl::Syntax::Methods
 

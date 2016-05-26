@@ -13,7 +13,8 @@ class CourseGradeExporter
   private
 
   def baseline_headers
-    ["First Name", "Last Name", "Email", "Username", "Score", "Grade", "Level", "Earned Badge #", "GradeCraft ID" ]
+    ["First Name", "Last Name", "Email", "Username", "Score", "Grade", "Level",
+      "Earned Badge #", "GradeCraft ID" ]
   end
 
   def student_data(student, course)
@@ -21,9 +22,10 @@ class CourseGradeExporter
       student.last_name,
       student.email,
       student.username,
-      student.cached_score_for_course(course), student.grade_letter_for_course(course), student.grade_level_for_course(course),
+      student.cached_score_for_course(course),
+      student.grade_letter_for_course(course),
+      student.grade_level_for_course(course),
       student.earned_badges.count,
       student.id ]
   end
-
 end

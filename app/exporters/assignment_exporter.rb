@@ -3,7 +3,9 @@ class AssignmentExporter
     CSV.generate do |csv|
       csv << baseline_headers
       course.assignments.each do |assignment|
-        csv << [ assignment.id, assignment.name, assignment.point_total, assignment.description, assignment.open_at, assignment.due_at, assignment.accepts_submissions_until  ]
+        csv << [ assignment.id, assignment.name, assignment.point_total,
+          assignment.description, assignment.open_at, assignment.due_at,
+          assignment.accepts_submissions_until  ]
       end
     end
   end
@@ -11,6 +13,7 @@ class AssignmentExporter
   private
 
   def baseline_headers
-    ["Assignment ID", "Name", "Point Total", "Description", "Open At", "Due At", "Accept Until"  ]
+    ["Assignment ID", "Name", "Point Total", "Description", "Open At",
+      "Due At", "Accept Until"  ]
   end
 end

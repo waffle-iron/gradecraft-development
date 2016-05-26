@@ -14,10 +14,31 @@ class PredictedAssignmentSerializer < SimpleDelegator
 
   def grade
     if @grade.nil?
-      grade = student.present? ? Grade.find_or_create(assignment.id, student.id) : NullGrade.new
+      if student.present?
+        grade = Grade.find_or_create(assignment.id, student.id)
+      else
+        grade = NullGrade.new
+      end
       @grade = PredictedGradeSerializer.new(assignment, grade, current_user)
     end
     @grade
+  end
+
+  def prediction
+    if @prediction.nil?
+      if student.present?
+        @prediction = PredictedEarnedGrade.find_or_create_by(
+          assignment_id: assignment.id,
+          student_id: student.id
+        )
+      else
+        @prediction = NullPredictedEarnedGrade.new
+      end
+    end
+    {
+      id: @prediction.id,
+      predicted_points: visible_predicted_points(@prediction.predicted_points)
+    }
   end
 
   def attributes
@@ -47,9 +68,16 @@ class PredictedAssignmentSerializer < SimpleDelegator
   end
 
   private
-  
+
   attr_reader :assignment
 
+  def visible_predicted_points(points)
+    @student == @current_user ? points : 0
+  end
+
+  # Selected attributes necessary for all method calls are declared in
+  # predicted_assignment_collection_serializer. Here we further refine down to
+  # only the attributes that will be passed to the front end.
   def select_attributes
     assignment.attributes.select do |attr,v|
       %w( accepts_submissions_until
@@ -61,6 +89,7 @@ class PredictedAssignmentSerializer < SimpleDelegator
           pass_fail
           point_total
           position
+          threshold_points
         ).include?(attr)
     end
   end
@@ -68,17 +97,18 @@ class PredictedAssignmentSerializer < SimpleDelegator
   # boolean states for icons in predictor
   def boolean_flags
     {
-      is_required: is_required?,
-      has_info: has_info?,
-      has_rubric: has_rubric?,
       accepting_submissions: accepting_submissions?,
+      closed_without_submission: closed_without_sumbission?,
+      has_been_unlocked: has_been_unlocked?,
+      has_info: has_info?,
+      is_rubric_graded: is_rubric_graded?,
       has_submission: has_submission?,
+      has_threshold: has_threshold?,
       is_a_condition: is_a_condition?,
       is_earned_by_group: is_earned_by_group?,
       is_late: is_late?,
-      closed_without_submission: closed_without_sumbission?,
       is_locked: is_locked?,
-      has_been_unlocked: has_been_unlocked?,
+      is_required: is_required?,
     }
   end
 
@@ -90,8 +120,8 @@ class PredictedAssignmentSerializer < SimpleDelegator
     !assignment.description.blank?
   end
 
-  def has_rubric?
-    !!assignment.has_rubric?
+  def is_rubric_graded?
+    assignment.grade_with_rubric?
   end
 
   def is_earned_by_group?
@@ -112,6 +142,10 @@ class PredictedAssignmentSerializer < SimpleDelegator
   def has_submission?
     !!assignment.accepts_submissions? && \
       student.submission_for_assignment(assignment).present?
+  end
+
+  def has_threshold?
+    assignment.threshold_points && assignment.threshold_points > 0
   end
 
   def closed_without_sumbission?

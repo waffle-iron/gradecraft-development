@@ -39,8 +39,6 @@ module LinkHelper
     link_to name, options, html_options, &block
   end
 
-  protected
-
   class InternalLinkScrubber < Rails::Html::PermitScrubber
     def scrub(node)
       return super unless (node.type == Nokogiri::XML::Node::ELEMENT_NODE) &&

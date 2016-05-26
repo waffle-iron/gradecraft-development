@@ -1,0 +1,5 @@
+- unless grade.feedback_read?
+  %p
+  .right
+    = simple_form_for grade.assignment, url: feedback_read_grade_path(grade), method: :post do |f|
+      = f.submit "I have read this feedback", class: "button"

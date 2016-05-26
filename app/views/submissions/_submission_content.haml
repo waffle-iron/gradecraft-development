@@ -1,0 +1,14 @@
+// Allow students to edit the submission if that's still possible
+= render "submissions/components/edit", presenter: presenter if presenter.open_for_editing?
+
+// Displaying when the assignment was submitted and if it was late/resubmitted
+= render "submissions/components/dates_and_state", presenter: presenter
+
+// Displaying the link to the submission if there is one
+= render "submissions/components/links", presenter: presenter if presenter.submission.link?
+
+// Display file attachments if present
+= render "submissions/components/files", presenter: presenter if presenter.submission.submission_files.present?
+
+// Display submission comment if the student wrote one
+= render "submissions/components/feedback", presenter: presenter if presenter.submission.text_comment?

@@ -65,7 +65,7 @@
       JSON.stringify(this.earnedBadge)
 
     earnBadgeForStudent: (requestParams)->
-      $http.post("/grades/earn_student_badge", requestParams).then ((response)->
+      $http.post("/api/earned_badges", requestParams).then ((response)->
         if typeof response.data == 'object'
           console.log "Successfully created Earned Badge"
           response.data

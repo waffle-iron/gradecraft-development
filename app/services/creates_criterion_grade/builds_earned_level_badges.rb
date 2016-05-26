@@ -24,7 +24,7 @@ module Services
           context[:earned_level_badges] = new_earned_level_badges(
             context[:assignment],
             context[:student],
-            !context[:student_visibile_status].nil?,
+            !context[:student_visible_status].nil?,
             context[:raw_params]["level_badges"]
           )
         end
@@ -34,9 +34,9 @@ module Services
         private
 
         def new_earned_level_badges(assignment, student, visible_status, level_badges_params)
+          destroy_exisiting_earned_badges(student.id, assignment.id)
           level_badges_params.collect do |params|
             level_badge = LevelBadge.where(badge_id: params["badge_id"], level_id: params["level_id"]).first
-            destroy_exisiting_earned_badges(student.id, params["badge_id"], params["level_id"])
             EarnedBadge.new(course_id: assignment.course.id, assignment_id: assignment.id,
                             student_id: student.id, student_visible: visible_status,
                             badge_id: level_badge.badge.id, level_id: level_badge.level.id,
@@ -56,8 +56,8 @@ module Services
         #   2. Currently there is a (race?) condition that causes badges to sometimes not load in the front end, in which
         #      case this will also mean badges that should be awarded will be lost.
         #   3. This is terrible for performace reasons, and won't allow us to track history through existing models.
-        def destroy_exisiting_earned_badges(student_id, badge_id, level_id)
-          EarnedBadge.where(student_id: student_id, badge_id: badge_id, level_id: level_id).destroy_all
+        def destroy_exisiting_earned_badges(student_id, assignment_id)
+          EarnedBadge.where(student_id: student_id, assignment_id: assignment_id).destroy_all
         end
       end
     end

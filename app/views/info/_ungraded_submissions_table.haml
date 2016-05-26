@@ -5,8 +5,8 @@
 - @ungraded_submissions_by_assignment.each do |assignment, submissions|
   %h4.assignment_name
     = link_to assignment.name, assignment
-    = link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(assignment), class: "button"
-  %table.nofeatures_default_last_name_dynatable{"aria-describedby" => "ungradedTableCaption"}
+    = link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(assignment), class: "button"
+  %table.dynatable{"aria-describedby" => "ungradedTableCaption"}
     %thead
       %tr
         - if assignment.is_individual?
@@ -42,5 +42,5 @@
                   %li= link_to glyph(:check) + "Grade", edit_assignment_grade_path(assignment_id: assignment.id, student_id: student.id), class: "button"
                 - elsif assignment.has_groups?
                   %li= link_to glyph(:eye) + "See Submission", assignment_submission_path(assignment.id, id: submission.id), class: "button"
-                  %li= link_to glyph(:check) + "Grade", group_grade_assignment_path(assignment, group_id: group), class: "button"
+                  %li= link_to glyph(:check) + "Grade", grade_assignment_group_path(assignment, group), class: "button"
   %hr.dotted

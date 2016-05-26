@@ -1,0 +1,8 @@
+%p
+  .bold= "#{term_for :students} in #{term_for :group} #{grade.group.name}:"
+  %ul
+    - grade.group.students.each do |student|
+      - if current_user_is_student?
+        %li= student.name
+      - else
+        %li= link_to student.name, student_path(student)

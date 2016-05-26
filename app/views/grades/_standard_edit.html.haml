@@ -25,20 +25,6 @@
             - else
               = render partial: "grades/standard_edit/raw_score_grading_fields", locals: {f:f}
 
-          - if @assignment.release_necessary?
-            .assignment-status
-              = f.input :status,  as: :select, :collection => Grade::STATUSES, :selected => @grade.status, :include_blank => true
-              .form_label Can the student see this grade? (Won't be updated until the grade is submitted.)
-
-              -# angular code for status update
-              -# .input.select.optional.grade_status
-                %label.select.optional(for="grade_status") Status
-                %select.select.optional(name="grade[status]" id="grade_status")
-                  %option(value="{{grade_status}}" ng-repeat="grade_status in gradeStatuses" ng-selected="grade_status == grade.status") {{grade_status}}
-
-          - elsif @grade.status.blank?
-            = f.hidden_field :status, value: "Graded"
-
           .attachments(ng-cloak)
             .clear
             = render partial: "grades/standard_edit/standard_edit_attachment", locals: {f: f}
@@ -57,6 +43,21 @@
             #updated-at-current(ng-show="grade.updated_at" ng-class="{just_updated: grade.justUpdated()}")
               %span updated
               %span(am-time-ago="grade.updated_at")
+
+          .clear
+          %br
+          .right
+            .row
+              .assignment-status
+                - if @assignment.release_necessary?
+
+                  = f.input :status, as: :select, :collection => Grade::STATUSES, :selected => @grade.status, :include_blank => false
+                - else
+                  = f.input :status, as: :select, :collection => Grade::UNRELEASED_STATUSES, :selected => @grade.status || "Graded", :include_blank => false
+                .align-right.form_label Can the student see this grade?
+          .clear
+          %br
+
 
           .submit-buttons
             %ul

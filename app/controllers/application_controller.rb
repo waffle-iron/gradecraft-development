@@ -2,17 +2,12 @@ require 'application_responder'
 
 class ApplicationController < ActionController::Base
   self.responder = ApplicationResponder
-  # Canable details
+
   include Omniauth::Lti::Context
-  include Canable::Enforcers
   include CustomNamedRoutes
   include CurrentScopes
   include CourseTerms
   include ZipUtils
-
-  delegate :can_view?, to: :current_user
-  helper_method :can_view?
-  hide_action :can_view?
 
   respond_to :html
 
@@ -23,7 +18,8 @@ class ApplicationController < ActionController::Base
   end
 
   def check_url
-    redirect_to request.protocol + "www." + request.host_with_port + request.fullpath if !/^www/.match(request.host)
+    redirect_to request.protocol + "www." + request.host_with_port +
+      request.fullpath if !/^www/.match(request.host)
   end
 
   before_filter :require_login, except: [:not_authenticated]
@@ -33,7 +29,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
 
   def not_authenticated
-    if request.env["REMOTE_USER"] != nil
+    if !request.env["REMOTE_USER"].nil?
       @user = User.find_by_username(request.env["REMOTE_USER"])
       if @user
         auto_login(@user)
@@ -41,7 +37,8 @@ class ApplicationController < ActionController::Base
         redirect_to dashboard_path
       else
         redirect_to root_url, alert: "Please login first."
-        # We ultimately need to handle Cosign approved users who don't have GradeCraft accounts
+        # TODO: We ultimately need to handle Cosign approved users who don't
+        # have GradeCraft accounts
       end
     else
       redirect_to root_path, alert: "Please login first."
@@ -51,7 +48,8 @@ class ApplicationController < ActionController::Base
   # Getting the course scores to display the box plot results
   def get_course_scores
     if current_user.present? && current_student.present?
-      @scores_for_current_course = current_student.scores_for_course(current_course)
+      @scores_for_current_course =
+        current_student.scores_for_course(current_course)
     end
   end
 
@@ -117,7 +115,8 @@ class ApplicationController < ActionController::Base
     begin
       file_creation.call
       zip_data = ZipUtils::Zip.new(temp_dir)
-      send_data(zip_data.zipstring, type: "application/zip", filename: "#{export_name}.zip")
+      send_data(zip_data.zipstring, type: "application/zip",
+        filename: "#{export_name}.zip")
     ensure
       FileUtils.remove_entry_secure temp_dir
     end
@@ -129,14 +128,14 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # Canable checks on permission
-  def enforce_view_permission(resource)
-    raise Canable::Transgression unless can_view?(resource)
+  def current_ability
+    @current_ability ||= Ability.new(current_user, current_course)
   end
 
   # Tracking page view counts
   def increment_page_views
     return unless current_user && request.format.html?
-    PageviewEventLogger.new(event_session).enqueue_in_with_fallback Lull.time_until_next_lull
+    PageviewEventLogger.new(event_session)
+                       .enqueue_in_with_fallback Lull.time_until_next_lull
   end
 end

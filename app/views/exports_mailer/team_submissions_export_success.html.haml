@@ -9,10 +9,13 @@
 %p{:align => "center"}
   You can download your completed ZIP archive
   = succeed ". This link will expire after one week." do
-    %a{:href => "#{ @submissions_export.presigned_s3_url }"} here
+    %a{ :href => secure_download_url(@secure_token) } here
 
 %p{:align => "center"}
   Alternatively you can download the submissions archive on the submissions downloads page
   = succeed "." do
     %a{:href => "#{ exports_url }"} here
 %hr/
+
+%p Sincerely,
+%p GradeCraft

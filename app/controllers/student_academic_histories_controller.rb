@@ -2,10 +2,12 @@ class StudentAcademicHistoriesController < ApplicationController
 
   before_filter :ensure_staff?
 
-  before_action :find_student, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :find_student,
+    only: [:show, :new, :create, :edit, :update, :destroy]
 
   def show
-    @academic_history = @student.student_academic_histories.where(course_id: current_course).first
+    @academic_history =
+      @student.student_academic_histories.where(course_id: current_course).first
   end
 
   def new
@@ -13,7 +15,8 @@ class StudentAcademicHistoriesController < ApplicationController
   end
 
   def create
-    @academic_history = @student.student_academic_histories.new(params[:student_academic_history])
+    @academic_history =
+      @student.student_academic_histories.new(params[:student_academic_history])
     if @academic_history.save
       flash[:notice] =  "#{@student.name}'s Academic History profile was successfully created"
       redirect_to student_path(@student)
@@ -43,7 +46,9 @@ class StudentAcademicHistoriesController < ApplicationController
     @academic_history.destroy
 
     respond_to do |format|
-      format.html { redirect_to student_path(@student), notice: "#{@student.name}'s Academic History Profile was successfully deleted" }
+      format.html { redirect_to student_path(@student),
+          notice: "#{@student.name}'s Academic History Profile was successfully deleted"
+        }
     end
   end
 

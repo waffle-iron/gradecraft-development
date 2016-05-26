@@ -1,6 +1,6 @@
 
 // Display top headers for expandable list of assignments.
-- @assignment_types.each do |assignment_type|
+- presenter.assignment_types.each do |assignment_type|
   .assignment_type{id: "assignment-type-#{assignment_type.id}" }
 
     // Display the student's points out of assignment total, if there is an assignment max value. Else
@@ -8,15 +8,12 @@
     %h3.collapse
       %a
         %i.fa.fa-angle-double-right.fa-fw
-      #{assignment_type.try(:name)} • #{ points assignment_type.visible_score_for_student(current_student) }/#{ points assignment_type.total_points_for_student(current_student) }
+      #{assignment_type.try(:name)} • #{ points assignment_type.visible_score_for_student(presenter.student) }/#{ points assignment_type.total_points_for_student(presenter.student) }
 
     .assignment-type-container
       - if assignment_type.description?
         %p.description= raw assignment_type.description
 
       // Display the assignments for each assignment type in a responsive table, below header.
-      %table.default_assignments_dynatable
-        - if current_user_is_staff?
-          = render "students/syllabus/instructor_table", assignment_type: assignment_type
-        - else
-          = render "students/syllabus/student_table", assignment_type: assignment_type
+      %table.dynatable
+        = render "students/syllabus/assignment_table", presenter: presenter, assignment_type: assignment_type

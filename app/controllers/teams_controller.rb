@@ -4,7 +4,7 @@ class TeamsController < ApplicationController
   before_filter :ensure_staff?
 
   def index
-    @teams = current_course.teams.includes(:earned_badges)
+    @teams = current_course.teams.order_by_high_score.includes(:earned_badges)
     @title = "#{term_for :teams}"
   end
 
@@ -53,7 +53,9 @@ class TeamsController < ApplicationController
     @name = "#{@team.name}"
     @team.destroy
     respond_to do |format|
-      format.html { redirect_to teams_url, notice: "#{(term_for :team).titleize} #{@name} successfully deleted" }
+      format.html { redirect_to teams_url,
+        notice: "#{(term_for :team).titleize} #{@name} successfully deleted"
+      }
     end
   end
 

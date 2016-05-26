@@ -20,6 +20,10 @@ describe NullStudent do
       expect(student.submission_for_assignment(0).present?).to eq(false)
     end
 
+    it "returns false for checking if staff" do
+      expect(NullStudent.new).to_not be_is_staff double(:course)
+    end
+
     it "handles student weights" do
       student = NullStudent.new
       expect(student.weight_for_assignment_type).to eq(0)

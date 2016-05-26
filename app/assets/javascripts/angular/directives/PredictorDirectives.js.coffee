@@ -35,6 +35,9 @@
         else
           return ""
 
+      scope.thresholdPoints = ()->
+        @target.threshold_points
+
       scope.conditions = ()->
         @target.unlock_conditions
 
@@ -58,7 +61,7 @@
           tooltip: scope.description()
           icon: "fa-info-circle"
         }
-        has_rubric: {
+        is_rubric_graded: {
           tooltip: 'This ' + scope.targetTerm() + ' is rubric graded'
           icon: "fa-th"
         }
@@ -69,6 +72,10 @@
         has_submission: {
           tooltip: 'You have submitted this ' + scope.targetTerm()
           icon: "fa-file"
+        }
+        has_threshold: {
+          tooltip: 'You must earn ' + scope.thresholdPoints() + ' points or above for this ' + scope.targetTerm()
+          icon: "fa-balance-scale"
         }
         is_locked: {
           tooltip: scope.conditions()
@@ -104,26 +111,29 @@
     link: (scope, el, attr)->
       scope.switchState = ()->
         if @targetType == 'assignment'
-          if @target.grade.predicted_score == @offValue then 'off' else 'on'
+          if @target.prediction.predicted_points == @offValue then 'off' else 'on'
         else if @targetType == 'badge'
-          if @target.prediction.times_earned == 0 then 'off' else 'on'
+          if @target.prediction.predicted_times_earned == 0 then 'off' else 'on'
 
       scope.textForSwitch = ()->
         if @targetType == 'assignment'
           if @target.pass_fail
-            if @target.grade.predicted_score == @offValue then PredictorService.termFor["fail"] else PredictorService.termFor["pass"]
+            if @target.prediction.predicted_points == @offValue then PredictorService.termFor["fail"] else PredictorService.termFor["pass"]
           else
-            if @target.grade.predicted_score == @offValue then @offValue else @onValue
+            if @target.prediction.predicted_points == @offValue then @offValue else @onValue
         else if @targetType == 'badge'
-          if @target.prediction.times_earned == 0 then @offValue else @onValue
+          if @target.point_total == 0
+            if @target.prediction.predicted_times_earned == 0 then "won't earn" else "will earn"
+          else
+            if @target.prediction.predicted_times_earned == 0 then @offValue else @onValue
 
       scope.toggleSwitch = ()->
         if @targetType == 'assignment'
-          @target.grade.predicted_score = if @target.grade.predicted_score == @offValue then @onValue else @offValue
-          PredictorService.postPredictedGrade(@target.id,@target.grade.predicted_score)
+          @target.prediction.predicted_points = if @target.prediction.predicted_points == @offValue then @onValue else @offValue
+          PredictorService.postPredictedGrade(@target.prediction.id, @target.prediction.predicted_points)
         else if @targetType == 'badge'
-          @target.prediction.times_earned = if @target.prediction.times_earned == 0 then 1 else 0
-          PredictorService.postPredictedBadge(@target.id,@target.prediction.times_earned)
+          @target.prediction.predicted_times_earned = if @target.prediction.predicted_times_earned == 0 then 1 else 0
+          PredictorService.postPredictedBadge(@target.prediction.id, @target.prediction.predicted_times_earned)
   }
 ]
 
@@ -137,16 +147,35 @@
     templateUrl: 'ng_predictor_counter.html'
     link: (scope, el, attr)->
       scope.atMin = ()->
-        @target.prediction.times_earned <= @target.earned_badge_count
+        @target.prediction.predicted_times_earned <= @target.earned_badge_count
+      scope.textForTotal = ()->
+        if @target.point_total == 0
+          ""
+        else
+          @target.prediction.predicted_times_earned * @target.point_total
+      scope.textForSwitch = ()->
+        if @target.point_total == 0
+          if scope.atMin()
+            switch @target.prediction.predicted_times_earned
+              when 0 then "won't earn"
+              when 1 then "earned 1 time"
+              else "earned " + @target.prediction.predicted_times_earned + " times"
+          else
+            if @target.prediction.predicted_times_earned == 1
+              "will earn 1 time"
+            else
+              "will earn " + @target.prediction.predicted_times_earned + " times"
+        else
+          @target.prediction.predicted_times_earned + " x " + @target.point_total
       scope.increment = ()->
-        @target.prediction.times_earned += 1
-        PredictorService.postPredictedBadge(@target.id,@target.prediction.times_earned)
+        @target.prediction.predicted_times_earned += 1
+        PredictorService.postPredictedBadge(@target.prediction.id, @target.prediction.predicted_times_earned)
       scope.decrement = ()->
         if scope.atMin()
           return false
         else
-          @target.prediction.times_earned -= 1
-          PredictorService.postPredictedBadge(@target.id,@target.prediction.times_earned)
+          @target.prediction.predicted_times_earned -= 1
+          PredictorService.postPredictedBadge(@target.prediction.id, @target.prediction.predicted_times_earned)
   }
 ]
 
@@ -172,8 +201,8 @@
       scope.weightsAvailable = ()->
         if @target.student_weight < 1
           return false if PredictorService.weights.unusedTypes() < 1
-        if PredictorService.weights.max_weights
-          @target.student_weight < PredictorService.weights.max_weights && PredictorService.weights.unusedWeights() > 0
+        if PredictorService.weights.max_assignment_weight
+          @target.student_weight < PredictorService.weights.max_assignment_weight && PredictorService.weights.unusedWeights() > 0
         else
           PredictorService.weights.unusedWeights() > 0
       scope.hasWeights = ()->
@@ -181,6 +210,6 @@
       scope.weightsOpen = ()->
         PredictorService.weights.open
       scope.defaultMultiplier = ()->
-        PredictorService.weights.default_weight
+        PredictorService.weights.default_assignment_weight
   }
 ]

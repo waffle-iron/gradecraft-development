@@ -7,11 +7,11 @@
 .pageContent
   = render "layouts/alerts"
 
-  %table.responsive.nopage_dynatable{"aria-describedby" => "tableCaption"}
+  %table.dynatable{"aria-describedby" => "tableCaption"}
     %thead
       %tr
         %th{scope: "col"} Name
-        %th{scope: "col"} Max Points
+        %th{scope: "col", "data-dynatable-sorts": "numericScore"} Max Points
         %th{scope: "col"}
           %span.sr-only Actions
     %tbody
@@ -42,7 +42,7 @@
 
   %h4.subtitle= "#{term_for :student} Scores"
 
-  %table.nofeatures_default_name_dynatable
+  %table.dynatable
     %thead
       %tr
         %th First Name
@@ -64,7 +64,7 @@
 
   %h4.subtitle= "#{term_for :student} Grade Counts"
 
-  %table.responsive.nofeatures_default_name_dynatable
+  %table.dynatable
     %thead
       %tr
         %th First Name

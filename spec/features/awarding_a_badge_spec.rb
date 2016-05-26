@@ -28,7 +28,7 @@ feature "awarding a badge" do
       expect(current_path).to eq new_badge_earned_badge_path(badge)
 
       within(".pageContent") do
-        select "Hermione Granger", from: "student_id"
+        select "Hermione Granger", from: "earned_badge_student_id"
         click_button "Award badge"
       end
       expect(page).to have_notification_message("notice", "The Fancy Badge badge was successfully awarded to Hermione Granger")

@@ -1,46 +1,45 @@
 .page
   .hero-section
     %h1 Brand & Style Guidelines
+    %ul.public-subnav= render "subnav"
   .main-section
-    .one-third
-      %ul= render "subnav"
-    .two-thirds
+    .main-section-content
       %ul
         %li.color-group
-          .title.bold Blues
+          %h2.title.bold Blues
           .color-bar
             != color_block_set("blue", %w[ 1 2 3 4 5 ])
 
         %li.color-group
-          .title.bold Purples
+          %h2.title.bold Purples
           .color-bar
             != color_block_set("purple", %w[ 1 2 ])
 
         %li.color-group
-          .title.bold Greens
+          %h2.title.bold Greens
           .color-bar
             != color_block_set("green", %w[ 1 2 ])
 
         %li.color-group
-          .title.bold Warm Hues
+          %h2.title.bold Warm Hues
           .color-bar
             != color_block_set("red", %w[ 1])
             != color_block_set("orange", %w[ 1 ])
             != color_block_set("yellow", %w[ 1 ])
 
         %li.color-group
-          .title.bold Gr[ea]ys
+          %h2.title.bold Gr[ea]ys
           .color-bar
             != color_block_set("grey", %w[ 1 2 3 4 5 6 7 8 ])
 
         %hr
 
         %li.color-group
-          .title.bold Background Blues
+          %h2.title.bold Background Blues
           .color-bar
             != color_block_set("alt-blue", %w[ 1 2 3 4 ])
 
         %li.color-group
-          .title.bold Background Greens
+          %h2.title.bold Background Greens
           .color-bar
             != color_block_set("alt-green", %w[ 1 2 ])

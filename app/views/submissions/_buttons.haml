@@ -20,4 +20,4 @@
           %span.sr-only #{presenter.group.name}'s Submission
       %li
         = link_to glyph(:trash) + "Delete Submission", assignment_submission_path(assignment: presenter.assignment, submission: presenter.submission ), data: { confirm: "Are you sure?",  method: :delete }
-      %li= link_to glyph(:check) + "Grade", group_grade_assignment_path(presenter.assignment,  group_id: presenter.group.id)
+      %li= link_to glyph(:check) + "Grade", grade_assignment_group_path(presenter.assignment,  presenter.group)

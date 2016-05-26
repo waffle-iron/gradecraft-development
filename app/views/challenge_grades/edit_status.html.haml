@@ -5,7 +5,7 @@
 .pageContent
   = render "layouts/alerts"
 
-  %table.nopage_dynatable
+  %table.dynatable
     %thead
       %tr
         %th= term_for :team
@@ -23,7 +23,7 @@
       = hidden_field_tag "challenge_grade_ids[]", challenge_grade.id
     %br
     %hr
-    .right= f.input :status, :label => "Update Status to:", as: :select, :collection => Grade::STATUSES
+    .right= f.input :status, :label => "Update Status to:", as: :select, :collection => ChallengeGrade::STATUSES
     .clear
     %br
     .right= f.button :submit, "Update Statuses", class: "button"

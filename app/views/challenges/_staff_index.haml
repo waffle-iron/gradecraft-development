@@ -1,9 +1,9 @@
-%table.nofeatures_default_due_date_dynatable
+%table.dynatable
   %thead
     %tr
       %th Name
       %th Description
-      %th Max Points
+      %th{"data-dynatable-sorts" => "numericScore"} Max Points
       %th{"data-dynatable-sorts" => "dueDate"} Due
       %th{:style => "display: none"} Due Date
       %th Visible
@@ -16,7 +16,7 @@
       %tr
         %td= link_to challenge.name, challenge
         %td= raw challenge.description
-        %td= challenge.point_total
+        %td= points challenge.point_total
         %td= challenge.due_at
         %td{:style => "display: none"}
           = challenge.try(:due_at).to_formatted_s(:db) if challenge.due_at.present?

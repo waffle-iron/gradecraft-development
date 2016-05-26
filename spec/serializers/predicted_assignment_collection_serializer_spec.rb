@@ -31,6 +31,7 @@ describe PredictedAssignmentCollectionSerializer do
        :point_total,
        :position,
        :required,
+       :threshold_points,
        :use_rubric,
        :visible,
        :visible_when_locked].each do |attribute|

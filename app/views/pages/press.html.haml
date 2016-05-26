@@ -1,12 +1,11 @@
 .page
 	.hero-section
 		%h1 Press & Awards
+		%ul.public-subnav= render "subnav"
 	.main-section
-		.one-third
-			%ul= render "subnav"
-		.two-thirds
-			.title.bold Awards
+		.main-section-content
+			%h2.title.bold Awards
 			%ul= render "awards"
 			%br
-			.title.bold Press
+			%h2.title.bold Press
 			%ul= render "articles"

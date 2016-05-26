@@ -51,7 +51,7 @@ angular.module('froala', []).
         }
 
 				var updateView = function () {
-					var returnedHtml = element.editable('getHTML');
+					var returnedHtml = element.froalaEditor('html.get');
 					var theHTML;
 					if(angular.isArray(returnedHtml) && angular.isString(returnedHtml[0])){
 						theHTML = returnedHtml[0];
@@ -75,12 +75,12 @@ angular.module('froala', []).
 				};
 
 				ngModel.$render = function(){
-					element.editable('setHTML', ngModel.$viewValue || '', true);
+					element.froalaEditor('html.set', ngModel.$viewValue || '', true);
 				};
 
-				var froala = element.editable(options).data('fa.editable');
+				var froala = element.froalaEditor(options).data('froala.editor');
 
-				froala.$element.on('blur keyup change', function(e){
+				froala.$el.on('blur keyup change', function(e){
 					updateView();
 				});
 
@@ -91,7 +91,7 @@ angular.module('froala', []).
 
 			  		if(froalaEvents.indexOf(eventName) > -1){
 			  			el = element;
-			  			realEventName = 'editable.' + eventName;
+			  			realEventName = 'froalaEditor.' + eventName;
 			  		}else{
 			  			el = froala.$element;
 			  			realEventName = eventName;
@@ -119,14 +119,14 @@ angular.module('froala', []).
 
 				// the froala instance to the options object to make methods available in parent scope
 				if(scope.froala){
-					scope.froala.froala = angular.bind(element, $(attrs.id).editable);
+					scope.froala.froala = angular.bind(element, $(attrs.id).froalaEditor);
 				}
 
 				scope.$watch('froala', function(n, o){
 					for (var key in n) {
 						if (n.hasOwnProperty(key)) {
 							if(n[key] != o[key]){
-								element.editable('option', key, n[key]);
+								element.froalaEditor('option', key, n[key]);
 							}
 						}
 					}

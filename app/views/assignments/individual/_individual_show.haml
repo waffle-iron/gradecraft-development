@@ -5,8 +5,8 @@
         Select #{term_for :team} –
       = select_tag :team_id, options_for_select(presenter.teams.map { |t| [t.name, t.id] }, presenter.team.try(:id)), prompt: "– Select #{(term_for :team).titleize} –"
 
-= form_tag edit_status_grades_assignment_path(presenter.assignment), method: :get do
-  %table.nofeatures_default_last_name_dynatable.default_assignments_dynatable
+= form_tag edit_status_assignment_grades_path(presenter.assignment), method: :get do
+  %table.dynatable
     %thead= render partial: "assignments/individual/table_head", locals: { presenter: presenter }
     %tbody= render partial: "assignments/individual/table_body", locals: { presenter: presenter }
 

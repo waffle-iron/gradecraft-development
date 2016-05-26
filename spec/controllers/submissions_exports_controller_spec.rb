@@ -51,19 +51,17 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   describe "DELETE #destroy" do
     subject { delete :destroy, id: submissions_export.id }
 
-    it "deletes the corresponding s3 object for the submissions export" do
-      expect(controller).to receive(:delete_s3_object)
-      subject
+    before(:each) do
+      allow(controller).to receive(:submissions_export) { submissions_export }
     end
 
     describe "determining success and failure" do
       context "the submissions export is destroyed and the s3 object deleted" do
         before do
-          allow(controller).to receive(:delete_s3_object) { true }
+          allow(submissions_export).to receive(:delete_object_from_s3) { true }
         end
 
         it "destroys the submissions export" do
-          allow(SubmissionsExport).to receive(:find) { submissions_export }
           expect(submissions_export).to receive(:destroy)
           subject
         end
@@ -76,7 +74,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
 
       context "the submissions export is not destroyed and the s3 object fails to delete" do
         before do
-          allow(controller).to receive(:delete_s3_object) { false }
+          allow(submissions_export).to receive(:delete_object_from_s3) { false }
         end
 
         it "notifies the user of the failure" do
@@ -93,34 +91,168 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   end
 
   describe "GET #download" do
-    subject { get :download, id: submissions_export.id }
-    let(:s3_object_body) { double("s3 object body").as_null_object }
-    let(:export_filename) { "/some/file/name.zip" }
-
-    before do
-      allow(controller).to receive_message_chain(:submissions_export, :fetch_object_from_s3, :body, :read) { s3_object_body }
-      allow(controller).to receive_message_chain(:submissions_export, :export_filename) { export_filename }
-    end
+    let(:result) { get :download, id: submissions_export.id }
 
     it "streams the s3 object to the client" do
-      expect(controller).to receive(:send_data).with(s3_object_body, filename: export_filename)
-      subject
+      expect(controller).to receive(:stream_file_from_s3)
+      result
     end
   end
 
-  describe "#delete_s3_object" do
-    subject { controller.instance_eval { delete_s3_object } }
-    before { allow(controller).to receive(:submissions_export) { submissions_export } }
-
-    it "calls #delete_object_from_s3 on the submissions export" do
-      expect(submissions_export).to receive(:delete_object_from_s3)
-      subject
+  describe "secure downloads" do
+    let(:secure_download_params) do
+      {
+        secure_token_uuid: secure_token.uuid,
+        secret_key: secure_token.random_secret_key,
+        id: submissions_export.id
+      }
     end
 
-    it "caches the deletion outcome" do
-      subject
-      expect(submissions_export).not_to receive(:delete_object_from_s3)
-      subject
+    let(:authenticator) { SecureTokenAuthenticator.new authenticator_params }
+    let(:authenticator_params) do
+      secure_download_params.except(:id).merge(
+        target_class: secure_token.target_type,
+        target_id: secure_token.target_id
+      )
+    end
+
+    let(:secure_token) { create(:secure_token, target: submissions_export) }
+
+    describe "GET #secure_download" do
+      let(:result) { get :secure_download, secure_download_params }
+
+      before(:each) do
+        allow(controller).to receive(:secure_download_authenticator)
+          .and_return authenticator
+      end
+
+      context "the SecureDownloadAuthenticator authenticates" do
+        before do
+          allow(authenticator).to receive(:authenticates?) { true }
+        end
+
+        it "streams the s3 object to the client" do
+          expect(controller).to receive(:stream_file_from_s3)
+          result
+        end
+      end
+
+      context "the SecureDownloadAuthenticator doesn't authenticate" do
+        before do
+          allow(authenticator).to receive(:authenticates?) { false }
+        end
+
+        context "the request was for a valid token that has expired" do
+          it "alerts the user that their token has expired" do
+            allow(authenticator).to receive(:valid_token_expired?) { true }
+            result
+            expect(flash[:alert]).to match /email link.*expired/
+          end
+        end
+
+        context "the request completely failed to authenticate" do
+          it "alerts the user that their request was invalid" do
+            allow(authenticator).to receive(:valid_token_expired?) { false }
+            result
+            expect(flash[:alert]).to match /does not exist/
+          end
+        end
+
+        it "redirects the user to the root page and tells them to log in" do
+          result
+          expect(flash[:alert]).to match /Please login/
+          expect(response).to redirect_to root_path
+        end
+      end
+
+      describe "skipped filters" do
+        let(:result) { get :secure_download, secure_download_params }
+
+        before do
+          # since we just want to test filter skipping let's disregard the
+          # secure token authenticator here
+          allow(controller).to receive(:secure_download_authenticator)
+            .and_return double(SecureTokenAuthenticator).as_null_object
+
+          # let's disregard s3 file streaming as well
+          allow(controller).to receive(:stream_file_from_s3) { false }
+        end
+
+        # make the GET secure_download call after each expectation
+        after(:each) { result }
+
+        it "doesn't require login" do
+          expect(controller).not_to receive(:require_login)
+        end
+
+        it "doesn't increment the page views" do
+          expect(controller).not_to receive(:increment_page_views)
+        end
+
+        it "doesn't get course scores" do
+          expect(controller).not_to receive(:get_course_scores)
+        end
+      end
+    end
+
+    describe "#secure_download_authenticator" do
+      let(:result) do
+        controller.instance_eval { secure_download_authenticator }
+      end
+
+      let(:authenticator_attrs) do
+        {
+          secure_token_uuid: secure_token.uuid,
+          secret_key: secure_token.random_secret_key,
+          target_id: submissions_export.id,
+          target_class: "SubmissionsExport"
+        }
+      end
+
+      before do
+        allow(controller).to receive(:params) { secure_download_params }
+      end
+
+      it "builds a new SecureTokenAuthenticator" do
+        expect(SecureTokenAuthenticator).to receive(:new)
+          .with authenticator_attrs
+        result
+      end
+
+      it "caches the SecureTokenAuthenticator" do
+        result
+        expect(SecureTokenAuthenticator).not_to receive(:new)
+        result
+      end
+
+      it "sets the returned value to @secure_token_authenticator" do
+        authenticator = SecureTokenAuthenticator.new authenticator_attrs
+        allow(SecureTokenAuthenticator).to receive(:new) { authenticator }
+        result
+        expect(controller.instance_variable_get(:@secure_download_authenticator))
+          .to eq(authenticator)
+      end
+    end
+  end
+
+  describe "#stream_file_from_s3" do
+    let(:result) do
+      controller.instance_eval { stream_file_from_s3 }
+    end
+    let(:temp_file) { Tempfile.new("s3_object") }
+
+    before do
+      allow(controller).to receive(:submissions_export) { submissions_export }
+      allow(submissions_export).to receive_messages(
+        export_filename: "some_filename.txt",
+        stream_s3_object_body: temp_file
+      )
+    end
+
+    it "renders the s3 object data with the submissions export filename" do
+      expect(controller).to receive(:send_data).with(temp_file,
+        filename: "some_filename.txt")
+      result
     end
   end
 

@@ -8,7 +8,8 @@ class SamlController < ApplicationController
   end
 
   def consume
-    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], settings: SAML_SETTINGS)
+    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse],
+      settings: SAML_SETTINGS)
 
     if response.success?
       email = response.attributes["urn:oid:0.9.2342.19200300.100.1.3"]

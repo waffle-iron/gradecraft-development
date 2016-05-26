@@ -14,7 +14,6 @@
 
     $scope.rawScoreUpdating = false
     $scope.hasChanges = false
-    $scope.gradeStatuses = ["In Progress", "Graded", "Released"]
 
     # establish and populate all necessary collections for UI
     $scope.populateCollections(initData.badges, initData.assignment_score_levels)
@@ -152,19 +151,17 @@
     grade_id: $scope.grade.id,
     assignment_id: $scope.grade.assignment_id
     score: badge.point_total
+    student_visible: $scope.grade.student_visible
 
   $scope.froalaOptions = {
     inlineMode: false,
-    minHeight: 100,
-    buttons: [
-      'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript',
-      'superscript', 'fontFamily', 'fontSize', 'sep', 'inlineStyle', 'blockStyle',
-      'sep', 'formatBlock', 'align', 'insertOrderedList', 'insertUnorderedList',
+    heightMin: 200,
+    toolbarButtons: [
+      'fullscreen', 'bold', 'italic', 'underline', 'strikeThrough',
+      'fontFamily', 'fontSize', 'color', 'sep', 'blockStyle', 'emoticons',
+      'insertTable', 'sep', 'formatBlock', 'align', 'insertOrderedList',
       'outdent', 'indent', 'insertHorizontalRule', 'createLink', 'undo', 'redo',
-      'removeFormat', 'selectAll'
-    ],
-    saveURL: '/grades/' + $scope.gradeId + '/async_update',
-    saveRequestType: 'PUT',
-    saveParams: {"save_type": "feedback"}
+      'clearFormatting', 'selectAll', 'html'
+    ]
   }
 ]

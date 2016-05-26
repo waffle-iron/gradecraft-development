@@ -82,7 +82,8 @@ class ModelCopier
     end
 
     def split_attributes_from_association
-      # association is specified as { association: { attributes }} and this splits out the attributes
+      # association is specified as { association: { attributes }} and this
+      # splits out the attributes
       @attributes = association.values.inject({}) { |hash, element| hash.merge!(element) }
     end
 

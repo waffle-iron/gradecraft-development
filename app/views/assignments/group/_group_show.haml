@@ -1,8 +1,8 @@
-= form_tag edit_status_grades_assignment_path(presenter.assignment), method: :get do
+= form_tag edit_status_assignment_grades_path(presenter.assignment), method: :get do
   - if ! presenter.groups.present?
     No #{term_for :groups} have been created! You can either have #{term_for :students} self-create their #{term_for :groups}, or you can create them manually #{link_to "here", new_group_path}.
   - else
-    %table
+    %table.dynatable
       %thead= render partial: "assignments/group/table_head", locals: { presenter: presenter }
       %tbody= render partial: "assignments/group/table_body", locals: { presenter: presenter }
       .right

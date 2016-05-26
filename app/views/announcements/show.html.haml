@@ -3,7 +3,7 @@
 
 %h3.pagetitle= @title
 
-- if current_user.can_create?(@announcement)
+- if can? :create, Announcement.new(course_id: current_course.id)
   .context_menu
     %ul
       %li= link_to_unless_current glyph(:plus) + 'New Announcement', new_announcement_path

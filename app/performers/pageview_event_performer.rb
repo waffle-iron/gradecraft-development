@@ -1,4 +1,4 @@
-# @mz todo: add specs
+# @mz TODO: add specs
 class PageviewEventPerformer < ResqueJob::Performer
   # perform() attributes assigned to @attrs in the ResqueJob::Base class
   def do_the_work
@@ -12,7 +12,7 @@ class PageviewEventPerformer < ResqueJob::Performer
   def pageview_event_attrs
     { event_type: "pageview" }.merge @attrs[:data]
   end
-  
+
   def messages
     {
       success: "Pageview analytics event was successfully created.",

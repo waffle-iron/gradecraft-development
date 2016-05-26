@@ -1,0 +1,16 @@
+- if badge.is_unlockable?
+  %a
+    = glyph(:lock)
+  .display_on_hover.hover-style
+    %h3 Unlock Requirements
+    %ul
+      - badge.unlock_conditions.each do |condition|
+        %li= "#{condition.name} must be #{condition.condition_state}"
+- if badge.is_a_condition?
+  %a
+    = glyph(:key)
+  .display_on_hover.hover-style
+    %h3 Unlock Key
+    %ul
+      - badge.unlock_keys.each do |key|
+        %li= "#{key.unlockable.name} is unlocked by #{key.condition_state} #{key.condition.name}"

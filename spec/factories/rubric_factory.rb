@@ -4,7 +4,7 @@ FactoryGirl.define do
 
     factory :rubric_with_criteria do
       after(:create) do |rubric|
-        (0..5).each {|i| create(:criterion, rubric: rubric, order: i)}
+        (0..5).each {|i| create(:criterion_with_level_and_grade, rubric: rubric, order: i)}
       end
     end
   end

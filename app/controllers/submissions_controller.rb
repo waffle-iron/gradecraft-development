@@ -3,16 +3,16 @@ class SubmissionsController < ApplicationController
   before_filter :save_referer, only: [:new, :edit]
 
   def show
-    presenter = ShowSubmissionPresenter.new({ id: params[:id],
+    presenter = Submissions::ShowPresenter.new({ id: params[:id],
                                               assignment_id: params[:assignment_id],
                                               course: current_course,
                                               view_context: view_context })
-    enforce_view_permission(presenter.submission)
+    authorize! :read, presenter.submission
     render :show, locals: { presenter: presenter }
   end
 
   def new
-    render :new, NewSubmissionPresenter.build(assignment_id: params[:assignment_id],
+    render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
                                               course: current_course,
                                               group_id: params[:group_id],
                                               view_context: view_context)
@@ -29,7 +29,7 @@ class SubmissionsController < ApplicationController
       end
       redirect_to redirect_to, notice: "#{assignment.name} was successfully submitted." and return
     end
-    render :new, NewSubmissionPresenter.build(assignment_id: params[:assignment_id],
+    render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
                                               submission: submission,
                                               student: submission.student,
                                               course: current_course,
@@ -38,10 +38,10 @@ class SubmissionsController < ApplicationController
   end
 
   def edit
-    presenter = EditSubmissionPresenter.new(id: params[:id], assignment_id: params[:assignment_id],
+    presenter = Submissions::EditPresenter.new(id: params[:id], assignment_id: params[:assignment_id],
                                             course: current_course, group_id: params[:group_id],
                                             view_context: view_context)
-    enforce_view_permission(presenter.submission)
+    authorize! :update, presenter.submission
     render :edit, locals: { presenter: presenter }
   end
 
@@ -62,7 +62,7 @@ class SubmissionsController < ApplicationController
         format.json { render json: assignment, status: :created, location: assignment }
       else
         format.html do
-          render :edit, EditSubmissionPresenter.build(id: params[:id],
+          render :edit, Submissions::EditPresenter.build(id: params[:id],
                                                       assignment_id: params[:assignment_id],
                                                      course: current_course,
                                                      group_id: submission.group_id,

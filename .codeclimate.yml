@@ -41,6 +41,6 @@ exclude_paths:
 - db/**/*
 - script/**/*
 - spec/**/*
-- test/**/*
 - vendor/**/*
 - assets/**/*
+- app/mailer_previews/*

@@ -1,6 +1,8 @@
 class ChallengeGrade < ActiveRecord::Base
+  include GradeStatus
 
-  attr_accessible :name, :score, :challenge_id, :text_feedback, :status, :team_id, :final_score, :status, :team, :challenge
+  attr_accessible :name, :score, :challenge_id, :text_feedback, :team_id,
+    :final_score, :team, :challenge
 
   belongs_to :course
   belongs_to :challenge
@@ -14,13 +16,12 @@ class ChallengeGrade < ActiveRecord::Base
 
   delegate :name, :description, :due_at, :point_total, to: :challenge
 
-  # @mz todo: add specs
-  scope :student_visible, -> { joins(:challenge).where(student_visible_sql) }
+  releasable_through :challenge
 
   # TODO: Need to bring this in and resolve dup challenge grades in production
   # validates :challenge_id, uniqueness: {scope: :team_id}
 
-  # @mz todo: add specs
+  # @mz TODO: add specs
   def recalculate_student_and_team_scores
     team.update_revised_team_score
     if team.course.add_team_score_to_student?
@@ -36,21 +37,8 @@ class ChallengeGrade < ActiveRecord::Base
     team.save!
   end
 
-  def is_graded?
-    status == "Graded"
-  end
-
-  def is_released?
-    status == "Released"
-  end
-
+  # TODO: jw this will be replaced with a ChallengeGradeProctor
   def is_student_visible?
     is_released? || (is_graded? && !challenge.release_necessary)
-  end
-
-  private
-
-  def self.student_visible_sql
-    ["status = 'Released' OR (status = 'Graded' AND challenges.release_necessary = ?)", false]
   end
 end

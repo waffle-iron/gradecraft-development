@@ -1,61 +1,53 @@
-= content_nav_for Badge
+= content_nav_for Badge if !current_student
 
-%h3.pagetitle= @title
+%h3.pagetitle= presenter.title
 
-.context_menu
-  %ul
-    %li
-      %a{:href => new_badge_path }
-        %i.fa.fa-plus
-        New #{(term_for :badge).titleize}
+= render partial: "badges/context_menu", locals: {actions: [:new]} if current_user_is_staff? && !presenter.view_student_context?
 
 .pageContent
   = render "layouts/alerts"
 
-  //instructor badge index table
-  %table
+  %table.badge-index-table{:class => ("student-index" if presenter.view_student_context?)}
     %thead
       %tr
-        %th
-        %th
-        %th.center{:width => "15%" } Icon
-        %th{:width => "25%" } Name
-        %th Awarded
-        %th{ :style => "min-width: 220px" }
-    %tbody.sort-badges
-      - @badges.each do |badge|
-        %tr{id: "badge-#{badge.id}"}
-          %td.center
-            %i.fa.fa-arrows-v.draggable
-          %td
-            - if badge.is_unlockable?
-              %a
-                %i.fa.fa-lock
-              .display_on_hover.hover-style
-                %h3 Unlock Requirements
-                %ul
-                  - badge.unlock_conditions.each do |condition|
-                    %li= "#{condition.name} must be #{condition.condition_state}"
-            - if badge.is_a_condition?
-              %a
-                %i.fa.fa-key
-              .display_on_hover.hover-style
-                %h3 Unlock Key
-                %ul
-                  - badge.unlock_keys.each do |key|
-                    %li= "#{key.unlockable.name} is unlocked by #{key.condition_state} #{key.condition.name}"
-          %td
-            %img.badge-icon{ :src => badge.icon, :alt => badge.name, :width => 40 }
-            - if badge.point_total.present? && badge.point_total > 0
-              .italic= "#{points badge.point_total} points"
-          %td
-            .subtitle= link_to badge.name, badge_path(badge)
-            = raw badge.description
-          %td= points badge.awarded_count
-          %td
-            .right
-              %ul.button-bar
-                %li= link_to glyph(:check) + "Quick Award", mass_award_badge_path(badge.id), class: "button"
-                %li= link_to glyph(:star) + "Award", new_badge_earned_badge_path(badge), class: "button"
-                %li= link_to glyph(:edit) + "Edit", edit_badge_path(badge), class: "button"
-                %li= link_to glyph(:trash) + "Delete", badge_path(badge),class: "button", data: { confirm: "Are you sure?",  method: :delete }
+        %th.sort-column
+        %th.lock-icon-column
+        %th.icon-column
+        %th.earned_column Earned
+        %th.description-column Description
+        %th.button-column
+
+    %tbody{:class => ("sort-badges" if !presenter.view_student_context?)}
+      - presenter.badges.each do |badge|
+        - if BadgeProctor.new(badge).viewable?(current_student || current_user)
+          %tr{id: "badge-#{badge.id}"}
+            - if !presenter.view_student_context?
+              %td.center
+                %i.fa.fa-arrows-v.draggable
+            - else
+              %td
+
+            // Lock Condition Icons
+            %td
+              = render partial: "badges/components/hover_icons", locals: { badge: badge }
+
+            // Badge Icon
+            %td
+              = render partial: "badges/components/icon", locals: { badge: badge }
+
+            %td
+              = render partial: "badges/components/count", locals: { badge: badge, count: presenter.earned_badges_count(badge) }
+
+            // Description
+            %td
+              - if current_user_is_staff? && presenter.view_student_context?
+                = render partial: "badges/components/description",
+                  locals: { badge: badge, title: link_to(badge.name, student_badge_show_path(presenter.student, badge)) }
+              - else
+                = render partial: "badges/components/description",
+                  locals: { badge: badge, title: link_to(badge.name, badge_path(badge)) }
+
+            // Buttons
+            %td
+              - if !presenter.view_student_context?
+                = render partial: "badges/buttons", locals: { badge: badge }

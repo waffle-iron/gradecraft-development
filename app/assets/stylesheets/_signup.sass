@@ -1,14 +1,31 @@
 @import color
+@import layout
 
 section.pilot
-  position: relative
-  padding: 3rem 2rem
-  background-color: $color-blue-3
-  opacity: .8
-  margin: 0 auto
+  margin-top: 45px
+  background-color: rgba($color-blue-3, .5)
   color: $color-white
-  width: 100%
+  padding: 4em 2em
 
-  h1
-    font-size: 2rem
-    font-weight: normal !important
+  h1, p
+    color: $color-grey-2
+    text-align: center
+  
+  .instructor-pilot, .student-pilot
+    max-width: 500px
+    margin: 2em auto
+  
+    .pilot-text
+      background-color: $color-white
+      padding: 2em
+  
+.instructor-pilot
+  border-left: 10px solid $color-green-2
+
+.student-pilot
+  border-left: 10px solid $color-blue-3
+  
+@media (max-width: $media-small-max)
+  section.pilot
+    padding: .5em 1em
+

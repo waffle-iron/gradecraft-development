@@ -1,0 +1,4 @@
+- if presenter.group_for(assignment).present?
+  %li= link_to glyph(:users) + "See #{term_for :group}", group_path(presenter.group_for(assignment)), class: "button"
+- else
+  %li= link_to glyph(:users) + "Create a #{term_for :group}", new_group_path, class: "button"

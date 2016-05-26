@@ -1,0 +1,10 @@
+- if assignment.is_individual?
+  - if presenter.submission_for(assignment).present?
+    %li= link_to glyph("file-o") + "See Submission", assignment_path(assignment, anchor: "tab3"), class: "button"
+  - elsif assignment.open?
+    %li= link_to glyph(:upload) + "Submit", new_assignment_submission_path(assignment, student_id: presenter.student.id), class: "button"
+- elsif assignment.has_groups? && presenter.group_for(assignment)
+  - if presenter.group_for(assignment).submission_for_assignment(assignment)
+    %li= link_to glyph("file-o") + "See Submission", assignment_path(assignment, anchor: "tab3"), class: "button"
+  - elsif presenter.group_for(assignment).approved? && assignment.open?
+    %li= link_to glyph(:upload) + "Submit", new_assignment_submission_path(assignment, group_id: presenter.group_for(assignment)), class: "button"

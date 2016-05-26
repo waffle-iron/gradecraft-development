@@ -1,0 +1,41 @@
+%table.dynatable
+  %thead
+    %tr
+      - if presenter.badge.is_unlockable?
+        %th
+      %th First Name
+      %th Last Name
+      %th{ :width => 200} Feedback
+      - if presenter.badge.can_earn_multiple_times
+        %th Count
+      - if presenter.badge.is_unlockable?
+        %th{ :width => 70}
+      %th{ :width => 230}
+  %tbody
+    - presenter.students.each do |student|
+      %tr
+        - if presenter.badge.is_unlockable?
+          %td
+            - if presenter.badge.is_unlocked_for_student?(student)
+              %i.fa.fa-unlock-alt
+            - else
+              %i.fa.fa-lock
+        %td= link_to student.first_name, student_path(student)
+        %td= link_to student.last_name, student_path(student)
+        %td{ :width => 80}
+          - presenter.badge.earned_badges.where(student_id: student.id).each do |badge|
+            %div{ :width => 80}= raw badge.feedback
+        - if presenter.badge.can_earn_multiple_times
+          %td= presenter.badge.earned_badge_count_for_student(student)
+        - if presenter.badge.is_unlockable?
+          %td
+            - if ! presenter.badge.is_unlocked_for_student?(student)
+              = link_to glyph(:lock) + "Unlock", manually_unlock_unlock_state_path(student_id: student.id, badge_id: presenter.badge.id), :method => :post, class: "button"
+        %td
+          .right
+            - presenter.badge.earned_badges.where(student_id: student.id).each do |badge|
+              %ul.button-bar
+                %li= link_to glyph(:star) + "Awarded #{badge.created_at.strftime("%b %d")}", badge_earned_badge_path(presenter.badge, badge.id), class: "button"
+                %li= link_to glyph(:edit) + "Edit", edit_badge_earned_badge_path(presenter.badge, badge), class: "button"
+                %li= link_to glyph(:trash) + "Delete", badge_earned_badge_path(presenter.badge, badge), class: "button", :method => :delete, data: { confirm: "Are you sure you want to delete this award?" }
+              .clear

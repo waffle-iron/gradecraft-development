@@ -1,0 +1,6 @@
+.row.badge-row
+  - level.level_badges.each_with_index do |level_badge, index|
+    - if BadgeProctor.new(level_badge.badge).viewable?(current_user, level: level) && index < 2
+      .level-badge-image
+        %img{:src => level_badge.badge.try(:icon), class: "level_badge" }
+    .clear

@@ -22,6 +22,10 @@ class NullStudent
     false
   end
 
+  def is_staff?(course)
+    false
+  end
+
   def team_for_course(*)
     NullTeam.new
   end
@@ -71,7 +75,17 @@ class NullPredictedEarnedChallenge
     0
   end
 
-  def points_earned
+  def predicted_points
+    0
+  end
+end
+
+class NullPredictedEarnedGrade
+  def id
+    0
+  end
+
+  def predicted_points
     0
   end
 end

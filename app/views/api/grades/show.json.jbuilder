@@ -15,5 +15,6 @@ end
 
 json.meta do
   json.grade_status_options @grade_status_options
+  json.threshold_points     @grade.assignment.threshold_points
 end
 

@@ -18,7 +18,7 @@ class AssignmentTypeExporter
     end
   end
 
-  private 
+  private
 
   def baseline_headers
     ["First Name", "Last Name", "Email", "Username", "Team"]
@@ -47,5 +47,4 @@ class AssignmentTypeExporter
       [ assignment_type.visible_score_for_student(student) ]
     end.flatten
   end
-
 end

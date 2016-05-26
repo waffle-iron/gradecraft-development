@@ -47,7 +47,6 @@ describe Rubric do
 
     it "returns true if criteria are present" do
       criterion = create(:criterion, rubric: rubric)
-
       expect(rubric.designed?).to eq(true)
     end
 
@@ -55,5 +54,4 @@ describe Rubric do
       expect(rubric.designed?).to eq(false)
     end
   end
-
 end

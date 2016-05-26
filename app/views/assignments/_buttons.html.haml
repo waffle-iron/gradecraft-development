@@ -10,36 +10,39 @@
       - if presenter.assignment.has_groups?
         %li= link_to glyph(:users) + "Create #{term_for :group}", new_group_path
       - if presenter.for_team?
-        %li= link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(presenter.assignment, team: presenter.team)
+        %li= link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(presenter.assignment, team: presenter.team)
       - else
-        %li= link_to glyph(:check) + "Quick Grade", mass_grade_assignment_path(presenter.assignment)
+        %li= link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(presenter.assignment)
 
       - if presenter.team
         %li= link_to glyph("file-zip-o") + "Download Team Submissions", submissions_exports_path(assignment_id: presenter.assignment.id, team_id: presenter.team.id), method: :post
       - else
-        %li= link_to glyph("file-zip-o") + "Download All Submissions", submissions_exports_path(assignment_id: presenter.assignment.id), method: :post
+        %li.hide-for-small= link_to glyph("file-zip-o") + "Download All Submissions", submissions_exports_path(assignment_id: presenter.assignment.id), method: :post
 
-      %li
-        %a{:href => import_grades_assignment_path(presenter.assignment) }
+      %li.hide-for-small
+        %a{:href => import_assignment_grades_path(presenter.assignment) }
           = glyph(:upload)
           Import Grades
-      %li
-        %a{:href => export_grades_assignment_path(presenter.assignment, format: "csv") }
+      %li.hide-for-small
+        %a{href: export_assignment_grades_path(presenter.assignment, format: :csv) }
           = glyph(:download)
           Download Grades
-      %li
+      %li.hide-for-small
         %a{:href => design_assignment_rubric_path(presenter.assignment) }
           = glyph(:sliders)
-          - if presenter.rubric_designed?
+          - if presenter.grade_with_rubric?
             Edit Rubric
           - else
             Create Rubric
-      %li
 
-      - if presenter.rubric_designed?
+      - if presenter.grade_with_rubric?
+        - if presenter.grades.present?
+          %li
+            %a{href: export_earned_levels_assignment_grades_path(presenter.assignment, format: :csv) }
+              Download Rubric Grades
         - if presenter.has_reviewable_grades?
           %li
-            %a{:href => criterion_grades_review_assignment_path(presenter.assignment) }
+            %a{href: assignment_grades_path(presenter.assignment) }
               Review Grades
         %li.on(ng-cloak ng-show="useRubric")
           %a(ng-click="rubricsOff()")

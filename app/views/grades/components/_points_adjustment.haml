@@ -1,0 +1,6 @@
+%div.grade-points-adjustment
+  %p
+    %span Points Adjustment:
+    %span= grade.adjustment_points
+  - if grade.adjustment_points_feedback.present?
+    %p= raw grade.adjustment_points_feedback

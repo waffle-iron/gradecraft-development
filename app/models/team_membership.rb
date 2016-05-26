@@ -1,4 +1,4 @@
-# @mz todo: add course_id attribute to team_memberships
+# @mz TODO: add course_id attribute to team_memberships
 class TeamMembership < ActiveRecord::Base
   attr_accessible :team, :team_id, :student, :student_id
 

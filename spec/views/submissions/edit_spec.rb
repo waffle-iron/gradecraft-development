@@ -3,7 +3,7 @@ include CourseTerms
 
 describe "submissions/edit" do
 
-  let(:presenter) { EditSubmissionPresenter.new({ course: @course, id: @submission.id, assignment_id: @assignment.id,
+  let(:presenter) { Submissions::EditPresenter.new({ course: @course, id: @submission.id, assignment_id: @assignment.id,
                                                   view_context: view_context })
                                                 }
   let(:view_context) { double(:view_context, current_user: @student) }
@@ -26,12 +26,5 @@ describe "submissions/edit" do
     assert_select "h3", text: "Editing My Submission for #{@assignment.name}", count: 1
   end
 
-  it "renders the breadcrumbs" do
-    render
-    assert_select ".content-nav", count: 1
-    assert_select ".breadcrumbs" do
-      assert_select "a", count: 4
-    end
-  end
 end
 

@@ -169,22 +169,6 @@ describe AssignmentTypesController do
         expect{ get :destroy, id: @assignment_type }.to change(AssignmentType,:count).by(-1)
       end
     end
-
-    describe "GET student predictor data" do
-      it "returns assignment types as json with current student if id present" do
-        get :predictor_data, format: :json, id: @student.id
-        expect(assigns(:student)).to eq(@student)
-        expect(assigns(:assignment_types)).to eq([@assignment_type])
-        expect(response).to render_template(:predictor_data)
-      end
-
-      it "returns assignment types with null student if no id present" do
-        get :predictor_data, format: :json
-        expect(assigns(:student).class).to eq(NullStudent)
-        expect(assigns(:assignment_types)).to eq([@assignment_type])
-        expect(response).to render_template(:predictor_data)
-      end
-    end
   end
 
   context "as student" do
@@ -193,21 +177,6 @@ describe AssignmentTypesController do
       @student.courses << @course
     end
     before(:each) { login_user(@student) }
-
-    describe "GET student predictor data" do
-      before do
-        @assignment_type = create(:assignment_type, course: @course)
-        assignment = create(:assignment, assignment_type: @assignment_type)
-        @course.assignments << assignment
-      end
-
-      it "returns assignment types as json for the current course" do
-        get :predictor_data, format: :json
-        expect(assigns(:student)).to eq(@student)
-        expect(assigns(:assignment_types)).to eq([@assignment_type])
-        expect(response).to render_template(:predictor_data)
-      end
-    end
 
     describe "protected routes" do
       [

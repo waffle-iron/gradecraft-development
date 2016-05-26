@@ -1,0 +1,14 @@
+- if GradeProctor.new(presenter.grade_for(assignment)).viewable?
+  %li= link_to glyph(:eye) + "See Grade", grade_path(presenter.grade_for(assignment), anchor: "tab4"), class: "button"
+  / Grade Management /
+  - if current_user_is_staff?
+    - if assignment.is_individual?
+      %li= link_to glyph(:edit) + "Edit Grade", edit_assignment_grade_path(assignment.id, student_id: presenter.student.id), class: "button"
+    - elsif assignment.has_groups?
+      %li= link_to glyph(:edit) + "Edit Grade", grade_assignment_group_path(assignment, presenter.group_for(assignment)), class: "button"
+- else
+  - if current_user_is_staff?
+    - if assignment.is_individual?
+      %li= link_to glyph(:check) + "Grade", edit_assignment_grade_path(assignment_id: assignment.id, student_id: presenter.student.id), class: "button"
+    - elsif assignment.has_groups? && presenter.group_for(assignment).present?
+      %li= link_to glyph(:check) + "Grade", grade_assignment_group_path(assignment, presenter.group_for(assignment)), class: "button"
