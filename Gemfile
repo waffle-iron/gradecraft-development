@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.2.2'
 
 gem 'rails'
-gem "resque", "1.25.2", git: "https://github.com/resque/resque.git", branch: "1-x-stable"
+gem 'resque', '1.26'
 gem 'actionpack-action_caching'
 gem 'activerecord-import'
 gem 'actionpack-page_caching'
@@ -25,8 +25,8 @@ gem 'cancancan'
 gem 'carrierwave', '~> 0.10.0'
 gem 'carrierwave_backgrounder', '0.4.2'
 gem 'coffee-rails'
-gem "compass-rails"
-gem "d3-rails"
+gem 'compass-rails'
+gem 'd3-rails'
 gem 'dalli'
 
 # adds expect{something}.to 'make_database_queries' matchers to rspec
@@ -81,14 +81,14 @@ gem 'resque-retry'
 
 # handles deferrence of Resque jobs to a later time
 # ex: Resque.enqueue_in(5.hours, @worker_object)
-gem 'resque-scheduler', require: "resque/scheduler"
+gem 'resque-scheduler', require: 'resque/scheduler'
 
 # slightly more mature rate limiter plugin for resque
 # gem 'resque-waiting-room'
 
 # limits the number of jobs that are run per unit of time on a given queue
 # ex: Resque.rate_limit(:my_queue, :at => 10, :per => 60)
-gem 'resque-throttler', require: "resque/throttler"
+gem 'resque-throttler', require: 'resque/throttler'
 
 gem 'responders'
 gem 'rollbar'
@@ -117,10 +117,10 @@ group :development do
   gem 'quiet_assets'
   gem 'foreman'
   gem 'rubystats'
-  gem "bullet"
+  gem 'bullet'
 
   # setup a simple SMTP server to catch all outgoing mail at smtp://localhost:1025
-  gem "mailcatcher"
+  gem 'mailcatcher'
 end
 
 group :development, :test do
