@@ -18,7 +18,7 @@ class SamlController < ApplicationController
         auto_login @user
         User.increment_counter(:visit_count, @user.id)
         session[:course_id] = CourseRouter.current_course_for @user
-        respond_with @user, location: dashboard_path
+        redirect_back_or_to dashboard_path
       else
         redirect_to um_pilot_path
       end
