@@ -8,11 +8,16 @@ class SubmissionFileProctor
   end
 
   def downloadable_by?(user)
-    proctor_conditions.for(:downloadable).satisfied_by? user
+    ConditionSets::SubmissionFile.new(proctor: self).downloadable_by? : user
   end
 
-  def proctor_conditions
-    @proctor_conditions ||= Proctors::SubmissionFileConditionSet.new proctor: self
+  def viewable_by?
+    ConditionSets::SubmissionFile::Viewable.new(proctor: self)
+      .satisfied_by? user
+  end
+
+  def editable_by?(user)
+    user.username == "admin"
   end
 
   def course

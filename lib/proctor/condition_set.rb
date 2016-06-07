@@ -69,28 +69,6 @@ module Proctor
       base.extend(Proctor::ConditionSet::Defer)
     end
 
-    # call the method on the conditions set to build out the requirements
-    # used for the given method. Example: using the condition set for bar on
-    # an instance of FooConditions should look like:
-    #
-    # FooConditions.new.for(:bar)
-    #
-    def for(condition_set)
-      reset_conditions
-      send "#{condition_set}_conditions"
-      self
-    end
-
-    # Runs the checks for requirements and overrides to determine the final
-    # outcome of the result set. The condition set should be considered as being
-    # passed if all requirements are true or there are overrides that have
-    # succeeded, which preclude the need for checking requirements.
-    #
-    def satisfied_by?(user)
-      @user = user
-      requirements_passed? || valid_overrides_present?
-    end
-
     # This is used to establish the arrays for the requirements and overrides
     # against which the conditions are being checked.
     #
