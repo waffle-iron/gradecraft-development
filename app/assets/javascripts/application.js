@@ -69,6 +69,7 @@
 //= require plugins/url.min.js
 //= require plugins/video.min.js
 
+//= require backpack_connect
 //= require gradecraft
 //= require preload_store
 //= require users

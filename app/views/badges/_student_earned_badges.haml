@@ -4,3 +4,9 @@
       = "Awarded #{ badge.created_at.strftime("%b %d") }"
     .earned-badge-feedback
       = "Feedback #{ raw badge.feedback }"
+
+- unless presenter.earned_badges.empty?
+  %p
+    %button{ :type => "button", class: "button", id: "export-badges" }
+      %i.fa.fa-upload
+      Export Badge to Mozilla

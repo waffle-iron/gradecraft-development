@@ -301,6 +301,10 @@ GradeCraft::Application.routes.draw do
     resources :assignment_types, only: :index do
       resources :assignment_type_weights, only: :create
     end
+    resource :backpack_connect do
+      get "connect", to: "backpack_connect#connect"
+      post "issue"
+    end
     resources :badges, only: :index
     resources :earned_badges, only: [:create, :destroy]
     resources :grades, only: :update do
