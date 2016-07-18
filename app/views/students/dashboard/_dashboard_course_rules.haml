@@ -1,9 +1,25 @@
 .card-header
   %h3 Course Rules
 .card-body
+- if presenter.has_course_terminology?
   %p Course terminology:
   - if presenter.term_for_assignments?
     %p= "Assignments: #{term_for :assignments}"
-  %p= "Badges: #{term_for :badges}"
-  %p= "Challenges: #{term_for :challenges}"
-  %p= "Teams: #{term_for :teams}"
+
+    - if presenter.term_for_weights?
+      %p= "Assignment Weights: #{term_for :weights}"
+
+  - if presenter.term_for_badges?
+    %p= "Badges: #{term_for :badges}"
+
+  - if presenter.term_for_challenges?
+    %p= "Challenges: #{term_for :challenges}"
+
+  - if presenter.term_for_teams?
+    %p= "Teams: #{term_for :teams}"
+
+  - if presenter.term_for_team_leaders?
+    %p= "Team Leaders: #{term_for :team_leaders}"
+
+    - if presenter.term_for_groups?
+      %p= "Groups: #{term_for :groups}"
