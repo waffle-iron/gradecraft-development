@@ -1,7 +1,11 @@
 .col-30
   .panel.todo.dashboard-module= render partial: "students/dashboard/dashboard_to_do_list", locals: { presenter: presenter }
 
-  .panel.dashboard-module.course-rules-module= render partial: "students/dashboard/dashboard_course_rules", locals: { presenter: Students::DashboardCourseRulesPresenter.new(course: current_course) }
+  - if current_course.student_weighted?
+    .panel.dashboard-module= render partial: "students/dashboard/dashboard_assignment_weights"
+
+  - if current_user_is_staff?
+    .panel= render partial: "students/dashboard/dashboard_avatar"
 
 .col-40
   - if @events.present?
@@ -9,11 +13,8 @@
 
   .panel.dashboard-module= render partial: "students/dashboard/dashboard_weekly_stats", locals:  { presenter: Students::DashboardWeeklyStatsPresenter.new(course: current_course, student: current_student) }
 
-  - if current_course.student_weighted?
-    .panel.dashboard-module= render partial: "students/dashboard/dashboard_assignment_weights"
+  .panel.dashboard-module.course-rules-module= render partial: "students/dashboard/dashboard_course_rules", locals: { presenter: Students::DashboardCourseRulesPresenter.new(course: current_course) }
 
-  - if current_user_is_staff?
-    .panel= render partial: "students/dashboard/dashboard_avatar"
 
 .col-30
   .panel.dashboard-module.earned_points= render partial: "students/dashboard/dashboard_earned_points_and_level"
