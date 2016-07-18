@@ -36,6 +36,6 @@ class Students::DashboardCourseRulesPresenter < Showtime::Presenter
   end
 
   def has_course_terminology?
-    [term_for_assignments?, term_for_badges?, term_for_teams?, term_for_team_leaders?, term_for_challenges?, term_for_groups?, term_for_weights?].any? { |attr| course[attr].present? }
+    [term_for_assignments?, term_for_badges?, term_for_teams?, term_for_team_leaders?, term_for_challenges?, term_for_groups?, term_for_weights?].any?
   end
 end
