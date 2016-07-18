@@ -2,24 +2,48 @@
   %h3 Course Rules
 .card-body
   - if presenter.has_course_terminology?
-    %p Course terminology:
-    - if presenter.term_for_assignments?
-      %p= "Assignments: #{term_for :assignments}"
+    .module-section
+      %h4 Course terminology:
+      %ul.course-terminology
+        - if presenter.term_for_assignments?
+          %li= "Assignments: #{term_for :assignments}"
 
-    - if presenter.term_for_weights?
-      %p= "Assignment Weights: #{term_for :weights}"
+        - if presenter.term_for_weights?
+          %li= "Assignment Weights: #{term_for :weights}"
 
-    - if presenter.term_for_badges?
-      %p= "Badges: #{term_for :badges}"
+        - if presenter.term_for_badges?
+          %li= "Badges: #{term_for :badges}"
 
-    - if presenter.term_for_challenges?
-      %p= "Challenges: #{term_for :challenges}"
+        - if presenter.term_for_challenges?
+          %li= "Challenges: #{term_for :challenges}"
 
-    - if presenter.term_for_teams?
-      %p= "Teams: #{term_for :teams}"
+        - if presenter.term_for_teams?
+          %li= "Teams: #{term_for :teams}"
 
-    - if presenter.term_for_team_leaders?
-      %p= "Team Leaders: #{term_for :team_leaders}"
+        - if presenter.term_for_team_leaders?
+          %li= "Team Leaders: #{term_for :team_leaders}"
 
-    - if presenter.term_for_groups?
-      %p= "Groups: #{term_for :groups}"
+        - if presenter.term_for_groups?
+          %li= "Groups: #{term_for :groups}"
+
+  %h4 A bit about GradeCraft:
+  %p GradeCraft is designed to support a gameful style of grading that allows you to build your grade up from 0 by earning points. In this course you will find the following features:
+
+  %h4= link_to 'Grade Predictor', predictor_path
+  %p The grade predictor allows you to plan what assignments you will complete in order to achieve the grade you would like. With often many more assignments available to choose from, planning becomes essential to progress. 
+
+  - if current_course.has_badges?
+    %h4= link_to "#{term_for :badges}", badges_path
+    %p We will award badges in this course to recognize content mastery, exceptional effort and other fun things. Some of these are already announced, while others may be announced throughout the course.
+
+  - if current_course.has_team_challenges?
+    %h4= link_to "#{term_for :challenges}", challenges_path
+    %p= "#{term_for :challenges} are assignments that are completed by whole #{term_for :teams} or sections of students. This may be anything from a scavenger hunt to a project"
+
+  - if current_course.in_team_leaderboard?
+    %h4= link_to 'Leaderboards', leaderboard_path
+    %p Love some competition? Add a pseudonym to join the leaderboards and compete with your teammates for who will be the first to level up and win the class.
+
+  - if current_course.student_weighted?
+    %h4= link_to 'Assignment Multipliers', assignment_type_weights_path
+    %p In this course, you can assign different weights to different assignment types. Be sure to read the rules about how many multipliers you can place on a single type!

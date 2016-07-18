@@ -1,7 +1,7 @@
 .col-30
   .panel.todo.dashboard-module= render partial: "students/dashboard/dashboard_to_do_list", locals: { presenter: presenter }
 
-  .panel.dashboard-module= render partial: "students/dashboard/dashboard_course_rules", locals: { presenter: Students::DashboardCourseRulesPresenter.new(course: current_course) }
+  .panel.dashboard-module.course-rules-module= render partial: "students/dashboard/dashboard_course_rules", locals: { presenter: Students::DashboardCourseRulesPresenter.new(course: current_course) }
 
 .col-40
   - if @events.present?
