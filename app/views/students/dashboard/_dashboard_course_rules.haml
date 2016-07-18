@@ -1,0 +1,9 @@
+.card-header
+  %h3 Course Rules
+.card-body
+  %p Course terminology:
+  - if presenter.term_for_assignments?
+    %p= "Assignments: #{term_for :assignments}"
+  %p= "Badges: #{term_for :badges}"
+  %p= "Challenges: #{term_for :challenges}"
+  %p= "Teams: #{term_for :teams}"

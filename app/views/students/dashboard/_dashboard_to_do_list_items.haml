@@ -19,7 +19,7 @@
           - if assignment.name_visible_for_student?(current_student)
             %span.bold.assignment-name= link_to assignment.name, grade_path(Grade.find_or_create(assignment.id, current_student.id))
           - else
-            %span.bold.assignment-name= "Locked #{(term_for :assignment ).titleize}"
+            %span.bold.assignment-name= "Locked #{(term_for :assignment).titleize}"
             %span.italic= "You must unlock this #{(term_for :assignment).downcase} to learn more about it"
           .small.uppercase= "#{assignment.assignment_type.name}"
         - if assignment.due_at?.present?
@@ -28,10 +28,10 @@
     %li.dashboard-message
       - if list_class == "course-planner-list"
         - if presenter.due_dates?
-          You don't have any #{(term_for :assignment).downcase.pluralize} due in the next week!
+          You don't have any #{(term_for :assignments).downcase} due in the next week!
         - else
-          This class has flexible #{(term_for :assignment).downcase} due dates. Check your course rules to learn when to turn in certain #{(term_for :assignment).downcase.pluralize}.
+          This class has flexible #{(term_for :assignment).downcase} due dates. Check your course rules to learn when to turn in certain #{(term_for :assignments).downcase}.
       - elsif list_class == "my-planner-list"
-        You have not predicted any #{(term_for :assignment).downcase.pluralize}! Check out the 
+        You have not predicted any #{(term_for :assignments).downcase}! Check out the 
         = link_to "grade predictor", predictor_path
-        to add #{(term_for :assignment).downcase.pluralize} to this planner.
+        to add #{(term_for :assignments).downcase} to this planner.
