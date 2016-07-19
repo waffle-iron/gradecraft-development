@@ -1,4 +1,4 @@
-class BackpackConnectAuthenticator
+class BackpackAuthenticator
   def initialize(error:, expires:, api_root:, access_token:, refresh_token:)
     method(__method__).parameters.each do |param_type, keyword|
       send "#{keyword}=", binding.local_variable_get(keyword)

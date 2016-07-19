@@ -138,6 +138,8 @@ GradeCraft::Application.routes.draw do
 
   #6. Badges
   resources :badges do
+    get :connect_backpack, on: :member
+    get :export, on: :member
     post :sort, on: :collection
     resources :earned_badges do
       get :mass_edit, on: :collection
@@ -300,10 +302,6 @@ GradeCraft::Application.routes.draw do
 
     resources :assignment_types, only: :index do
       resources :assignment_type_weights, only: :create
-    end
-    resource :backpack_connect do
-      get "connect", to: "backpack_connect#connect"
-      post "issue"
     end
     resources :badges, only: :index
     resources :earned_badges, only: [:create, :destroy]
