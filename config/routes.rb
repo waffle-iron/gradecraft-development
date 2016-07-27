@@ -318,6 +318,18 @@ GradeCraft::Application.routes.draw do
     resources :predicted_earned_challenges, only: [:index, :update]
     resources :predicted_earned_grades, only: [:index, :update]
 
+    namespace :openbadges, defaults: { format: :json } do
+      resources :badge_class, only: [] do
+        get :index, on: :member
+      end
+      resources :badge_verification, only: [] do
+        get "/:user_id", to: :index, on: :member
+      end
+      resources :badge_assertion, only: [] do
+        get :index, on: :member
+      end
+    end
+
     # Instructor View of Student's Predictor
     resources :students, only: [], module: :students do
       get "assignment_types", to: "assignment_types#index"

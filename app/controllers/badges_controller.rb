@@ -67,11 +67,7 @@ class BadgesController < ApplicationController
   end
 
   def connect_backpack
-    # canvas = BackpackConnect::API.new
-    # authenticator ||= canvas.connect \
-    #   params[:error], params[:expires], params[:api_root],
-    #   params[:access_token], params[:refresh_token]
-    authenticator = BackpackAuthenticator.new(
+    authenticator = BackpackConnect::BackpackAuthenticator.new(
       error: params[:error],
       expires: params[:expires],
       api_root: params[:api_root],
