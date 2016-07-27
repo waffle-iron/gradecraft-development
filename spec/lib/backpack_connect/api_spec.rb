@@ -5,7 +5,7 @@ require "./lib/backpack_connect"
 
 describe BackpackConnect::API, type: :disable_external_api do
   let(:badge) { build :badge }
-  let(:authenticator) { BackpackConnect::Authenticator.new(
+  let(:authenticator) { Authenticator.new(
     error: nil,
     expires: 3600,
     api_root: "https://backpack.openbadges.org/api",

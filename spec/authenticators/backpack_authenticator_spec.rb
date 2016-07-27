@@ -1,6 +1,6 @@
-require "./lib/backpack_connect"
+require_relative "../../app/authenticators/backpack_authenticator"
 
-describe BackpackConnect::Authenticator do
+describe BackpackAuthenticator do
   subject { described_class.new authenticator_options }
 
   let(:authenticator_options) do
