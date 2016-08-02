@@ -1,22 +1,16 @@
 # return badge assertion as json for the current user's earned badge
 class API::Openbadges::BadgeAssertionController < ApplicationController
   def index
-    puts "current user is: #{current_user.id} and current course is: #{current_course.id}"
-    # badge = EarnedBadge.where(student_id: current_user.id, badge_id: params[:id],
-    #   course_id: current_course.id
-    # ).first
-
-    # this is a problem, would potentially need to make multiple assertions for a particular badge
-    # if it has been earned more than once
+    #todo issue multiple badges at a time
     badge = current_user.earned_badge_for_badge(params[:id]).first
-    puts "badge is: #{badge.inspect}"
     if (!badge.present?)
       render json: {
         message: "Current user has not earned this badge"
       }, status: 400
     else
+      verification = { type: "hosted", url: "/todo/verification_url" }
       render json: BackpackConnect::Assertions::BadgeAssertion.new(badge,
-        current_user, api_openbadges_badge_class_url, { type: "hosted", url: "/someurl" }
+        current_user, badges_url(badge.badge_id), verification
       ), status: 200
     end
   end

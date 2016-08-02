@@ -10,19 +10,15 @@ module BackpackConnect
       def initialize(badge, user, url, verification)
         @uid = badge.id
         @recipient = IdentityObject.new({
-          identity: user.id,
-          type: "email",
+          identity: user.username,
+          type: "email",  # currently the only supported value?
           hashed: false,
           salt: nil
         })
-        # @badge = api_badge_class_assertion_path
         @badge = url
-        @verify = VerificationObject.new({
-          type: verification[:type],
-          url: "/api/badge_class_assertion/1"
-        })
+        @verify = VerificationObject.new(verification)
         @issuedOn = DateTime.now
-        @image = badge.icon
+        # @image = badge.icon # optional
       end
     end
   end

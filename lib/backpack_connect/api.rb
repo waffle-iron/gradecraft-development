@@ -1,4 +1,6 @@
 require "httparty"
+require "base64"
+require "byebug"
 
 module BackpackConnect
   class API
@@ -11,20 +13,14 @@ module BackpackConnect
       @authenticator = authenticator
     end
 
-    def issue(badge, params={})
+    def issue(assertion)
       if (@authenticator.nil?)
         raise SecurityError, "User has not granted permissions to export badges"
-        # todo some sort of custom error for this lib
-      else
-        assertion = Assertions::BadgeAssertion.new({
-          uid: "123abc",
-          # badge: api_openbadges_badge_class_url(badge.id)
-          badge: "https://badge.com"
-        })
-        puts "assertion = #{assertion}"
-        url = "#{@authenticator.api_root}/issue"
-        self.class.get(url, query: params)
       end
+      response = HTTParty.post("#{@authenticator.api_root}/issue", {
+        body: { badge: assertion }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      })
     end
   end
 end
