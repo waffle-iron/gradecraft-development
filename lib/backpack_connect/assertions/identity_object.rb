@@ -6,10 +6,9 @@ module BackpackConnect
     attr_accessor :identity, :type, :hashed, :salt
 
     def initialize(options={})
-      @identity = options[:identity]  #probably an email?
-      @type = options[:type] #will need to double-check what this means
-      @hashed = options[:hashed]
-      @salt = options[:salt]
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value) unless value.nil?
+      end
     end
   end
 end
