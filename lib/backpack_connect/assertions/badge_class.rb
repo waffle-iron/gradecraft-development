@@ -6,10 +6,11 @@ module BackpackConnect
     attr_accessor :name, :description, :image, :criteria, :issuer, :alignment,
       :tags
 
-    def initialize(badge)
-      @uid = badge.name
+    def initialize(badge, issuer, host)
+      @name = badge.name
       @description = badge.description
-      @image = badge.icon
+      @issuer = issuer  #URL of the organization issuing the badge - endpoint should be an IssuerOrganization
+      @image = "#{host}/#{badge.icon}"
     end
   end
 end
