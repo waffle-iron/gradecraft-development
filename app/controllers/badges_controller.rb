@@ -1,10 +1,8 @@
-require "backpack_connect"
-
 class BadgesController < ApplicationController
   include SortsPosition
 
-  before_filter :ensure_staff?, except: [:index, :show, :connect_backpack, :export]
-  before_action :find_badge, only: [:show, :edit, :update, :destroy, :connect_backpack, :export]
+  before_filter :ensure_staff?, except: [:index, :show, :export]
+  before_action :find_badge, only: [:show, :edit, :update, :destroy, :export]
 
   # GET /badges
   def index
@@ -64,31 +62,6 @@ class BadgesController < ApplicationController
     @badge.destroy
     redirect_to badges_path,
       notice: "#{@name} #{term_for :badge} successfully deleted"
-  end
-
-  def connect_backpack
-    authenticator = BackpackAuthenticator.new(
-      error: params[:error],
-      expires: params[:expires],
-      api_root: params[:api_root],
-      access_token: params[:access_token],
-      refresh_token: params[:refresh_token]
-    )
-    redirect_to badges_path,
-      notice: "Unable to establish connection to backpack" and return unless authenticator.error.nil?
-    session[:backpack_authenticator] = authenticator
-    redirect_to action: "export", id: @badge.id
-  end
-
-  def export
-    authenticator = session[:backpack_authenticator]
-    if (authenticator.nil?)
-      redirect_to badges_path,
-        notice: "User has not granted permissions to export badges"
-    else
-      redirect_to badges_path,
-        notice: "#{@name} #{term_for :badge} successfully exported"
-    end
   end
 
   private
