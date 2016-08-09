@@ -138,8 +138,6 @@ GradeCraft::Application.routes.draw do
 
   #6. Badges
   resources :badges do
-    get :connect_backpack, on: :member
-    get :export, on: :member
     post :sort, on: :collection
     resources :earned_badges do
       get :mass_edit, on: :collection
@@ -328,6 +326,11 @@ GradeCraft::Application.routes.draw do
       resources :badge_assertion, only: [] do
         get :index, on: :member
       end
+      resources :backpack, only: [] do
+        get :connect, on: :collection
+        get :issue, on: :member
+      end
+      resources :issuer_organization, only: :index
     end
 
     # Instructor View of Student's Predictor
