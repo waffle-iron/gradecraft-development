@@ -23,20 +23,20 @@ describe BackpackConnect::API, type: :disable_external_api do
     context "without authorization" do
       it "fails if the user has not yet granted permission to the backpack" do
         subject = described_class.new(nil)
-        expect { subject.issue(badge) }.to \
-          raise_error SecurityError, "User has not granted permissions to export badges"
+        expect { subject.issue badge }.to \
+          raise_error Exception, "User has not granted permissions to export badges"
       end
     end
 
     context "with authorization" do
       let(:subject) { described_class.new(authenticator) }
-      let(:assertion) { BackpackConnect::Assertions::BadgeClass.new(badge) }
+      let(:assertion) { BackpackConnect::Assertions::BadgeClass.new(badge, "www.umich.edu", "www.umich.edu") }
 
       it "requests from the specified path" do
         stub = stub_request(:post, "https://backpack.openbadges.org/api/issue").
-          with(:body => { badge: assertion }.to_json, :headers => { 'Content-Type' => 'application/json' }).
+          with(:body => { badge: assertion }.to_json, :headers => { "Content-Type" => "application/json" }).
           to_return(:status => 200, :body => "", :headers => {})
-        subject.issue(assertion)
+        subject.issue assertion
         expect(stub).to have_been_requested
       end
     end

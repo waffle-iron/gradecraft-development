@@ -1,6 +1,5 @@
 require "httparty"
 require "base64"
-require "byebug"
 
 module BackpackConnect
   class API
@@ -15,11 +14,14 @@ module BackpackConnect
 
     def issue(assertion)
       if (@authenticator.nil?)
-        raise SecurityError, "User has not granted permissions to export badges"
+        raise Exception, "User has not granted permissions to export badges"
       end
-      response = HTTParty.post("#{@authenticator.api_root}/issue", {
-        body: { badge: assertion }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
+      querystring = { badge: assertion }.to_json
+      HTTParty.post("#{@authenticator.api_root}/issue", {
+        :body => querystring,
+        :headers => { "Content-Type" => "application/json",
+          "Authorization" => "Bearer #{ Base64.encode64(@authenticator.access_token) }"
+        }
       })
     end
   end
