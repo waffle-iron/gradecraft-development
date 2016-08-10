@@ -2,16 +2,18 @@ require "api_spec_helper"
 require "active_record_spec_helper"
 require "./lib/backpack_connect"
 require "./app/authenticators/backpack_authenticator"
-#this should probably be a part of the module but it doesn't seem to work
+#todo this should probably be a part of the module
 
 describe BackpackConnect::API, type: :disable_external_api do
   let(:badge) { build :badge }
-  let(:authenticator) { BackpackAuthenticator.new(
+  let(:user) { create :user }
+  let(:assertion) { BackpackConnect::Assertions::BadgeAssertion.new(badge, user, "http://badge.com", {}) }
+  let(:authenticator) { BackpackAuthenticator.new({
     error: nil,
     expires: 3600,
     api_root: "https://backpack.openbadges.org/api",
     access_token: "password1",
-    refresh_token: "secretrefreshtoken" )}
+    refresh_token: "secretrefreshtoken" })}
 
   describe "#initialize" do
     it "sets the authenticator" do
@@ -21,20 +23,20 @@ describe BackpackConnect::API, type: :disable_external_api do
 
   describe "#issue the badge" do
     context "without authorization" do
-      it "fails if the user has not yet granted permission to the backpack" do
-        subject = described_class.new(nil)
-        expect { subject.issue badge }.to \
+      let(:subject) { described_class.new(nil) }
+
+      it "throws an exception if the user has not yet granted permission to the backpack" do
+        expect { subject.issue assertion }.to \
           raise_error Exception, "User has not granted permissions to export badges"
       end
     end
 
     context "with authorization" do
       let(:subject) { described_class.new(authenticator) }
-      let(:assertion) { BackpackConnect::Assertions::BadgeClass.new(badge, "www.umich.edu", "www.umich.edu") }
 
       it "requests from the specified path" do
         stub = stub_request(:post, "https://backpack.openbadges.org/api/issue").
-          with(:body => { badge: assertion }.to_json, :headers => { "Content-Type" => "application/json" }).
+          with(:body => assertion.to_json, :headers => { "Content-Type" => "application/json" }).
           to_return(:status => 200, :body => "", :headers => {})
         subject.issue assertion
         expect(stub).to have_been_requested

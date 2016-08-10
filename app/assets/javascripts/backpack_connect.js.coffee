@@ -10,5 +10,7 @@ $ ->
       error: (jqXHR, textStatus, errorThrown) ->
         if jqXHR.status == 401
           OpenBadges.connect callback: target.data('connect-url'), scope: ['issue']
+        else
+          alert('An error occurred. Reason: ' + jqXHR.responseText)
       success: (data, textStatus, jsXHR) ->
         alert('Success: ' + data)

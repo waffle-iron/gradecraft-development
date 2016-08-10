@@ -9,8 +9,9 @@ module BackpackConnect
     def initialize(badge, issuer, host)
       @name = badge.name
       @description = badge.description
-      @issuer = issuer  #URL of the organization issuing the badge - endpoint should be an IssuerOrganization
-      @image = "#{host}/#{badge.icon}"
+      @issuer = issuer  # URL of the organization issuing the badge - endpoint should be an IssuerOrganization
+      @image = "#{host}#{badge.icon}"
+      @criteria = "localhost:5000/badges/1" #todo this
     end
   end
 end

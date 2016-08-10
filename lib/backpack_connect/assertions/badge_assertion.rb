@@ -7,7 +7,7 @@ module BackpackConnect
       attr_accessor :uid, :recipient, :badge, :verify, :issuedOn, :image,
         :evidence, :expires
 
-      def initialize(badge, user, url, verification)
+      def initialize(badge, user, badge_class_url, verification_options)
         @uid = badge.id
         @recipient = IdentityObject.new({
           identity: user.username,
@@ -15,10 +15,9 @@ module BackpackConnect
           hashed: false,
           salt: nil
         })
-        @badge = url
-        @verify = VerificationObject.new(verification)
+        @badge = badge_class_url
+        @verify = VerificationObject.new(verification_options)
         @issuedOn = DateTime.now
-        # @image = badge.icon # optional
       end
     end
   end

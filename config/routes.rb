@@ -321,7 +321,7 @@ GradeCraft::Application.routes.draw do
         get :index, on: :member
       end
       resources :badge_verification, only: [] do
-        get "/:user_id", to: :index, on: :member
+        get "badge/:badge_id", to: :index, as: :user
       end
       resources :badge_assertion, only: [] do
         get :index, on: :member

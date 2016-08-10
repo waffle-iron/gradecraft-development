@@ -16,9 +16,8 @@ module BackpackConnect
       if (@authenticator.nil?)
         raise Exception, "User has not granted permissions to export badges"
       end
-      querystring = { badge: assertion }.to_json
       HTTParty.post("#{@authenticator.api_root}/issue", {
-        :body => querystring,
+        :body => assertion.to_json,
         :headers => { "Content-Type" => "application/json",
           "Authorization" => "Bearer #{ Base64.encode64(@authenticator.access_token) }"
         }

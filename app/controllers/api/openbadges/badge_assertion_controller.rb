@@ -2,15 +2,20 @@
 class API::Openbadges::BadgeAssertionController < ApplicationController
   def index
     #todo issue multiple badges at a time
-    badge = current_user.earned_badge_for_badge(params[:id]).first
-    if (!badge.present?)
+    earned_badge = current_user.earned_badge_for_id(params[:id])
+    if (!earned_badge.present?)
       render json: {
         message: "Current user has not earned this badge"
       }, status: 400
     else
-      verification = { type: "hosted", url: "/todo/verification_url" }
-      render json: BackpackConnect::Assertions::BadgeAssertion.new(badge,
-        current_user, badges_url(badge.badge_id), verification
+      #badge_verification_id, or user_id, cannot be reliant on current_user since this endpoint will be public
+      verification = {
+        type: "hosted",
+        url: api_openbadges_badge_verification_user_url(badge_verification_id: current_user.id,
+          badge_id: earned_badge.id) + ".json"
+      }
+      render json: BackpackConnect::Assertions::BadgeAssertion.new(earned_badge,
+        current_user, "#{api_openbadges_badge_class_url(earned_badge.badge_id)}.json", verification
       ), status: 200
     end
   end
