@@ -372,6 +372,10 @@ class User < ActiveRecord::Base
     earned_badges.where(course: course)
   end
 
+  def earned_badge_for_id(id)
+    earned_badges.find_by(id: id)
+  end
+
   def earned_badge_for_badge(badge)
     earned_badges.where(badge: badge)
   end
