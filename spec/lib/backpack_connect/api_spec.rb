@@ -1,14 +1,12 @@
 require "api_spec_helper"
 require "active_record_spec_helper"
 require "./lib/backpack_connect"
-require "./app/authenticators/backpack_authenticator"
-#todo this should probably be a part of the module
 
 describe BackpackConnect::API, type: :disable_external_api do
   let(:badge) { build :badge }
   let(:user) { create :user }
   let(:assertion) { BackpackConnect::Assertions::BadgeAssertion.new(badge, user, "http://badge.com", {}) }
-  let(:authenticator) { BackpackAuthenticator.new({
+  let(:authenticator) { BackpackConnect::Authenticator.new({
     error: nil,
     expires: 3600,
     api_root: "https://backpack.openbadges.org/api",

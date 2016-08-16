@@ -5,7 +5,7 @@ class API::Openbadges::BackpackController < ApplicationController
 
   # Backpack Connect callback for retrieving auth credentials
   def connect
-    @authenticator = BackpackAuthenticator.new params
+    @authenticator = BackpackConnect::Authenticator.new params
     if (@authenticator.error.nil?)
       session[:backpack_authenticator] = @authenticator
       #todo probably should be a regular controller action; user may need to retry the issue request
@@ -36,8 +36,8 @@ class API::Openbadges::BackpackController < ApplicationController
       current_user, "#{api_openbadges_badge_class_url(earned_badge.badge_id)}.json", verification
     )
     backpackIssuer = BackpackConnect::API.new(@authenticator)
-    issueResponse = backpackIssuer.issue assertion
-    check_response issueResponse
+    response = backpackIssuer.issue assertion
+    check_response response
   end
 
   private

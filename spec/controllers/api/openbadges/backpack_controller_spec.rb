@@ -5,7 +5,7 @@ describe API::Openbadges::BackpackController do
   let(:badge) { create(:badge) }
   let(:student) { build(:user) }
   let(:earned_badge) { create(:earned_badge, badge: badge, student: student) }
-  let(:authenticator) { BackpackAuthenticator.new({
+  let(:authenticator) { BackpackConnect::Authenticator.new({
     error: nil,
     expires: 3600,
     api_root: "https://backpack.openbadges.org/api",

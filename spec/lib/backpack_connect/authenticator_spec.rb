@@ -1,6 +1,6 @@
-require_relative "../../app/authenticators/backpack_authenticator"
+require "./lib/backpack_connect"
 
-describe BackpackAuthenticator do
+describe BackpackConnect::Authenticator do
   let(:subject) { described_class.new options }
   let(:options) {{
     error: "none",
