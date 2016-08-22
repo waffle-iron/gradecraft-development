@@ -23,6 +23,7 @@ GradeCraft::Application.routes.draw do
   #17. Predictor
   #18. Importers
   #19. Exports
+  #20. OpenBadges
 
   #1. Analytics & Charts
   namespace :analytics do
@@ -326,10 +327,6 @@ GradeCraft::Application.routes.draw do
       resources :badge_assertion, only: [] do
         get :index, on: :member
       end
-      resources :backpack, only: [] do
-        get :connect, on: :collection
-        get :issue, on: :member
-      end
       resources :issuer_organization, only: :index
     end
 
@@ -350,6 +347,12 @@ GradeCraft::Application.routes.draw do
 
   #19. Exports
   resources :exports, only: :index
+
+  #20. OpenBadges
+  resources :openbadges, only: [] do
+    get :connect, on: :collection
+    get :push, on: :member
+  end
 
   resources :submissions_exports, only: [:create, :destroy] do
     member do

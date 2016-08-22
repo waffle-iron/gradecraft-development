@@ -7,7 +7,7 @@
 
 - unless presenter.earned_badges.empty?
   %p
-    %button{ type: "button", class: "button", id: "backpack_issue", data: { issue_path: "#{ issue_api_openbadges_backpack_path(presenter.badge.id) }",
-      connect_url: "#{ connect_api_openbadges_backpack_index_url }" } }
+    %button{ type: "button", class: "button", id: "backpack_issue", data: { issue_path: "#{ push_openbadge_path(presenter.badge.id) }",
+      connect_url: "#{ connect_openbadges_url }", current_badge: "#{ presenter.badge.id }" } }
       %i.fa.fa-upload
-      Export Badge to Mozilla
+      Export Badge to Mozilla Backpack
