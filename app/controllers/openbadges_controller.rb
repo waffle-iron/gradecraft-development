@@ -11,7 +11,7 @@ class OpenbadgesController < ApplicationController
       session[:backpack_authenticator] = @authenticator
       redirect_to action: :push, id: params[:current_badge]
     else
-      redirect_on_completion({ :error => "Unable to establish connection to backpack" })
+      redirect_on_completion({ error: "Unable to establish connection to backpack" })
     end
   end
 
