@@ -6,9 +6,8 @@ class API::Openbadges::BadgeAssertionController < ApplicationController
     if (!earned_badge.present?)
       render json: {
         message: "Current user has not earned this badge"
-      }, status: 400
+      }, status: 404
     else
-      #badge_verification_id, or user_id, cannot be reliant on current_user since this endpoint will be public
       verification = {
         type: "hosted",
         url: api_openbadges_badge_verification_user_url(badge_verification_id: current_user.id,
