@@ -6,19 +6,18 @@ class OpenbadgesController < ApplicationController
   # Callback for backpack connect api; expects auth credentials
   def connect
     @authenticator = BackpackConnect::Authenticator.new(params)
-
     if @authenticator.error.nil?
       session[:backpack_authenticator] = @authenticator
-      redirect_to action: :push, id: params[:current_badge]
+      redirect_to action: "push", id: params[:current_badge]
     else
-      redirect_on_completion({ error: "Unable to establish connection to backpack" })
+      redirect_to badge_path(params[:current_badge]), flash: { error: "Unable to establish connection to backpack" }
     end
   end
 
-  # rubocop:disable AndOr
   def push
     @earned_badge = current_user.earned_badge_for_id(params[:id])
 
+    # rubocop:disable AndOr
     redirect_to badges_path,
       alert: "Current user has not earned this badge" and return unless @earned_badge.present?
     verification = {
@@ -31,7 +30,7 @@ class OpenbadgesController < ApplicationController
       "#{api_openbadges_badge_class_url(@earned_badge.badge_id)}.json", verification)
     backpack_issuer = BackpackConnect::API.new(@authenticator)
     response = backpack_issuer.issue assertion
-    redirect_push_response(response)
+    redirect_after_push(response)
   end
 
   private
@@ -41,22 +40,14 @@ class OpenbadgesController < ApplicationController
     redirect_to badges_path, status: 401 and return if @authenticator.nil?
   end
 
-  def redirect_push_response(response)
+  def redirect_after_push(response)
     case response.code
     when 200
-      redirect_on_completion({ success: "Badge was successfully issued" })
+      redirect_to badge_path(params[:current_badge]), flash: { success: "Badge was successfully issued" }
     when 401
       redirect_to badges_path, status: 401
     else
-      redirect_on_completion({ alert: "An error occurred (#{response.parsed_response["message"]})" })
-    end
-  end
-
-  def redirect_on_completion(options)
-    if params[:current_badge].nil?
-      redirect_to badges_path, flash: options
-    else
-      redirect_to badge_path(params[:current_badge]), flash: options
+      redirect_to badge_path(params[:current_badge]), flash: { alert: "An error occurred (#{response.parsed_response[:message]})" }
     end
   end
 end
