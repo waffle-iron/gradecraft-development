@@ -12,7 +12,7 @@ describe BackpackConnect::Assertions::BadgeClass do
       expect(subject.name).to eq badge.name
       expect(subject.description).to eq badge.description
       expect(subject.issuer).to eq issuer
-      expect(subject.image).to eq "#{host}/#{badge.icon}"
+      expect(subject.image).to eq "#{host}#{badge.icon}"
     end
   end
 end

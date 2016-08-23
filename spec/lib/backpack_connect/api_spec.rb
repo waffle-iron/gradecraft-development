@@ -19,8 +19,8 @@ describe BackpackConnect::API, type: :disable_external_api do
     end
   end
 
-  describe "#issue the badge" do
-    context "without authorization" do
+  describe "#issue" do
+    context "when not authorized" do
       let(:subject) { described_class.new(nil) }
 
       it "throws an exception if the user has not yet granted permission to the backpack" do
@@ -29,7 +29,7 @@ describe BackpackConnect::API, type: :disable_external_api do
       end
     end
 
-    context "with authorization" do
+    context "when authorized" do
       let(:subject) { described_class.new(authenticator) }
 
       it "requests from the specified path" do
