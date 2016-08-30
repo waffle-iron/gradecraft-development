@@ -27,10 +27,11 @@ class AnnouncementsController < ApplicationController
     if @announcement.save
       @announcement.deliver!
       flash[:success] = "Announcement created and sent."
+      redirect_to announcements_path
+    else 
+      @title = "Create a New Announcement"
+      render :new
     end
-
-    @title = "Create a New Announcement"
-    render :new
   end
 
   private

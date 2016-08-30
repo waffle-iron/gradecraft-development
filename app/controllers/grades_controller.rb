@@ -108,10 +108,10 @@ class GradesController < ApplicationController
     grade.destroy
     score_recalculator(grade.student)
 
-    redirect_to assignment_path(grade.assignment),
-      notice: "#{grade.student.name}'s #{grade.assignment.name} grade was "\
-              "successfully deleted."
-  rescue CanCan::AccessDenied
+    flash[:success] = "#{grade.student.name}'s #{grade.assignment.name} grade was successfully deleted."
+    redirect_to assignment_path(grade.assignment)
+      
+    rescue CanCan::AccessDenied
     # This is handled here so that a different redirect path can be specified
     redirect_to assignment_path(grade.assignment)
   end
@@ -121,8 +121,8 @@ class GradesController < ApplicationController
     grade = Grade.find params[:id]
     authorize! :update, grade, student_logged: false
     grade.feedback_read!
-    redirect_to assignment_path(grade.assignment),
-      notice: "Thank you for letting us know!"
+    flash[:success] = "Thank you for letting us know!"
+    redirect_to assignment_path(grade.assignment)
   end
 
   private

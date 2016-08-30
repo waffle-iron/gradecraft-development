@@ -1,6 +1,6 @@
 require "rails_spec_helper"
 
-feature "creating a new user" do
+feature "creating a new user", focus: true do
   context "as an administrator" do
     let!(:course_membership) { create :admin_course_membership, user: admin }
     let(:admin) { create :user }

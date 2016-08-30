@@ -6,9 +6,7 @@ class TeamsController < ApplicationController
   def index
     @teams = current_course.teams.order_by_rank.includes(:earned_badges)
     @title = "#{term_for :teams}"
-    if current_user_is_student?
-      @team = current_student.team_for_course(current_course)
-    end
+    @team = current_student.team_for_course(current_course) if current_user_is_student?
   end
 
   def show
@@ -29,7 +27,7 @@ class TeamsController < ApplicationController
     @team.save
     @team.team_memberships.build
     flash[:success] = "Team #{@team.name} successfully created"
-    respond_with @team
+    redirect_to @team
   end
 
   def edit
@@ -42,7 +40,7 @@ class TeamsController < ApplicationController
     @team = current_course.teams.find(params[:id])
     @team.update_attributes(team_params)
     flash[:success] = "Team #{@team.name} successfully updated"
-    respond_with @team 
+    redirect_to @team 
   end
 
   def destroy

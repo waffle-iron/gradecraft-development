@@ -17,8 +17,8 @@ class Ability
   include SubmissionFileAbility
 
   def initialize(user, course)
-    define_assignment_type_weight_abilities user, course
     define_announcement_abilities user, course
+    define_assignment_type_weight_abilities user, course
     define_challenge_grade_abilities user, course
     define_course_abilities user
     define_grade_abilities user, course

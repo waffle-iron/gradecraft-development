@@ -106,8 +106,8 @@ class Assignments::GradesController < ApplicationController
         respond_with @assignment
       end
     else
-      redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id]),
-        notice: "Oops! There was an error while saving the grades!"
+      flash[:alert] = "Oops! There was an error while saving the grades!"
+      redirect_to mass_edit_assignment_grades_path(@assignment, team_id: params[:team_id])
     end
   end
 
@@ -119,10 +119,9 @@ class Assignments::GradesController < ApplicationController
       grade.destroy
       ScoreRecalculatorJob.new(user_id: grade.student_id, course_id: current_course.id).enqueue
     end
-
-    redirect_to assignment_path(assignment), flash: {
-      success: "Successfully deleted all grades for #{ assignment.name }"
-    }
+    
+    flash[:success] = "Successfully deleted all grades for #{ assignment.name }"
+    redirect_to assignment_path(assignment)
   end
 
   # PUT /assignments/:assignment_id/grades/self_log
@@ -148,16 +147,15 @@ class Assignments::GradesController < ApplicationController
         grade_updater_job = GradeUpdaterJob.new(grade_id: @grade.id)
         grade_updater_job.enqueue
 
-        redirect_to assignments_path,
-          notice: "Nice job! Thanks for logging your grade!"
+        flash[:success] = "Nice job! Thanks for logging your grade!"
+        redirect_to assignments_path
       else
-        redirect_to assignments_path,
-          notice: "We're sorry, there was an error saving your grade."
+        flash[:alert] = "We're sorry, there was an error saving your grade."
+        redirect_to assignments_path
       end
-
     else
-      redirect_to dashboard_path,
-        notice: "This assignment is not open for self grading."
+      flash[:alert] = "This assignment is not open for self grading."
+      redirect_to assignments_path
     end
   end
 
