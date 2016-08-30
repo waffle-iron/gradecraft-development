@@ -41,21 +41,17 @@ class CoursesController < ApplicationController
 
   def create
     @course = Course.new(course_params)
-    respond_to do |format|
-      if @course.save
-        if !current_user_is_admin?
-          @course.course_memberships.create(user_id: current_user.id,
-                                            role: current_user.role(current_course))
-        end
-        session[:course_id] = @course.id
-        bust_course_list_cache current_user
-        format.html do
-          redirect_to course_path(@course),
-          notice: "Course #{@course.name} successfully created"
-        end
-      else
-        format.html { render action: "new" }
+    if @course.save
+      if !current_user_is_admin?
+        @course.course_memberships.create(user_id: current_user.id,
+                                          role: current_user.role(current_course))
       end
+      session[:course_id] = @course.id
+      bust_course_list_cache current_user
+      flash[:success] = "Course #{@course.name} successfully created"
+      redirect_to course_path(@course)
+    else
+      render action: "new"
     end
   end
 
@@ -68,26 +64,22 @@ class CoursesController < ApplicationController
       end
       duplicated.recalculate_student_scores unless duplicated.student_count.zero?
       session[:course_id] = duplicated.id
-      redirect_to edit_course_path(duplicated.id),
-        notice: "#{@course.name} successfully copied" and return
+      flash[:success] = "#{@course.name} successfully copied"
+      redirect_to edit_course_path(duplicated.id)
     else
-      redirect_to courses_path,
-        alert: "#{@course.name} was not successfully copied" and return
+      flash[:alert] = "#{@course.name} was not successfully copied"
+      redirect_to courses_path
     end
   end
 
   def update
     authorize! :update, @course
-    respond_to do |format|
-      if @course.update_attributes(course_params)
-        bust_course_list_cache current_user
-        format.html do
-          redirect_to @course,
-          notice: "Course #{@course.name} successfully updated"
-        end
-      else
-        format.html { render action: "edit" }
-      end
+    if @course.update_attributes(course_params)
+      bust_course_list_cache current_user
+      flash[:success] = "Course #{@course.name} successfully updated"
+      redirect_to @course
+    else
+      render action: "edit"
     end
   end
 
@@ -95,7 +87,8 @@ class CoursesController < ApplicationController
     authorize! :destroy, @course
     @name = @course.name
     @course.destroy
-    redirect_to courses_url, notice: "Course #{@name} successfully deleted"
+    flash[:success] = "Course #{@name} successfully deleted"
+    redirect_to courses_url
   end
 
   # Switch between enrolled courses
@@ -118,7 +111,8 @@ class CoursesController < ApplicationController
       @title = @course.name
       @badges = @course.badges
     else
-      redirect_to root_path, alert: "Whoops, nothing to see here! That data is not available."
+      flash[:alert] = "Whoops, nothing to see here! That data is not available."
+      redirect_to root_path
     end
   end
 

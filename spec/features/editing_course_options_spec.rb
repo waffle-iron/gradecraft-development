@@ -22,7 +22,7 @@ feature "editing a course's basic settings" do
       end
 
       expect(current_path).to eq course_path(course.id)
-      expect(page).to have_notification_message("notice", "Course New Course Name successfully updated")
+      expect(page).to have_notification_message("success", "Course New Course Name successfully updated")
     end
   end
 end

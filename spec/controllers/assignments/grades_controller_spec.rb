@@ -198,7 +198,7 @@ describe Assignments::GradesController do
           allow_any_instance_of(Grade).to receive(:save).and_return false
           post :self_log, assignment_id: @assignment.id
           grade = @student.grade_for_assignment(@assignment)
-          expect(flash[:notice]).to \
+          expect(flash[:alert]).to \
             eq("We're sorry, there was an error saving your grade.")
         end
 

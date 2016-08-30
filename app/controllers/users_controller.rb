@@ -96,8 +96,9 @@ class UsersController < ApplicationController
       auto_login @user
       flash[:success] = "Welcome to GradeCraft!"
       redirect_to dashboard_path
+    else
+      render :activate, alert: @user.errors.full_messages.first
     end
-    render :activate, alert: @user.errors.full_messages.first
   end
 
   def flag

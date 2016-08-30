@@ -23,7 +23,7 @@ feature "deleting a team" do
         click_link "Delete"
       end
 
-      expect(page).to have_notification_message("notice", "Team Team Name successfully deleted")
+      expect(page).to have_notification_message("success", "Team Team Name successfully deleted")
     end
   end
 end

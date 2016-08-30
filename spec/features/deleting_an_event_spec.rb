@@ -23,7 +23,7 @@ feature "deleting an event" do
         click_link "Delete"
       end
 
-      expect(page).to have_notification_message("notice", "Event Name successfully deleted")
+      expect(page).to have_notification_message("success", "Event Name successfully deleted")
     end
   end
 end

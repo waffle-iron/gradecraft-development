@@ -36,7 +36,7 @@ feature "editing an event" do
         click_button "Update Event"
       end
 
-      expect(page).to have_notification_message("notice", "Event Edited Event Name was successfully updated")
+      expect(page).to have_notification_message("success", "Event Edited Event Name was successfully updated")
     end
   end
 end
