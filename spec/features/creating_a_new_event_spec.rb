@@ -27,7 +27,7 @@ feature "creating a new event" do
         click_button "Create Event"
       end
 
-      expect(page).to have_notification_message("notice", "Event New Event was successfully created")
+      expect(page).to have_notification_message("success", "Event New Event was successfully created")
     end
   end
 end

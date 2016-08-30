@@ -40,7 +40,7 @@ feature "grading an individual assignment" do
         fill_in("grade_raw_points", with: 100)
         click_button "Submit Grade"
       end
-      expect(page).to have_notification_message("notice", "Hermione Granger's Assignment Name was successfully updated")
+      expect(page).to have_notification_message("success", "Hermione Granger's Assignment Name was successfully updated")
     end
   end
 end

@@ -24,7 +24,7 @@ feature "deleting a course" do
         click_link "course-id-#{course.id}"
       end
 
-      expect(page).to have_notification_message("notice", "Course Course Name successfully deleted")
+      expect(page).to have_notification_message("success", "Course Course Name successfully deleted")
     end
   end
 end

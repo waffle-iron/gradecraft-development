@@ -48,10 +48,10 @@ class UsersController < ApplicationController
         flash[:success] = "Staff Member #{@user.name} was successfully created!"
         redirect_to staff_index_path
       end
+    else
+      CourseMembershipBuilder.new(current_user).build_for(@user)
+      render :new
     end
-
-    CourseMembershipBuilder.new(current_user).build_for(@user)
-    render :new
   end
 
   def update
@@ -66,10 +66,10 @@ class UsersController < ApplicationController
         flash[:success] = "Staff Member #{@user.name} was successfully updated!"
         redirect_to staff_index_path
       end
+    else 
+      CourseMembershipBuilder.new(current_user).build_for(@user)
+      render :edit
     end
-
-    CourseMembershipBuilder.new(current_user).build_for(@user)
-    render :edit
   end
 
   def destroy

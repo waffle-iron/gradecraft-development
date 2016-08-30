@@ -19,7 +19,7 @@ feature "creating a new user" do
         end
 
         expect(current_path).to eq students_path
-        expect(page).to have_notification_message "notice", "#{course_membership.course.student_term} #{user.name} was successfully created!"
+        expect(page).to have_notification_message "success", "#{course_membership.course.student_term} #{user.name} was successfully created!"
 
         result = user.reload
         expect(result.course_memberships.count).to eq 1
@@ -38,7 +38,7 @@ feature "creating a new user" do
         end
 
         expect(current_path).to eq students_path
-        expect(page).to have_notification_message "notice", "#{course_membership.course.student_term} #{user.name} was successfully created!"
+        expect(page).to have_notification_message "success", "#{course_membership.course.student_term} #{user.name} was successfully created!"
 
         result = User.unscoped.last
         expect(result.first_name).to eq user.first_name

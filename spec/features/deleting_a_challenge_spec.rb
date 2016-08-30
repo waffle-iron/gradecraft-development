@@ -23,7 +23,7 @@ feature "deleting a challenge" do
         click_link "Delete"
       end
 
-      expect(page).to have_notification_message("notice", "Challenge Team Challenge Name successfully deleted")
+      expect(page).to have_notification_message("success", "Challenge Team Challenge Name successfully deleted")
     end
   end
 end

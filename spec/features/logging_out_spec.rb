@@ -20,7 +20,7 @@ feature "logging out" do
       end
 
       expect(current_path).to eq root_path
-      expect(page).to have_notification_message("notice", "You are now logged out.")
+      expect(page).to have_notification_message("success", "You are now logged out.")
     end
 
   end
