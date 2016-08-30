@@ -65,7 +65,8 @@ class AssignmentsController < ApplicationController
   def copy
     assignment = current_course.assignments.find(params[:id])
     duplicated = assignment.copy
-    redirect_to edit_assignment_path(duplicated), notice: "#{(term_for :assignment).titleize} #{duplicated.name} successfully created"
+    redirect_to edit_assignment_path(duplicated)
+    flash[:success] = "#{(term_for :assignment).titleize} #{duplicated.name} successfully created"
   end
 
   def create
@@ -92,26 +93,15 @@ class AssignmentsController < ApplicationController
   def update
     assignment = current_course.assignments.find(params[:id])
     if assignment.update_attributes assignment_params
-      respond_to do |format|
-        format.html do
-          redirect_to assignments_path
-          flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name } "\
-            "successfully updated" and return
-        end
-        format.json { render json: assignment and return }
-      end
-    end
-
-    respond_to do |format|
-      format.html do
-        @title = "Edit #{term_for :assignment}"
-        render :edit, Assignments::Presenter.build({
-          assignment: assignment,
-          course: current_course,
-          view_context: view_context
-          })
-      end
-      format.json { render json: { errors: assignment.errors }, status: 400 }
+      flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name } successfully updated"
+      redirect_to assignments_path
+    else 
+      @title = "Edit #{term_for :assignment}"
+      render :edit, Assignments::Presenter.build({
+        assignment: assignment,
+        course: current_course,
+        view_context: view_context
+        })
     end
   end
 
