@@ -62,7 +62,8 @@ class UserSessionsController < ApplicationController
 
   def destroy
     logout
-    redirect_to root_url, notice: "You are now logged out. Thanks for playing!"
+    flash[:success] = "You are now logged out. Thanks for playing!"
+    redirect_to root_url 
   end
 
   private

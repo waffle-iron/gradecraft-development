@@ -42,12 +42,11 @@ class UsersController < ApplicationController
 
     if result.success?
       if @user.is_student?(current_course)
-        redirect_to students_path,
-          # rubocop:disable AndOr
-          notice: "#{term_for :student} #{@user.name} was successfully created!" and return
+        flash[:success] = "#{term_for :student} #{@user.name} was successfully created!"
+        redirect_to students_path
       elsif @user.is_staff?(current_course)
-        redirect_to staff_index_path,
-          notice: "Staff Member #{@user.name} was successfully created!" and return
+        flash[:success] = "Staff Member #{@user.name} was successfully created!"
+        redirect_to staff_index_path
       end
     end
 
@@ -61,9 +60,11 @@ class UsersController < ApplicationController
     cancel_course_memberships @user
     if @user.save
       if @user.is_student?(current_course)
-        redirect_to students_path, notice: "#{term_for :student} #{@user.name} was successfully updated!" and return
+        flash[:success] = "#{term_for :student} #{@user.name} was successfully updated!"
+        redirect_to students_path
       elsif @user.is_staff?(current_course)
-        redirect_to staff_index_path, notice: "Staff Member #{@user.name} was successfully updated!" and return
+        flash[:success] = "Staff Member #{@user.name} was successfully updated!"
+        redirect_to staff_index_path
       end
     end
 
@@ -74,14 +75,8 @@ class UsersController < ApplicationController
   def destroy
     @user = current_course.users.find(params[:id])
     @name = @user.name
+    flash[:success] = "#{@name} was successfully deleted"
     @user.destroy
-
-    respond_to do |format|
-      format.html do
-        redirect_to users_url,
-        notice: "#{@name} was successfully deleted"
-      end
-    end
   end
 
   def activate
@@ -99,7 +94,8 @@ class UsersController < ApplicationController
     if @user.update_attributes user_params
       @user.activate!
       auto_login @user
-      redirect_to dashboard_path, notice: "Welcome to GradeCraft!" and return
+      flash[:success] = "Welcome to GradeCraft!"
+      redirect_to dashboard_path
     end
     render :activate, alert: @user.errors.full_messages.first
   end
@@ -127,8 +123,8 @@ class UsersController < ApplicationController
     end
 
     if @user.update_attributes(up)
-      redirect_to dashboard_path,
-        notice: "Your profile was successfully updated!"
+      flash[:success] = "Your profile was successfully updated!"
+      redirect_to dashboard_path
     else
       @title = "Edit My Profile"
       @course_membership =

@@ -21,10 +21,10 @@ class SubmissionsController < ApplicationController
       redirect_to = (session.delete(:return_to) || assignment_path(assignment))
       if current_user_is_student?
         NotificationMailer.successful_submission(submission.id).deliver_now if assignment.is_individual?
-        redirect_to = assignment_path(assignment, anchor: "tab3")
+        redirect_to_path = assignment_path(assignment, anchor: "tab3")
       end
-      # rubocop:disable AndOr
-      redirect_to redirect_to, notice: "#{assignment.name} was successfully submitted." and return
+      flash[:success] = "#{assignment.name} was successfully submitted."
+      redirect_to redirect_to_path
     end
     render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
                                               submission: submission,
@@ -44,6 +44,7 @@ class SubmissionsController < ApplicationController
     assignment = current_course.assignments.find(params[:assignment_id])
     submission = assignment.submissions.find(params[:id])
 
+<<<<<<< HEAD
     respond_to do |format|
       if submission.update_attributes(submission_params.merge(submitted_at: DateTime.now))
         submission.check_and_set_late_status!
@@ -66,7 +67,25 @@ class SubmissionsController < ApplicationController
                                                      view_context: view_context)
         end
         format.json { render json: submission.errors, status: :unprocessable_entity }
+=======
+    if submission.update_attributes(submission_params.merge(submitted_at: DateTime.now))
+      path = assignment.has_groups? ? { group_id: submission.group_id } :
+        { student_id: submission.student_id }
+      redirect_to_path = assignment_submission_path(assignment, submission, path)
+      if current_user_is_student?
+        NotificationMailer.updated_submission(submission.id).deliver_now if assignment.is_individual?
+        redirect_to_path = assignment_path(assignment, anchor: "tab3")
+>>>>>>> Refactored alerts
       end
+      flash[:success] ="Your submission for #{assignment.name} was successfully updated."
+      redirect_to redirect_to_path
+    else
+      render :edit, Submissions::EditPresenter.build(id: params[:id],
+                                                  assignment_id: params[:assignment_id],
+                                                 course: current_course,
+                                                 group_id: submission.group_id,
+                                                 submission: submission,
+                                                 view_context: view_context)
     end
   end
 

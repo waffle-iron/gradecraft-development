@@ -63,7 +63,7 @@ class StudentsController < ApplicationController
     ScoreRecalculatorJob.new(user_id: @student.id,
       course_id: current_course.id).enqueue
 
-    flash[:notice]="Your request to recalculate #{@student.name}'s grade is being processed. Check back shortly!"
+    flash[:notice] = "Your request to recalculate #{@student.name}'s grade is being processed. Check back shortly!"
     redirect_to session[:return_to] || student_path(@student)
   end
 end

@@ -1,4 +1,3 @@
-# rubocop:disable AndOr
 require "canvas"
 
 class AssignmentsController < ApplicationController
