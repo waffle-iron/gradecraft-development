@@ -26,9 +26,7 @@ class AnnouncementsController < ApplicationController
     authorize! :create, @announcement
     if @announcement.save
       @announcement.deliver!
-      redirect_to announcements_path,
-        # rubocop:disable AndOr
-        notice: "Announcement created and sent." and return
+      flash[:success] = "Announcement created and sent."
     end
 
     @title = "Create a New Announcement"
