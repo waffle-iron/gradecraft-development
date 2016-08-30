@@ -1,29 +1,24 @@
-# Gradecraft web application Docker image
-#
-# VERSION       1.0
-# ENVIRONMENT	production
-# ~~~~ Image base ~~~~
-FROM quay.io/gradecraft/secrets:production
-MAINTAINER Shekhar Patil <shekhar@venturit.com>
-ENV DOCKER_FIX random
+FROM ruby:2.2.2
+
+RUN apt-get update && apt-get upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive \
+  apt-get --no-install-recommends install --yes \
+    postgresql-contrib \
+    sqlite3 libsqlite3-dev \
+    nodejs git \
+    build-essential libreadline-dev \
+    libpq-dev libkrb5-dev \
+    libxslt-dev libxml2-dev \
+    ruby-dev
+
+EXPOSE 5000
+CMD ./run.sh
+
 RUN gem install -v 1.10.6 bundler
 RUN mkdir /gradecraft
 WORKDIR /gradecraft/
 ADD Gemfile /gradecraft/Gemfile
 ADD Gemfile.lock /gradecraft/Gemfile.lock
 RUN bundle install
+
 COPY . /gradecraft
-RUN cp /intermidiate/gradecraft_saml_idp.pem /gradecraft/gradecraft_saml_idp.pem
-RUN cp /intermidiate/gcsha256.key /gradecraft/gcsha256.key
-RUN cp /intermidiate/gcsha256.crt /gradecraft/gcsha256.crt
-RUN cp /intermidiate/www.gradecraft.com.key /gradecraft/www.gradecraft.com.key
-RUN cp /intermidiate/www.gradecraft.com.crt /gradecraft/www.gradecraft.com.crt
-RUN cp /intermidiate/database.yml /gradecraft/config/database.yml
-RUN cp /intermidiate/mongoid.yml /gradecraft/config/mongoid.yml
-RUN cp /intermidiate/puma.rb /gradecraft/config/puma.rb
-RUN cp /intermidiate/Procfile /gradecraft/Procfile
-RUN printf  "if [ \$WEBRESQUE = 'WEB' ]\nthen \n RAILS_ENV=production bundle exec rake resque:scheduler &\n/mounts3.sh\nservice nginx start\npuma\nelse \n RAILS_ENV=production bundle exec rake resque:scheduler & \nbundle exec rake resque:work >> resque.log\nfi" > /gradecraft/start.sh
-RUN chmod +x /gradecraft/start.sh
-RUN RAILS_ENV=production bundle exec rake assets:precompile
-RUN RAILS_ENV=production bundle exec rake db:migrate
-ENTRYPOINT /gradecraft/start.sh
