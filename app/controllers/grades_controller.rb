@@ -42,12 +42,11 @@ class GradesController < ApplicationController
       else
         path = assignment_path(grade.assignment)
       end
-      redirect_to path,
-        notice: "#{grade.student.name}'s #{grade.assignment.name} was successfully updated"
+      flash[:success] = "#{grade.student.name}'s #{grade.assignment.name} was successfully updated"
+      redirect_to path
     else # failure
-      redirect_to edit_grade_path(grade),
-        alert: "#{grade.student.name}'s #{grade.assignment.name} was not successfully "\
-          "submitted! Please try again."
+      flash[:alert] = "#{grade.student.name}'s #{grade.assignment.name} was not successfully submitted! Please try again."
+      redirect_to edit_grade_path(grade)
     end
   end
 

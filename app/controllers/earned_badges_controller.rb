@@ -44,8 +44,8 @@ class EarnedBadgesController < ApplicationController
     result = Services::CreatesEarnedBadge.award earned_badge_params
 
     if result.success?
-      redirect_to badge_path(result.earned_badge.badge),
-        notice: "The #{result.earned_badge.badge.name} #{term_for :badge} was successfully awarded to #{result.earned_badge.student.name}"
+      flash[:success] = "The #{result.earned_badge.badge.name} #{term_for :badge} was successfully awarded to #{result.earned_badge.student.name}"
+      redirect_to badge_path(result.earned_badge.badge)
     else
       @title = "Award #{@badge.name}"
       @earned_badge = result.earned_badge
@@ -61,8 +61,8 @@ class EarnedBadgesController < ApplicationController
                                  course_id: current_course.id).enqueue
       end
       expire_fragment "earned_badges"
-      redirect_to badge_path(@badge),
-        notice: "#{@earned_badge.student.name}'s #{@badge.name} #{term_for :badge} was successfully updated"
+      flash[:success] = "#{@earned_badge.student.name}'s #{@badge.name} #{term_for :badge} was successfully updated"
+      redirect_to badge_path(@badge)
     else
       render action: "edit"
     end
@@ -109,8 +109,8 @@ class EarnedBadgesController < ApplicationController
     @student_name = "#{@earned_badge.student.name}"
     @earned_badge.destroy
     expire_fragment "earned_badges"
-    redirect_to @badge,
-      notice: "The #{@badge.name} #{term_for :badge} has been taken away from #{@student_name}."
+    flash[:success] = "The #{@badge.name} #{term_for :badge} has been taken away from #{@student_name}."
+    redirect_to @badge
   end
 
   private
@@ -165,11 +165,11 @@ class EarnedBadgesController < ApplicationController
 
   def handle_mass_update_redirect
     if @valid_earned_badges.any?
-      redirect_to badge_path(@badge),
-        notice: "The #{@badge.name} #{term_for :badge} was successfully awarded #{@valid_earned_badges.count} times"
+      flash[:success] = "The #{@badge.name} #{term_for :badge} was successfully awarded #{@valid_earned_badges.count} times"
+      redirect_to badge_path(@badge)
     else
-      redirect_to mass_edit_badge_earned_badges_path(@badge),
-        notice: "No earned badges were sucessfully created."
+      flash[:alert] = "No earned badges were sucessfully created."
+      redirect_to mass_edit_badge_earned_badges_path(@badge)
     end
   end
 end

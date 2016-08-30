@@ -16,8 +16,8 @@ class GradeSchemeElementsController < ApplicationController
   def update
     @grade_scheme_element = current_course.grade_scheme_elements.find(params[:id])
     if @grade_scheme_element.update_attributes(grade_scheme_element_params)
-      redirect_to grade_scheme_elements_path,
-        notice: "#{@grade_scheme_element.name} successfully updated"
+      flash[:success] = "#{@grade_scheme_element.name} successfully updated"
+      redirect_to grade_scheme_elements_path
     else
       render action: "edit"
     end

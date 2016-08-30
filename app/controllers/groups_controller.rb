@@ -31,15 +31,12 @@ class GroupsController < ApplicationController
     else
       @group.approved = "Approved"
     end
-    respond_to do |format|
-      if @group.save
-        format.html { respond_with @group }
-        flash[:success]=
-          "#{(@group.name).capitalize} #{term_for :group} successfully created"
-      else
-        @other_students = potential_team_members
-        format.html { render action: "new" }
-      end
+    if @group.save
+      flash[:success]= "#{(@group.name).capitalize} #{term_for :group} successfully created"
+      respond_with @group
+    else
+      @other_students = potential_team_members
+      render action: "new"
     end
   end
 
@@ -49,25 +46,19 @@ class GroupsController < ApplicationController
   end
 
   def update
-    respond_to do |format|
-      if @group.update_attributes(group_params)
-        format.html { respond_with @group }
-        flash[:success]=
-          "#{@group.name} #{term_for :group} successfully updated"
-      else
-        @other_students = potential_team_members
-        format.html { render action: "edit" }
-      end
+    if @group.update_attributes(group_params)
+      flash[:success] = "#{@group.name} #{term_for :group} successfully updated"
+      respond_with @group
+    else
+      @other_students = potential_team_members
+      render action: "edit"
     end
   end
 
   def destroy
     @group.destroy
-
-    respond_to do |format|
-      format.html { redirect_to groups_path }
-      flash[:success]= "#{@group.name} #{term_for :group} successfully deleted"
-    end
+    flash[:success] = "#{@group.name} #{term_for :group} successfully deleted"
+    redirect_to groups_path
   end
 
   private
