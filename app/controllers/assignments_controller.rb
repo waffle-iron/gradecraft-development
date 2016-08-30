@@ -71,17 +71,22 @@ class AssignmentsController < ApplicationController
   def create
     assignment = current_course.assignments.new(assignment_params)
     if assignment.save
+<<<<<<< 748e543780793688994cf2eaa8ae06af1a10d364
       redirect_to assignments_path,
         notice: "#{(term_for :assignment).titleize} #{assignment.name} successfully created" \
         and return
+=======
+      flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name} successfully created"
+      redirect_to assignment_path(assignment)
+    else 
+      @title = "Create a New #{term_for :assignment}"
+      render :new, Assignments::Presenter.build({
+        assignment: assignment,
+        course: current_course,
+        view_context: view_context
+        })
+>>>>>>> Assignment Types Controller cleanup
     end
-
-    @title = "Create a New #{term_for :assignment}"
-    render :new, Assignments::Presenter.build({
-      assignment: assignment,
-      course: current_course,
-      view_context: view_context
-      })
   end
 
   def update
@@ -89,8 +94,8 @@ class AssignmentsController < ApplicationController
     if assignment.update_attributes assignment_params
       respond_to do |format|
         format.html do
-          redirect_to assignments_path,
-            notice: "#{(term_for :assignment).titleize} #{assignment.name } "\
+          redirect_to assignments_path
+          flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name } "\
             "successfully updated" and return
         end
         format.json { render json: assignment and return }
@@ -117,7 +122,8 @@ class AssignmentsController < ApplicationController
   def destroy
     assignment = current_course.assignments.find(params[:id])
     assignment.destroy
-    redirect_to assignments_url, notice: "#{(term_for :assignment).titleize} #{assignment.name} successfully deleted"
+    redirect_to assignments_url
+    flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name} successfully deleted"
   end
 
   def export_structure

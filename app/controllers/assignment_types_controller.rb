@@ -30,14 +30,11 @@ class AssignmentTypesController < ApplicationController
       current_course.assignment_types.new(assignment_type_params)
     @title = "Create a New #{term_for :assignment_type}"
 
-    respond_to do |format|
-      if @assignment_type.save
-        format.html do redirect_to assignments_path, flash: {
-          success: "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully created" }
-        end
-      else
-        format.html { render action: "new" }
-      end
+    if @assignment_type.save
+      flash[:success] = "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully created"
+      redirect_to assignments_path
+    else
+      render action: "new"
     end
   end
 
@@ -45,17 +42,14 @@ class AssignmentTypesController < ApplicationController
   def update
     @title = "Editing #{@assignment_type.name}"
     @assignment_type.update_attributes(assignment_type_params)
-
-    respond_to do |format|
-      if @assignment_type.save
-        format.html do redirect_to assignments_path, flash: {
-          success: "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully updated" }
-        end
-      else
-        format.html { render action: "edit" }
-      end
+    
+    if @assignment_type.save
+      flash[:success] = "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully updated"
+      redirect_to assignments_path
+    else
+      render action: "edit"
     end
-  end
+  end 
 
   def sort
     sort_position_for "assignment-type"
@@ -82,9 +76,8 @@ class AssignmentTypesController < ApplicationController
         end
       end
     else
-      redirect_to dashboard_path, flash: {
-        error: "Sorry! You have not yet created an #{(term_for :assignment_type).titleize} for this course"
-      }
+      flash[:error] = "Sorry! You have not yet created an #{(term_for :assignment_type).titleize} for this course"
+      redirect_to dashboard_path
     end
   end
 
@@ -107,9 +100,8 @@ class AssignmentTypesController < ApplicationController
   def destroy
     @name = "#{@assignment_type.name}"
     @assignment_type.destroy
-    redirect_to assignments_path, flash: {
-      success: "#{(term_for :assignment_type).titleize} #{@name} successfully deleted"
-    }
+    redirect_to assignments_path
+    flash[:success] = "#{(term_for :assignment_type).titleize} #{@name} successfully deleted"
   end
 
   private
