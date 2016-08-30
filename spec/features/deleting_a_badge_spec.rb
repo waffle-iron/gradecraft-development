@@ -23,7 +23,7 @@ feature "deleting a badge" do
         click_link "Delete"
       end
 
-      expect(page).to have_notification_message("notice", "Fancy Badge Badge successfully deleted")
+      expect(page).to have_notification_message("success", "Fancy Badge Badge successfully deleted")
     end
   end
 end

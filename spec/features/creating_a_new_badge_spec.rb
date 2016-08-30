@@ -27,7 +27,7 @@ feature "creating a new badge" do
         click_button "Create Badge"
       end
 
-      expect(page).to have_notification_message("notice", "New Badge Name Badge successfully created")
+      expect(page).to have_notification_message("success", "New Badge Name Badge successfully created")
     end
   end
 end

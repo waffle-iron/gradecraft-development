@@ -37,7 +37,7 @@ feature "editing a team challenge grade" do
         fill_in("challenge_grade_score", with: 101)
         click_button "Update Grade"
       end
-      expect(page).to have_notification_message("notice", "Team Name's Grade for Team Challenge Name Team Challenge successfully updated")
+      expect(page).to have_notification_message("success", "Team Name's Grade for Team Challenge Name Team Challenge successfully updated")
     end
   end
 end

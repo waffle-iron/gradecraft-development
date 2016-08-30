@@ -34,7 +34,7 @@ feature "editing a challenge" do
         click_button "Update Team Challenge"
       end
 
-      expect(page).to have_notification_message("notice", "Challenge Edited Team Challenge Name successfully updated")
+      expect(page).to have_notification_message("success", "Challenge Edited Team Challenge Name successfully updated")
     end
   end
 end

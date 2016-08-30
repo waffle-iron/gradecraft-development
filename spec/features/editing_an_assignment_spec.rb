@@ -36,7 +36,7 @@ feature "editing an assignment" do
         click_button "Update Assignment"
       end
 
-      expect(page).to have_notification_message("notice", "Assignment Edited Assignment Name successfully updated")
+      expect(page).to have_notification_message("success", "Assignment Edited Assignment Name successfully updated")
     end
   end
 end

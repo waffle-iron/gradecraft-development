@@ -27,7 +27,7 @@ feature "creating a new challenge" do
         click_button "Create Team Challenge"
       end
 
-      expect(page).to have_notification_message("notice", "Challenge New Team Challenge Name successfully created")
+      expect(page).to have_notification_message("success", "Challenge New Team Challenge Name successfully created")
     end
   end
 end

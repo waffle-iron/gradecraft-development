@@ -29,7 +29,7 @@ feature "creating a new assignment" do
         click_button "Create Assignment"
       end
 
-      expect(page).to have_notification_message("notice", "Assignment New Assignment Name successfully created")
+      expect(page).to have_notification_message("success", "Assignment New Assignment Name successfully created")
     end
   end
 end
