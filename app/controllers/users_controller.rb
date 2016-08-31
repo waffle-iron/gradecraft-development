@@ -41,17 +41,18 @@ class UsersController < ApplicationController
     @user = result[:user]
 
     if result.success?
-      if @user.is_student?(current_course)
-        flash[:success] = "#{term_for :student} #{@user.name} was successfully created!"
-        redirect_to students_path
-      elsif @user.is_staff?(current_course)
-        flash[:success] = "Staff Member #{@user.name} was successfully created!"
-        redirect_to staff_index_path
-      end
-    else
-      CourseMembershipBuilder.new(current_user).build_for(@user)
-      render :new
-    end
+     if @user.is_student?(current_course)
+       redirect_to students_path,
+         # rubocop:disable AndOr
+         notice: "#{term_for :student} #{@user.name} was successfully created!" and return
+     elsif @user.is_staff?(current_course)
+       redirect_to staff_index_path,
+         notice: "Staff Member #{@user.name} was successfully created!" and return
+     end
+   end
+
+   CourseMembershipBuilder.new(current_user).build_for(@user)
+   render :new
   end
 
   def update
@@ -75,8 +76,9 @@ class UsersController < ApplicationController
   def destroy
     @user = current_course.users.find(params[:id])
     @name = @user.name
-    flash[:success] = "#{@name} was successfully deleted"
     @user.destroy
+    flash[:success] = "#{@name} was successfully deleted"
+    redirect_to users_path
   end
 
   def activate

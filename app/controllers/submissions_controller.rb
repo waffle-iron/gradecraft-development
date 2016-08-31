@@ -21,17 +21,18 @@ class SubmissionsController < ApplicationController
       redirect_to = (session.delete(:return_to) || assignment_path(assignment))
       if current_user_is_student?
         NotificationMailer.successful_submission(submission.id).deliver_now if assignment.is_individual?
-        redirect_to_path = assignment_path(assignment, anchor: "tab3")
+        redirect_to_path = assignment_path(assignment)
       end
       flash[:success] = "#{assignment.name} was successfully submitted."
       redirect_to redirect_to_path
+    else
+      render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
+                                                submission: submission,
+                                                student: submission.student,
+                                                course: current_course,
+                                                group_id: submission.group_id,
+                                                view_context: view_context)
     end
-    render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
-                                              submission: submission,
-                                              student: submission.student,
-                                              course: current_course,
-                                              group_id: submission.group_id,
-                                              view_context: view_context)
   end
 
   def edit

@@ -71,11 +71,6 @@ class AssignmentsController < ApplicationController
   def create
     assignment = current_course.assignments.new(assignment_params)
     if assignment.save
-<<<<<<< 748e543780793688994cf2eaa8ae06af1a10d364
-      redirect_to assignments_path,
-        notice: "#{(term_for :assignment).titleize} #{assignment.name} successfully created" \
-        and return
-=======
       flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name} successfully created"
       redirect_to assignment_path(assignment)
     else 
@@ -85,7 +80,6 @@ class AssignmentsController < ApplicationController
         course: current_course,
         view_context: view_context
         })
->>>>>>> Assignment Types Controller cleanup
     end
   end
 
