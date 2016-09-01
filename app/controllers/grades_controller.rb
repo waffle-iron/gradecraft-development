@@ -32,7 +32,9 @@ class GradesController < ApplicationController
   def update
     grade = Grade.find params[:id]
 
-    if grade.update_attributes grade_params.merge(graded_at: DateTime.now, instructor_modified: true)
+    if grade.update_attributes grade_params.merge(graded_at: DateTime.now,
+                                                  graded_by_id: current_user.id,
+                                                  instructor_modified: true)
       if GradeProctor.new(grade).viewable?
         GradeUpdaterJob.new(grade_id: grade.id).enqueue
       end

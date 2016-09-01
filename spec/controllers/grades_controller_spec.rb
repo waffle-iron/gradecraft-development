@@ -97,6 +97,12 @@ describe GradesController do
         expect(@grade.reload.graded_at).to be > current_time
       end
 
+      it "marks uses the current user as the graded by id" do
+        put :update, { id: @grade.id, grade: { raw_points: 12345 }}
+
+        expect(@grade.reload.graded_by_id).to eq @professor.id
+      end
+
       it "attaches the student submission" do
         submission = create :submission, assignment: @assignment, student: @student
         grade_params = { raw_points: 12345, submission_id: submission.id }

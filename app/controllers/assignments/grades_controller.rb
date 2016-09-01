@@ -141,6 +141,7 @@ class Assignments::GradesController < ApplicationController
       end
 
       @grade.instructor_modified = true
+      @grade.graded_by_id = current_user.id
       @grade.status = "Graded"
 
       if @grade.save
@@ -164,9 +165,12 @@ class Assignments::GradesController < ApplicationController
   private
 
   def assignment_params
-    params.require(:assignment).permit grades_attributes: [:graded_by_id, :graded_at,
-                                                           :instructor_modified, :student_id,
-                                                           :raw_points, :status, :pass_fail_status,
+    params.require(:assignment).permit grades_attributes: [:graded_by_id,
+                                                           :graded_at,
+                                                           :instructor_modified,
+                                                           :student_id,
+                                                           :raw_points, :status,
+                                                           :pass_fail_status,
                                                            :id]
   end
 

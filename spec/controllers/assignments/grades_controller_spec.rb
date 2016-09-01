@@ -160,7 +160,7 @@ describe Assignments::GradesController do
 
     describe "POST self_log" do
       it "redirects back to the root" do
-        expect(post :self_log, assignment_id: @assignment.id ).to \
+        expect(post :self_log, assignment_id: @assignment.id).to \
           redirect_to(:root)
       end
     end
@@ -192,6 +192,13 @@ describe Assignments::GradesController do
           post :self_log, assignment_id: @assignment.id
           grade = @student.grade_for_assignment(@assignment)
           expect(grade.raw_points).to eq @assignment.full_points
+        end
+
+        it "marks the grade as graded by the student" do
+          post :self_log, assignment_id: @assignment.id
+
+          grade = @student.grade_for_assignment(@assignment)
+          expect(grade.graded_by_id).to eq @student.id
         end
 
         it "reports errors on failure to save" do

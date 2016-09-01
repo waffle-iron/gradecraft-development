@@ -28,7 +28,9 @@ describe API::GradesController do
 
     describe "update" do
       it "updates feedback, status and raw score from params" do
-        post :update, { id: world.grade.id, grade: { raw_points: 20000, feedback: "good jorb!", status: "Graded" }}
+        post :update, { id: world.grade.id, grade: {
+          raw_points: 20000, feedback: "good jorb!", status: "Graded" }}
+
         world.grade.reload
         expect(world.grade.feedback).to eq("good jorb!")
         expect(world.grade.status).to eq("Graded")
@@ -36,14 +38,26 @@ describe API::GradesController do
       end
 
       it "updates instructor modified to true" do
-        post :update, { id: world.grade.id, grade: { raw_points: 20000, feedback: "good jorb!" }}
+        post :update, { id: world.grade.id, grade: {
+          raw_points: 20000, feedback: "good jorb!" }}
+
         world.grade.reload
         expect(world.grade.instructor_modified).to be_truthy
       end
 
+      it "updates the graded by id to the current user" do
+        post :update, { id: world.grade.id, grade: {
+          raw_points: 20000, feedback: "good jorb!" }}
+
+        world.grade.reload
+        expect(world.grade.graded_by_id).to eq professor.id
+      end
+
       it "timestamps the grade" do
         current_time = DateTime.now
-        post :update, { id: world.grade.id, grade: { raw_points: 20000, feedback: "good jorb!" }}
+        post :update, { id: world.grade.id, grade: {
+          raw_points: 20000, feedback: "good jorb!" }}
+
         expect(world.grade.reload.graded_at).to be > current_time
       end
     end
