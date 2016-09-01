@@ -85,7 +85,7 @@ class Grades::ImportersController < ApplicationController
         notice: "File is missing"
     else
       @result = CSVGradeImporter.new(params[:file].tempfile)
-        .import(current_course, @assignment)
+        .import(current_course, @assignment, current_user)
 
       grade_ids = @result.successful.map(&:id)
       enqueue_multiple_grade_update_jobs(grade_ids)

@@ -11,7 +11,7 @@ class CSVGradeImporter
     @unchanged = []
   end
 
-  def import(course=nil, assignment=nil)
+  def import(course=nil, assignment=nil, grader=nil)
     if file
       if course && assignment
         students = course.students
@@ -30,12 +30,12 @@ class CSVGradeImporter
 
           grade = assignment.grades.where(student_id: student.id).first
           if row.update_grade? grade
-            grade = update_grade row, grade
+            grade = update_grade row, grade, grader
             report row, grade
           elsif grade.present?
             unchanged << grade
           elsif grade.nil?
-            grade = create_grade row, assignment, student
+            grade = create_grade row, assignment, grader, student
             report row, grade
           end
         end
@@ -51,23 +51,24 @@ class CSVGradeImporter
     unsuccessful << { data: row.to_s, errors: errors }
   end
 
-  def assign_grade(row, grade)
+  def assign_grade(row, grade, grader)
     grade.raw_points = row.grade
     grade.feedback = row.feedback
     grade.status = "Graded" if grade.status.nil?
     grade.instructor_modified = true
+    grade.graded_by_id = grader.id unless grader.nil?
     grade.graded_at = DateTime.now
   end
 
-  def create_grade(row, assignment, student)
+  def create_grade(row, assignment, grader, student)
     assignment.grades.create do |grade|
       grade.student_id = student.id
-      assign_grade row, grade
+      assign_grade row, grade, grader
     end
   end
 
-  def update_grade(row, grade)
-    assign_grade row, grade
+  def update_grade(row, grade, grader)
+    assign_grade row, grade, grader
     grade.save
     grade
   end
