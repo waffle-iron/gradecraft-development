@@ -42,17 +42,17 @@ class UsersController < ApplicationController
 
     if result.success?
      if @user.is_student?(current_course)
-       redirect_to students_path,
-         # rubocop:disable AndOr
-         notice: "#{term_for :student} #{@user.name} was successfully created!" and return
+       flash[:success] = "#{term_for :student} #{@user.name} was successfully created!"
+       redirect_to students_path
      elsif @user.is_staff?(current_course)
-       redirect_to staff_index_path,
-         notice: "Staff Member #{@user.name} was successfully created!" and return
+       flash[:success] = "Staff Member #{@user.name} was successfully created!"
+       redirect_to staff_index_path
      end
+   else 
+      CourseMembershipBuilder.new(current_user).build_for(@user)
+      render :new
    end
 
-   CourseMembershipBuilder.new(current_user).build_for(@user)
-   render :new
   end
 
   def update
