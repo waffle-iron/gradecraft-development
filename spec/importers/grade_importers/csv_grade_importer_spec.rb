@@ -49,7 +49,6 @@ describe CSVGradeImporter do
           expect(grade.feedback).to eq "You did great!"
           expect(grade.status).to eq "Graded"
           expect(grade.graded_by_id).to eq user.id
-          expect(grade.instructor_modified).to eq true
           expect(result.successful.count).to eq 1
           expect(result.successful.last).to eq grade
         end

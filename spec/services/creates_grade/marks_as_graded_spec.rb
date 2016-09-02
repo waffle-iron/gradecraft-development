@@ -20,6 +20,5 @@ describe Services::Actions::MarksAsGraded do
     result = described_class.execute grade: grade, user: user
     expect(result[:grade].graded_at).to be_within(1.second).of(Time.now)
     expect(result[:grade].graded_by_id).to eq user.id
-    expect(result[:grade].instructor_modified).to be_truthy
   end
 end

@@ -210,7 +210,6 @@ describe GradesController do
           feedback_read_at: Time.now,
           feedback_reviewed: true,
           feedback_reviewed_at: Time.now,
-          instructor_modified: true,
           graded_at: DateTime.now,
           status: "Graded"
         )

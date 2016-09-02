@@ -47,7 +47,6 @@
   # only used if :grades is true:
   grade_attributes: {
     raw_points: -> { rand(5000) },
-    instructor_modified: false,
     status: nil,
     feedback: nil,
     excluded_from_course_score: false
@@ -122,7 +121,6 @@ uncertainty! - Douglas Adams"
   grades: true,
   grade_attributes: {
     status: "Graded",
-    instructor_modified: true
   }
 }
 
@@ -157,8 +155,7 @@ to bed. ― J.K. Rowling"
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -194,8 +191,7 @@ of what it feels about education.― Harold Howe",
   assignment_score_levels: true,
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -228,8 +224,7 @@ life.― John Holt",
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -250,7 +245,6 @@ met. Grades have a raw_points of 15000",
   grades: true,
   grade_attributes: {
     status: "Graded",
-    instructor_modified: true,
     raw_points: -> { 15000 },
   }
 }
@@ -363,7 +357,6 @@ is for. Did you learn nothing from my chemistry class? - Walter H. White",
   grades: true,
   grade_attributes: {
     status: "Graded",
-    instructor_modified: true,
     raw_points: -> { 80000 },
     feedback: 'As Aristotle said, <strong>"The whole is greater than the sum \
 of its parts."</strong>'
@@ -548,9 +541,7 @@ positive, because they allow you to work off something.–Charles Gwathmey",
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: true,
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   },
   prediction: true,
   prediction_attributes: {
@@ -572,10 +563,8 @@ not added to total",
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: true,
     status: "Graded",
-    excluded_from_course_score: true,
-    instructor_modified: true
+    excluded_from_course_score: true
   },
   prediction: true,
   prediction_attributes: {
@@ -631,10 +620,8 @@ should not have a visible grade",
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: true,
     raw_points: -> { rand(15000) },
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   },
   prediction: true,
   prediction_attributes: {
@@ -701,7 +688,6 @@ accepts predictions.",
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: false,
     raw_points: -> { nil },
     status: nil,
   },
@@ -783,7 +769,6 @@ submissive, and so on -- because they're dysfunctional to the institutions. \
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: false,
     raw_points: -> { nil },
     status: nil,
   },
@@ -810,7 +795,6 @@ submissive, and so on -- because they're dysfunctional to the institutions. \
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: true,
     raw_points: -> { 15000 },
     status: "Graded"
   },
@@ -849,7 +833,6 @@ Ralph Waldo Emerson",
   },
   grades: true,
   grade_attributes: {
-    instructor_modified: false,
     raw_points: -> { nil },
     status: nil,
   },
@@ -889,7 +872,6 @@ to proceed with growing up. ― John Taylor Gatto",
   assignment_score_levels: true,
   grades: true,
   grade_attributes: {
-    instructor_modified: false,
     raw_points: -> { nil },
     status: nil,
   },
@@ -1227,7 +1209,6 @@ treated like money, to be put away in a bank for the future. ― Seymour Papert"
   grades: true,
   grade_attributes: {
     status: "Graded",
-    instructor_modified: true,
     raw_points: -> { 180000 },
     feedback: 'As George Washington Carver said, <strong>"Education is the key
       to unlock the golden door of freedom."</strong>'
@@ -1273,7 +1254,6 @@ in the end you’ll fall right into my trap. ― Sophia Nikolaidou",
   grades: true,
   grade_attributes: {
     status: "Graded",
-    instructor_modified: true,
     raw_points: -> { 180000 },
     feedback: 'As Winston Churchill said, <strong>"Continuous effort - not
       strength or intelligence - is the key to unlocking our potential.
@@ -1505,8 +1485,7 @@ the speed, and the route.― Jay Cross",
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -1534,8 +1513,7 @@ the speed, and the route.― Jay Cross",
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -1563,8 +1541,7 @@ the speed, and the route.― Jay Cross",
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }
 
@@ -1592,7 +1569,6 @@ the speed, and the route.― Jay Cross",
   },
   grades: true,
   grade_attributes: {
-    status: "Graded",
-    instructor_modified: true
+    status: "Graded"
   }
 }

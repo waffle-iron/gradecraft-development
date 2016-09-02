@@ -63,12 +63,12 @@ describe GradeExporter do
       updated_at = DateTime.now
       allow(students[0]).to \
         receive(:grade_for_assignment).with(assignment)
-          .and_return double(:grade, instructor_modified?: true, graded_or_released?: false,
-                              score: 123, raw_points: 789, feedback: nil, graded_at: updated_at)
+          .and_return double(:grade, graded_or_released?: false, score: 123,
+                             raw_points: 789, feedback: nil, graded_at: updated_at)
       allow(students[1]).to \
         receive(:grade_for_assignment).with(assignment)
-          .and_return double(:grade, instructor_modified?: false, graded_or_released?: true,
-                              score: 456, raw_points: 456, feedback: "Grrrrreat!", graded_at: updated_at)
+          .and_return double :grade, graded_or_released?: true, score: 456,
+                             raw_points: 456, feedback: "Grrrrreat!", graded_at: updated_at
       allow(students[1]).to \
         receive(:submission_for_assignment).with(assignment)
           .and_return double(:submission, text_comment: "Hello there")
@@ -104,7 +104,7 @@ describe GradeExporter do
     it "does not include the grade if it has not been graded or released" do
       allow(students[0]).to \
         receive(:grade_for_assignment).with(assignment)
-          .and_return double(:grade, instructor_modified?: false, graded_or_released?: false)
+          .and_return double(:grade, graded_or_released?: false)
       csv = CSV.new(subject.export_grades_with_detail(assignment, students)).read
       expect(csv[1][3]).to eq ""
     end

@@ -55,7 +55,6 @@ class CSVGradeImporter
     grade.raw_points = row.grade
     grade.feedback = row.feedback
     grade.status = "Graded" if grade.status.nil?
-    grade.instructor_modified = true
     grade.graded_by_id = grader.id unless grader.nil?
     grade.graded_at = DateTime.now
   end

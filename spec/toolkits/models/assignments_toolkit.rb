@@ -83,7 +83,7 @@ module Toolkits
       end
 
       def grade_student_for_active_assignment(student)
-        create(:grade, assignment: @assignment, student: student, feedback: "good jorb!", instructor_modified: true)
+        create(:grade, assignment: @assignment, student: student, feedback: "good jorb!")
       end
 
       def create_submission_for_student(student)

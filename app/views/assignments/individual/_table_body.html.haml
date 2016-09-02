@@ -11,18 +11,18 @@
     %td= link_to student.last_name, student_path(student)
     - if presenter.assignment.threshold_points?
       %td.raw-score
-        = points grade.raw_points if grade.instructor_modified?
+        = points grade.raw_points if grade.grade_modified?
     %td.status-or-score
       - if presenter.assignment.pass_fail?
-        = grade.try(:pass_fail_status) if grade.instructor_modified?
+        = grade.try(:pass_fail_status) if grade.grade_modified?
       - else
-        = points grade.final_points if grade.instructor_modified?
+        = points grade.final_points if grade.grade_modified?
 
     // If the student can weight the assignment type
     - if presenter.assignment_type.student_weightable?
       %td
         - if student.weighted_assignments?(current_course)
-          = points grade.score if grade.instructor_modified?
+          = points grade.score if grade.grade_modified?
         - else
           = "(not yet assigned)"
 
@@ -60,7 +60,7 @@
               /* Submission present - allow instructor to see it, and identify if it's a new submission or a resubmission. Icon represents if there are files attached. */
               %li= link_to glyph(:paperclip) + "See Submission", assignment_submission_path(presenter.assignment, submission.id), class: "button"
 
-          - if grade.instructor_modified?
+          - if grade.grade_modified?
             %li= link_to glyph(:eye) + "See Grade", grade_path(grade), class: "button"
             - if presenter.assignment.accepts_submissions? && presenter.submission_resubmitted?(submissions_for_assignment)
               %li= link_to glyph(:edit) + "Re-grade", edit_grade_path(grade), class: "button danger"

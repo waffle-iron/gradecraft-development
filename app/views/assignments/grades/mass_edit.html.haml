@@ -30,7 +30,6 @@
                 = gf.hidden_field :graded_by_id, :value => current_user.id
                 - if !grade.status
                   = gf.hidden_field :status, :value => "Graded"
-                = gf.hidden_field :instructor_modified, :value => true
                 = gf.hidden_field :student_id
                 = label_tag do
                   // Checking to see if the grade is actually graded before setting the default value to 0

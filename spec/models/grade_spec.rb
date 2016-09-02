@@ -80,7 +80,7 @@ describe Grade do
   describe "#clear_grade!" do
     subject  { create :released_grade, feedback: "You rock", feedback_read: true,
                feedback_read_at: DateTime.now, feedback_reviewed: true,
-               feedback_reviewed_at: DateTime.now, instructor_modified: true,
+               feedback_reviewed_at: DateTime.now,
                graded_at: DateTime.now, graded_by_id: 123 }
 
     it "clears the raw points" do
@@ -112,12 +112,6 @@ describe Grade do
       expect(subject.feedback_reviewed).to eq false
     end
 
-    it "clears the instructor modified" do
-      subject.clear_grade!
-
-      expect(subject.instructor_modified).to eq false
-    end
-
     it "removes any indication that it's been graded" do
       subject.clear_grade!
 
@@ -129,6 +123,29 @@ describe Grade do
       subject.clear_grade!
 
       expect(subject).to_not be_changed
+    end
+  end
+
+  describe ".grade_modified" do
+    it "returns all the grades that have been graded by someone" do
+      modified = create :grade, graded_by_id: 123
+      not_modified = create :grade, graded_by_id: nil
+
+      expect(described_class.grade_modified).to eq [modified]
+    end
+  end
+
+  describe "#grade_modified?" do
+    it "returns true if it has been graded by someone" do
+      subject.graded_by_id = 123
+
+      expect(subject).to be_grade_modified
+    end
+
+    it "returns false if it has not been graded by someone" do
+      subject.graded_by_id = nil
+
+      expect(subject).to_not be_grade_modified
     end
   end
 

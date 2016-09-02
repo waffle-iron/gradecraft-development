@@ -33,8 +33,7 @@ class GradesController < ApplicationController
     grade = Grade.find params[:id]
 
     if grade.update_attributes grade_params.merge(graded_at: DateTime.now,
-                                                  graded_by_id: current_user.id,
-                                                  instructor_modified: true)
+                                                  graded_by_id: current_user.id)
       if GradeProctor.new(grade).viewable?
         GradeUpdaterJob.new(grade_id: grade.id).enqueue
       end
@@ -136,7 +135,7 @@ class GradesController < ApplicationController
       :earned_badges_attributes, :excluded_by_id, :excluded_at, :excluded_from_course_score,
       :feedback, :feedback_read, :feedback_read_at, :feedback_reviewed, :feedback_reviewed_at,
       :final_points, :grade_file_ids, :grade_files_attributes, :graded_at, :graded_by_id,
-      :group_id, :group_type, :instructor_modified, :is_custom_value, :pass_fail_status,
+      :group_id, :group_type, :is_custom_value, :pass_fail_status,
       :full_points, :raw_points, :student_id, :submission_id, :task_id, :team_id, :status,
       grade_files_attributes: [:id, file: []]
   end

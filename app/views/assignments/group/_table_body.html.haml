@@ -38,7 +38,7 @@
               %td= link_to student.name, student_path(student)
               - grade = group_presenter.grade_for(student)
               %td
-                - if grade.present? && grade.instructor_modified?
+                - if grade.present? && grade.grade_modified?
                   = points grade.final_points
               - if group_presenter.assignment.assignment_type.student_weightable?
                 %td

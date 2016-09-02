@@ -35,7 +35,7 @@ class Assignments::GroupsController < ApplicationController
   private
 
   def grade_params
-    params.require(:grade).permit :graded_at, :group_id, :graded_by_id, :instructor_modified,
+    params.require(:grade).permit :graded_at, :group_id, :graded_by_id,
       :submission_id, :raw_points, :feedback, :status
   end
 

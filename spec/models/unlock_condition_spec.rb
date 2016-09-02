@@ -258,9 +258,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student,
-                  raw_points: 100, status: nil, instructor_modified: false,
-                  graded_at: DateTime.now
-        )
+                  raw_points: 100, status: nil, graded_at: DateTime.now)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_value: 100)
@@ -271,9 +269,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student,
-                  raw_points: 100, status: "Graded", instructor_modified:
-                  true, graded_at: DateTime.now
-        )
+                  raw_points: 100, status: "Graded", graded_at: DateTime.now)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_date: (Date.today + 1)
@@ -285,9 +281,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student,
-                  raw_points: 100, status: "Graded", instructor_modified: true,
-                  graded_at: DateTime.now
-        )
+                  raw_points: 100, status: "Graded", graded_at: DateTime.now)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_date: (Date.today - 1)
@@ -299,9 +293,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, raw_points: 100,
-                  status: "Graded", instructor_modified: true,
-                  graded_at: DateTime.now
-        )
+                  status: "Graded", graded_at: DateTime.now)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_value: 100,
@@ -314,8 +306,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student,
-                  raw_points: 90, status: "Graded", instructor_modified: true
-        )
+                  raw_points: 90, status: "Graded")
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_value: 100,
@@ -328,9 +319,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, raw_points: 100,
-                  status: "Graded", instructor_modified: true,
-                  graded_at: DateTime.now
-        )
+                  status: "Graded", graded_at: DateTime.now)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Grade Earned", condition_value: 100,
@@ -345,8 +334,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, status: "Graded",
-                  instructor_modified: true, feedback_read: true
-        )
+                  feedback_read: true)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Feedback Read"
@@ -358,8 +346,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, status: "Graded",
-                  instructor_modified: true, feedback_read: false
-        )
+                  feedback_read: false)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Feedback Read"
@@ -371,9 +358,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, status: "Graded",
-                  instructor_modified: true, feedback_read: true,
-                  feedback_read_at: Date.today
-        )
+                  feedback_read: true, feedback_read_at: Date.today)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Feedback Read", condition_date: Date.today + 1
@@ -385,9 +370,7 @@ describe UnlockCondition do
         student = create(:user)
         create(
           :grade, assignment: assignment, student: student, status: "Graded",
-                  instructor_modified: true, feedback_read: true,
-                  feedback_read_at: Date.today
-        )
+                  feedback_read: true, feedback_read_at: Date.today)
         unlock_condition = UnlockCondition.new(
           condition_id: assignment.id, condition_type: "Assignment",
           condition_state: "Feedback Read", condition_date: Date.today - 1

@@ -140,7 +140,6 @@ class Assignments::GradesController < ApplicationController
         @grade.raw_points = @assignment.full_points
       end
 
-      @grade.instructor_modified = true
       @grade.graded_by_id = current_user.id
       @grade.status = "Graded"
 
@@ -167,7 +166,6 @@ class Assignments::GradesController < ApplicationController
   def assignment_params
     params.require(:assignment).permit grades_attributes: [:graded_by_id,
                                                            :graded_at,
-                                                           :instructor_modified,
                                                            :student_id,
                                                            :raw_points, :status,
                                                            :pass_fail_status,

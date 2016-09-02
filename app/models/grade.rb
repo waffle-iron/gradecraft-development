@@ -44,7 +44,7 @@ class Grade < ActiveRecord::Base
 
   scope :excluded_from_course_score, -> { where excluded_from_course_score: true }
   scope :included_in_course_score, -> { where excluded_from_course_score: false }
-  scope :instructor_modified, -> { where instructor_modified: true }
+  scope :grade_modified, -> { where.not(graded_by_id: nil) }
   scope :positive, -> { where("score > 0")}
   scope :for_course, ->(course) { where(course_id: course.id) }
   scope :for_student, ->(student) { where(student_id: student.id) }
@@ -67,8 +67,12 @@ class Grade < ActiveRecord::Base
       self.adjustment_points_feedback = nil
 
     self.adjustment_points = 0
-    self.feedback_read = self.feedback_reviewed = self.instructor_modified = false
+    self.feedback_read = self.feedback_reviewed = false
     save
+  end
+
+  def grade_modified?
+    !self.graded_by_id.nil?
   end
 
   def feedback_read!

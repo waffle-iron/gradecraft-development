@@ -5,6 +5,7 @@ include CourseTerms
 describe "assignments/individual/_table_body" do
   let(:presenter) { Assignments::Presenter.new({ assignment: @assignment,
                                                  course: @course }) }
+  let(:professor) { create(:professor_course_membership, course: @course).user }
 
   before(:each) do
     @course = create(:course)
@@ -25,16 +26,15 @@ describe "assignments/individual/_table_body" do
 
   describe "with a graded grade" do
     before(:each) do
-      @grade.update(status: "Graded", instructor_modified: true)
+      @grade.update(status: "Graded", graded_by_id: professor.id)
       allow(view).to receive(:remove_grades_assignment_path).and_return("#")
     end
 
     describe "with a score" do
-      context "and the grade is present and instructor modified" do
+      context "and the grade is present and graded" do
         it "renders the final score" do
           @grade.update(raw_points: @assignment.full_points)
-          allow(@grade).to receive(:present?) {true}
-          allow(@grade).to receive(:instructor_modified) {true}
+          allow(@grade).to receive_messages(present?: true, grade_modified?: true)
           render
           assert_select "td.status-or-score", text: "#{points @grade.final_points}"
         end
@@ -43,18 +43,16 @@ describe "assignments/individual/_table_body" do
       context "and the grade is not present" do
         it "doesn't render the raw score" do
           @grade.update(raw_points: @assignment.full_points)
-          allow(@grade).to receive(:present?) {false}
-          allow(@grade).to receive(:instructor_modified) {true}
+          allow(@grade).to receive_messages(present?: false, grade_modified?: true)
           render
           assert_select "td.status-or-score", text: "#{points @grade.final_points}"
         end
       end
 
-      context "and the grade is not instructor modified" do
+      context "and the grade is not graded" do
         it "doesn't render the raw score" do
           @grade.update(raw_points: @assignment.full_points)
           allow(@grade).to receive(:present?) {true}
-          allow(@grade).to receive(:instructor_modified) {false}
           render
           assert_select "td.status-or-score", text: "#{points @grade.final_points}"
         end

@@ -37,7 +37,7 @@ class InfoController < ApplicationController
   # submissions in the system
   def grading_status
     @title = "Grading Status"
-    grades = current_course.grades.instructor_modified
+    grades = current_course.grades.grade_modified
     submissions = current_course.submissions.includes(:assignment, :grade, :student, :group, :submission_files)
     @ungraded_submissions_by_assignment = submissions.ungraded.group_by(&:assignment)
     @resubmissions_by_assignment = submissions.resubmitted.group_by(&:assignment)
