@@ -16,7 +16,6 @@ class API::GradesController < ApplicationController
   def update
     grade = Grade.find(params[:id])
     grade.assign_attributes(grade_params.merge(graded_by_id: current_user.id))
-    grade.instructor_modified = true
     if grade.raw_points_changed?
       grade.graded_at = DateTime.now
     end

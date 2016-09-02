@@ -37,14 +37,6 @@ describe API::GradesController do
         expect(world.grade.raw_points).to eq(20000)
       end
 
-      it "updates instructor modified to true" do
-        post :update, { id: world.grade.id, grade: {
-          raw_points: 20000, feedback: "good jorb!" }}
-
-        world.grade.reload
-        expect(world.grade.instructor_modified).to be_truthy
-      end
-
       it "updates the graded by id to the current user" do
         post :update, { id: world.grade.id, grade: {
           raw_points: 20000, feedback: "good jorb!" }}
