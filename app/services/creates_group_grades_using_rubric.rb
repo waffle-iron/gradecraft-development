@@ -5,8 +5,8 @@ module Services
   class CreatesGroupGradesUsingRubric
     extend LightService::Organizer
 
-    def self.create(raw_params)
-      with(raw_params: raw_params)
+    def self.create(raw_params, user)
+      with(raw_params: raw_params, user: user)
         .reduce(
           Actions::IteratesCreatesGradeUsingRubric
         )
