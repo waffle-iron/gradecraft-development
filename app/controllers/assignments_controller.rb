@@ -7,6 +7,7 @@ class AssignmentsController < ApplicationController
   before_filter :ensure_staff?, except: [:show, :index]
   before_filter :sanitize_params, only: [:create, :update]
 
+  # rubocop:disable AndOr
   def index
     @title = "#{term_for :assignments}"
     @assignment_types = current_course.assignment_types.ordered.includes(:assignments)

@@ -110,7 +110,7 @@ class GradesController < ApplicationController
 
     flash[:success] = "#{grade.student.name}'s #{grade.assignment.name} grade was successfully deleted."
     redirect_to assignment_path(grade.assignment)
-      
+
     rescue CanCan::AccessDenied
     # This is handled here so that a different redirect path can be specified
     redirect_to assignment_path(grade.assignment)

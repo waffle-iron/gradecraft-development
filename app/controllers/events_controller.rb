@@ -37,8 +37,12 @@ class EventsController < ApplicationController
 
   def update
     @event = current_course.events.find(params[:id])
-    flash[:success] = "Event #{@event.name} was successfully updated" if @event.update(event_params)
-    redirect_to @event
+    if @event.update(event_params)
+      flash[:success] = "Event #{@event.name} was successfully updated" 
+      redirect_to @event
+    else 
+      render :edit
+    end
   end
 
   def destroy
