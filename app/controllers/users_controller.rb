@@ -1,6 +1,7 @@
 require_relative "../services/cancels_course_membership"
 require_relative "../services/creates_or_updates_user"
 
+# rubocop:disable AndOr
 class UsersController < ApplicationController
   include UsersHelper
 
@@ -41,18 +42,17 @@ class UsersController < ApplicationController
     @user = result[:user]
 
     if result.success?
-     if @user.is_student?(current_course)
-       flash[:success] = "#{term_for :student} #{@user.name} was successfully created!"
-       redirect_to students_path
-     elsif @user.is_staff?(current_course)
-       flash[:success] = "Staff Member #{@user.name} was successfully created!"
-       redirect_to staff_index_path
-     end
-   else 
-      CourseMembershipBuilder.new(current_user).build_for(@user)
-      render :new
-   end
-
+      if @user.is_student?(current_course)
+        flash[:success] = "#{term_for :student} #{@user.name} was successfully created!"
+        redirect_to students_path and return 
+      elsif @user.is_staff?(current_course)
+        flash[:success] = "Staff Member #{@user.name} was successfully created!"
+        redirect_to staff_index_path and return
+      end
+    end
+    
+    CourseMembershipBuilder.new(current_user).build_for(@user)
+    render :new
   end
 
   def update
@@ -62,15 +62,15 @@ class UsersController < ApplicationController
     if @user.save
       if @user.is_student?(current_course)
         flash[:success] = "#{term_for :student} #{@user.name} was successfully updated!"
-        redirect_to students_path
+        redirect_to students_path and return
       elsif @user.is_staff?(current_course)
         flash[:success] = "Staff Member #{@user.name} was successfully updated!"
-        redirect_to staff_index_path
+        redirect_to staff_index_path and return
       end
-    else 
-      CourseMembershipBuilder.new(current_user).build_for(@user)
-      render :edit
     end
+    
+    CourseMembershipBuilder.new(current_user).build_for(@user)
+    render :edit
   end
 
   def destroy
