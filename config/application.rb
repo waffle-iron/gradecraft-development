@@ -20,6 +20,7 @@ module GradeCraft
 
     config.i18n.enforce_available_locales = true
     config.angular_templates.ignore_prefix  = %w(angular/templates/)
+    config.responders.flash_keys = [ :success, :failure ]
     config.generators do |g|
       g.integration_tool :mini_test
       g.orm :active_record

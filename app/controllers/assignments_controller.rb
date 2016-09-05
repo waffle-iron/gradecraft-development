@@ -65,15 +65,13 @@ class AssignmentsController < ApplicationController
   def copy
     assignment = current_course.assignments.find(params[:id])
     duplicated = assignment.copy
-    redirect_to edit_assignment_path(duplicated)
-    flash[:success] = "#{(term_for :assignment).titleize} #{duplicated.name} successfully created"
+    respond_with duplicated, location: edit_assignment_path(duplicated)
   end
 
   def create
     assignment = current_course.assignments.new(assignment_params)
     if assignment.save
-      flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name} successfully created"
-      redirect_to assignment_path(assignment)
+      respond_with assignment
     else 
       @title = "Create a New #{term_for :assignment}"
       render :new, Assignments::Presenter.build({
@@ -87,8 +85,7 @@ class AssignmentsController < ApplicationController
   def update
     assignment = current_course.assignments.find(params[:id])
     if assignment.update_attributes assignment_params
-      flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name } successfully updated"
-      redirect_to assignments_path
+      respond_with assignment
     else 
       @title = "Edit #{term_for :assignment}"
       render :edit, Assignments::Presenter.build({
@@ -106,8 +103,7 @@ class AssignmentsController < ApplicationController
   def destroy
     assignment = current_course.assignments.find(params[:id])
     assignment.destroy
-    redirect_to assignments_url
-    flash[:success] = "#{(term_for :assignment).titleize} #{assignment.name} successfully deleted"
+    respond_with assignment
   end
 
   def export_structure
@@ -144,5 +140,9 @@ class AssignmentsController < ApplicationController
       assignment_files_attributes: [:id, file: []],
       assignment_score_levels_attributes: [:id, :name, :points, :_destroy],
       assignment_groups_attributes: [:group_id]
+  end
+  
+  def flash_interpolation_options
+    { resource_name: @assignment.name }
   end
 end

@@ -32,7 +32,6 @@ class GroupsController < ApplicationController
       @group.approved = "Approved"
     end
     if @group.save
-      flash[:success]= "#{(@group.name).capitalize} #{term_for :group} successfully created"
       respond_with @group
     else
       @other_students = potential_team_members
@@ -47,7 +46,6 @@ class GroupsController < ApplicationController
 
   def update
     if @group.update_attributes(group_params)
-      flash[:success] = "#{@group.name} #{term_for :group} successfully updated"
       respond_with @group
     else
       @other_students = potential_team_members
@@ -57,8 +55,7 @@ class GroupsController < ApplicationController
 
   def destroy
     @group.destroy
-    flash[:success] = "#{@group.name} #{term_for :group} successfully deleted"
-    redirect_to groups_path
+    respond_with groups_path
   end
 
   private
