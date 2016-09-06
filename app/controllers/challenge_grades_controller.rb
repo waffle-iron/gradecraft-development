@@ -40,7 +40,7 @@ class ChallengeGradesController < ApplicationController
       ScoreRecalculatorJob.new(user_id: student.id, course_id: current_course.id)
     end.each(&:enqueue)
     @team.average_score
-    redirect_to challenge_path(@challenge)
+    respond_with @challenge_grade, location: -> { challenge_path(@challenge) }
   end
 
   private

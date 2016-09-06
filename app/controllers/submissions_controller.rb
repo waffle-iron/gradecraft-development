@@ -44,40 +44,16 @@ class SubmissionsController < ApplicationController
     assignment = current_course.assignments.find(params[:assignment_id])
     submission = assignment.submissions.find(params[:id])
 
-<<<<<<< HEAD
-    respond_to do |format|
-      if submission.update_attributes(submission_params.merge(submitted_at: DateTime.now))
-        submission.check_and_set_late_status!
-        path = assignment.has_groups? ? { group_id: submission.group_id } :
-          { student_id: submission.student_id }
-        redirect_to = assignment_submission_path(assignment, submission, path)
-        if current_user_is_student?
-          NotificationMailer.updated_submission(submission.id).deliver_now if assignment.is_individual?
-          redirect_to = assignment_path(assignment, anchor: "tab3")
-        end
-        format.html { redirect_to redirect_to, notice: "Your submission for #{assignment.name} was successfully updated." }
-        format.json { render json: assignment, status: :created, location: assignment }
-      else
-        format.html do
-          render :edit, Submissions::EditPresenter.build(id: params[:id],
-                                                      assignment_id: params[:assignment_id],
-                                                     course: current_course,
-                                                     group_id: submission.group_id,
-                                                     submission: submission,
-                                                     view_context: view_context)
-        end
-        format.json { render json: submission.errors, status: :unprocessable_entity }
-=======
     if submission.update_attributes(submission_params.merge(submitted_at: DateTime.now))
+      submission.check_and_set_late_status!
       path = assignment.has_groups? ? { group_id: submission.group_id } :
         { student_id: submission.student_id }
-      redirect_to_path = assignment_submission_path(assignment, submission, path)
+      redirect_to = assignment_submission_path(assignment, submission, path)
       if current_user_is_student?
         NotificationMailer.updated_submission(submission.id).deliver_now if assignment.is_individual?
-        redirect_to_path = assignment_path(assignment, anchor: "tab3")
->>>>>>> Refactored alerts
+        flash[:success] = "Your submission for #{assignment.name} was successfully updated."
+        redirect_to = assignment_path(assignment)
       end
-      respond_with submission, location: -> { redirect_to_path }
     else
       render :edit, Submissions::EditPresenter.build(id: params[:id],
                                                   assignment_id: params[:assignment_id],
@@ -85,6 +61,7 @@ class SubmissionsController < ApplicationController
                                                  group_id: submission.group_id,
                                                  submission: submission,
                                                  view_context: view_context)
+      end
     end
   end
 

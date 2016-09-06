@@ -43,9 +43,9 @@ class UsersController < ApplicationController
 
     if result.success?
       if @user.is_student?(current_course)
-        respond_with @user, location: -> { students_path }
+        respond_with @user, location: -> { students_path } and return
       elsif @user.is_staff?(current_course)
-        respond_with @user, location: -> { staff_path }
+        respond_with @user, location: -> { staff_path } and return
       end
     end
     
@@ -59,9 +59,9 @@ class UsersController < ApplicationController
     cancel_course_memberships @user
     if @user.save
       if @user.is_student?(current_course)
-        respond_with @user, location: -> { students_path }
+        respond_with @user, location: -> { students_path } and return
       elsif @user.is_staff?(current_course)
-        respond_with @user, location: -> { staff_path }
+        respond_with @user, location: -> { staff_path } and return
       end
     end
     
