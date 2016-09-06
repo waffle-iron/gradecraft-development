@@ -26,8 +26,7 @@ class TeamsController < ApplicationController
     @team =  current_course.teams.new(team_params)
     @team.save
     @team.team_memberships.build
-    flash[:success] = "Team #{@team.name} successfully created"
-    redirect_to @team
+    respond_with @team
   end
 
   def edit
@@ -39,16 +38,14 @@ class TeamsController < ApplicationController
   def update
     @team = current_course.teams.find(params[:id])
     @team.update_attributes(team_params)
-    flash[:success] = "Team #{@team.name} successfully updated"
-    redirect_to @team 
+    respond_with @team 
   end
 
   def destroy
     @team = current_course.teams.find(params[:id])
     @name = "#{@team.name}"
     @team.destroy
-    flash[:success] = "#{(term_for :team).titleize} #{@name} successfully deleted"
-    redirect_to teams_url
+    respond_with @team
   end
 
   private

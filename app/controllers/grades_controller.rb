@@ -45,8 +45,10 @@ class GradesController < ApplicationController
       flash[:success] = "#{grade.student.name}'s #{grade.assignment.name} was successfully updated"
       redirect_to path
     else # failure
-      flash[:alert] = "#{grade.student.name}'s #{grade.assignment.name} was not successfully submitted! Please try again."
+      flash[:alert] = "#{grade.student.name}'s #{grade.assignment.name} was not successfully "\
+        "submitted! Please try again."
       redirect_to edit_grade_path(grade)
+        
     end
   end
 
@@ -73,13 +75,9 @@ class GradesController < ApplicationController
     grade.excluded_at = Time.now
     if grade.save
       score_recalculator(grade.student)
-      redirect_to student_path(grade.student), notice: "#{ grade.student.name }'s
-      #{ grade.assignment.name } grade was successfully excluded from their
-      total score."
+      respond_with grade, location: -> { student_path(grade.student) }
     else
-      redirect_to student_path(grade.student), alert: "#{ grade.student.name }'s
-      #{ grade.assignment.name } grade was not successfully excluded from their
-      total score - please try again."
+      redirect_to student_path(grade.student)
     end
   end
 
@@ -91,13 +89,9 @@ class GradesController < ApplicationController
     grade.excluded_at = nil
     if grade.save
       score_recalculator(grade.student)
-      redirect_to student_path(grade.student), notice: "#{ grade.student.name }'s
-      #{ grade.assignment.name } grade was successfully re-added to their total
-      score."
+      respond_with grade, location: -> { student_path(grade.student) }
     else
-      redirect_to student_path(grade.student), alert: "#{ grade.student.name }'s
-      #{ grade.assignment.name } grade was not successfully re-added to their
-      total score - please try again."
+      redirect_to student_path(grade.student)
     end
   end
 
@@ -108,8 +102,7 @@ class GradesController < ApplicationController
     grade.destroy
     score_recalculator(grade.student)
 
-    flash[:success] = "#{grade.student.name}'s #{grade.assignment.name} grade was successfully deleted."
-    redirect_to assignment_path(grade.assignment)
+    respond_with grade, location: -> { assignment_path(grade.assignment) }
 
     rescue CanCan::AccessDenied
     # This is handled here so that a different redirect path can be specified
@@ -121,8 +114,7 @@ class GradesController < ApplicationController
     grade = Grade.find params[:id]
     authorize! :update, grade, student_logged: false
     grade.feedback_read!
-    flash[:success] = "Thank you for letting us know!"
-    redirect_to assignment_path(grade.assignment)
+    respond_with grade, location: -> { assignment_path(grade.assignment) }
   end
 
   private

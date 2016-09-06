@@ -27,8 +27,7 @@ class EventsController < ApplicationController
   def create
     @event = current_course.events.new(event_params)
     if @event.save
-      flash[:success] = "Event #{@event.name} was successfully created"
-      redirect_to @event
+      respond_with @event
     else
       @title = "Create a New Calendar Event"
       render :new
@@ -38,8 +37,7 @@ class EventsController < ApplicationController
   def update
     @event = current_course.events.find(params[:id])
     if @event.update(event_params)
-      flash[:success] = "Event #{@event.name} was successfully updated" 
-      redirect_to @event
+      respond_with @event
     else 
       render :edit
     end
@@ -49,8 +47,7 @@ class EventsController < ApplicationController
     @event = current_course.events.find(params[:id])
     @name = @event.name
     @event.destroy
-    flash[:success] = "#{@name} successfully deleted"
-    redirect_to events_url
+    respond_with @event
   end
 
   private

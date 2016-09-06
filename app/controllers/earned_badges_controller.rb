@@ -44,8 +44,7 @@ class EarnedBadgesController < ApplicationController
     result = Services::CreatesEarnedBadge.award earned_badge_params
 
     if result.success?
-      flash[:success] = "The #{result.earned_badge.badge.name} #{term_for :badge} was successfully awarded to #{result.earned_badge.student.name}"
-      redirect_to badge_path(result.earned_badge.badge)
+      respond_with result.earned_badge, location: -> { badge_path(@badge) }
     else
       @title = "Award #{@badge.name}"
       @earned_badge = result.earned_badge
@@ -61,8 +60,7 @@ class EarnedBadgesController < ApplicationController
                                  course_id: current_course.id).enqueue
       end
       expire_fragment "earned_badges"
-      flash[:success] = "#{@earned_badge.student.name}'s #{@badge.name} #{term_for :badge} was successfully updated"
-      redirect_to badge_path(@badge)
+      respond_with @earned_badge, location: -> { badge_path(@badge) }
     else
       render action: "edit"
     end
@@ -109,8 +107,7 @@ class EarnedBadgesController < ApplicationController
     @student_name = "#{@earned_badge.student.name}"
     @earned_badge.destroy
     expire_fragment "earned_badges"
-    flash[:success] = "The #{@badge.name} #{term_for :badge} has been taken away from #{@student_name}."
-    redirect_to @badge
+    respond_with @badge
   end
 
   private

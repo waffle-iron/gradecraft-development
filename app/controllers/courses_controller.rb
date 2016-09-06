@@ -48,8 +48,7 @@ class CoursesController < ApplicationController
       end
       session[:course_id] = @course.id
       bust_course_list_cache current_user
-      flash[:success] = "Course #{@course.name} successfully created"
-      redirect_to course_path(@course)
+      respond_with @course, location: -> { edit_course_path(@course) }
     else
       render action: "new"
     end
@@ -64,10 +63,8 @@ class CoursesController < ApplicationController
       end
       duplicated.recalculate_student_scores unless duplicated.student_count.zero?
       session[:course_id] = duplicated.id
-      flash[:success] = "#{@course.name} successfully copied"
-      redirect_to edit_course_path(duplicated.id)
+      respond_with @course, location: -> { edit_course_path(duplicated.id) }
     else
-      flash[:alert] = "#{@course.name} was not successfully copied"
       redirect_to courses_path
     end
   end
@@ -76,8 +73,7 @@ class CoursesController < ApplicationController
     authorize! :update, @course
     if @course.update_attributes(course_params)
       bust_course_list_cache current_user
-      flash[:success] = "Course #{@course.name} successfully updated"
-      redirect_to @course
+      respond_with @course
     else
       render action: "edit"
     end
@@ -87,8 +83,7 @@ class CoursesController < ApplicationController
     authorize! :destroy, @course
     @name = @course.name
     @course.destroy
-    flash[:success] = "Course #{@name} successfully deleted"
-    redirect_to courses_url
+    respond_with @course
   end
 
   # Switch between enrolled courses

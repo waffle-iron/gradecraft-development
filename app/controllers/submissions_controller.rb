@@ -23,8 +23,7 @@ class SubmissionsController < ApplicationController
         NotificationMailer.successful_submission(submission.id).deliver_now if assignment.is_individual?
         redirect_to_path = assignment_path(assignment)
       end
-      flash[:success] = "#{assignment.name} was successfully submitted."
-      redirect_to redirect_to_path
+      respond_with submission, location: -> { redirect_to_path }
     else
       render :new, Submissions::NewPresenter.build(assignment_id: params[:assignment_id],
                                                 submission: submission,
@@ -78,8 +77,7 @@ class SubmissionsController < ApplicationController
         redirect_to_path = assignment_path(assignment, anchor: "tab3")
 >>>>>>> Refactored alerts
       end
-      flash[:success] ="Your submission for #{assignment.name} was successfully updated."
-      redirect_to redirect_to_path
+      respond_with submission, location: -> { redirect_to_path }
     else
       render :edit, Submissions::EditPresenter.build(id: params[:id],
                                                   assignment_id: params[:assignment_id],
@@ -93,7 +91,7 @@ class SubmissionsController < ApplicationController
   def destroy
     assignment = current_course.assignments.find(params[:assignment_id])
     assignment.submissions.find(params[:id]).destroy
-    redirect_to assignment_path(assignment, notice: "Submission deleted")
+    respond_with submission, location: -> { assignment }
   end
 
   private

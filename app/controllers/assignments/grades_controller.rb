@@ -26,9 +26,9 @@ class Assignments::GradesController < ApplicationController
     enqueue_multiple_grade_update_jobs(grade_ids)
 
     if session[:return_to].present?
-      redirect_to session[:return_to], notice: "Grades were successfully updated!"
+      respond_with assignment, location: -> { session[:return_to] }
     else
-      redirect_to assignment, notice: "Grades were successfully updated!"
+      respond_with assignment
     end
   end
 
@@ -119,9 +119,7 @@ class Assignments::GradesController < ApplicationController
       grade.destroy
       ScoreRecalculatorJob.new(user_id: grade.student_id, course_id: current_course.id).enqueue
     end
-    
-    flash[:success] = "Successfully deleted all grades for #{ assignment.name }"
-    redirect_to assignment_path(assignment)
+    respond_with assignment, location: -> { assignment_path(assignment) }
   end
 
   # PUT /assignments/:assignment_id/grades/self_log
@@ -147,11 +145,10 @@ class Assignments::GradesController < ApplicationController
         grade_updater_job = GradeUpdaterJob.new(grade_id: @grade.id)
         grade_updater_job.enqueue
 
-        flash[:success] = "Nice job! Thanks for logging your grade!"
         redirect_to assignments_path
       else
         flash[:alert] = "We're sorry, there was an error saving your grade."
-        redirect_to assignments_path
+        respond_with @assignment, location: -> { assignments_path }
       end
     else
       flash[:alert] = "This assignment is not open for self grading."

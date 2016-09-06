@@ -33,8 +33,12 @@ en:
         success: "Challenge Grade successfully created."
       update_status: 
         success: "Challenge Grades successfully updated."
+    courses: 
+      copy: 
+        success: "Course successfully copied"
     course_memberships: 
-      destroy: "User was successfully deleted from this course"
+      destroy: 
+        success: "User was successfully deleted from this course"
     groups:
       create:
         success: "Your group was successfully created."
