@@ -26,8 +26,7 @@ class AnnouncementsController < ApplicationController
     authorize! :create, @announcement
     if @announcement.save
       @announcement.deliver!
-      flash[:success] = "Announcement created and sent."
-      redirect_to announcements_path
+      respond_with @announcement
     else 
       @title = "Create a New Announcement"
       render :new

@@ -20,12 +20,10 @@ class ChallengeGradesController < ApplicationController
   def update
     @team = @challenge_grade.team
     if @challenge_grade.update_attributes(challenge_grade_params)
-
       if ChallengeGradeProctor.new(@challenge_grade).viewable?
         ChallengeGradeUpdaterJob.new(challenge_grade_id: @challenge_grade.id).enqueue
       end
-      flash[:success] = "#{@team.name}'s Grade for #{@challenge.name} #{(term_for :challenge).titleize} successfully updated"
-      redirect_to challenge_path(@challenge)
+      respond_with @challenge_grade, location: -> { challenge_path(@challenge) }
     else
       render action: "edit"
     end
@@ -42,8 +40,6 @@ class ChallengeGradesController < ApplicationController
       ScoreRecalculatorJob.new(user_id: student.id, course_id: current_course.id)
     end.each(&:enqueue)
     @team.average_score
-    
-    flash[:success] = "#{@team.name}'s grade for #{@challenge.name} has been successfully deleted."
     redirect_to challenge_path(@challenge)
   end
 

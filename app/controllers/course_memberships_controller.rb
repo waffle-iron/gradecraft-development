@@ -16,8 +16,7 @@ class CourseMembershipsController < ApplicationController
     course_membership = current_course.course_memberships.find(params[:id])
     Services::CancelsCourseMembership.for_student course_membership
     
-    flash[:success] = "#{course_membership.user.name} was successfully removed from course."
-    redirect_to students_path
+    respond_with course_membership, location: -> { students_path }
   end
 
   private

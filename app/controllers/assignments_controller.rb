@@ -143,6 +143,6 @@ class AssignmentsController < ApplicationController
   end
   
   def flash_interpolation_options
-    { resource_name: @assignment.name }
+    { resource_name: assignment.name }
   end
 end

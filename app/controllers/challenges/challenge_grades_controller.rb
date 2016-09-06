@@ -19,9 +19,7 @@ class Challenges::ChallengeGradesController < ApplicationController
       if ChallengeGradeProctor.new(@challenge_grade).viewable?
         ChallengeGradeUpdaterJob.new(challenge_grade_id: @challenge_grade.id).enqueue
       end
-
-      redirect_to challenge_path(@challenge),
-        notice: "#{@team.name}'s Grade for #{@challenge.name} #{(term_for :challenge).titleize} successfully graded"
+      respond_with @challenge_grade, location: -> { challenge_path(@challenge_grade.challenge) }
     else
       render action: "new"
     end
@@ -48,8 +46,7 @@ class Challenges::ChallengeGradesController < ApplicationController
 
       challenge_grade_ids.each { |id| ChallengeGradeUpdaterJob.new(challenge_grade_id: id).enqueue }
 
-      redirect_to challenge_path(@challenge),
-        notice: "#{@challenge.name} #{term_for :challenge} successfully graded"
+      respond_with @challenge, location: -> { challenge_path(@challenge) }
     else
       render action: "mass_edit"
     end
@@ -71,8 +68,7 @@ class Challenges::ChallengeGradesController < ApplicationController
     @challenge_grades.each do |challenge_grade|
       challenge_grade.update_attributes!(challenge_grade_params.reject { |k, v| v.blank? })
     end
-    flash[:notice] = "Updated #{(term_for :challenge).titleize} Grades!"
-    redirect_to challenge_path(@challenge)
+    respond_with @challenge_grades, location: -> { challenge_path(@challenge_grades.first.challenge) }
   end
 
   private

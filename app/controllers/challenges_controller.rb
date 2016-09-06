@@ -28,8 +28,7 @@ class ChallengesController < ApplicationController
     @challenge = current_course.challenges.create(challenge_params)
 
     if @challenge.save
-      redirect_to @challenge
-      flash[:success] = "Challenge #{@challenge.name} successfully created"
+      respond_with @challenge
     else
       render action: "new"
     end
@@ -37,8 +36,7 @@ class ChallengesController < ApplicationController
 
   def update
     if @challenge.update_attributes(challenge_params)
-      redirect_to challenges_path
-      flash[:success] = "Challenge #{@challenge.name} successfully updated"
+      respond_with @challenge
     else
       render action: "edit"
     end
@@ -47,8 +45,7 @@ class ChallengesController < ApplicationController
   def destroy
     @name = "#{@challenge.name}"
     @challenge.destroy
-    flash[:success] = "Challenge #{@name} successfully deleted"
-    redirect_to challenges_path
+    respond_with @challenge
   end
 
   private

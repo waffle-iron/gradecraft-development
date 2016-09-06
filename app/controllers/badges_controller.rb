@@ -37,8 +37,7 @@ class BadgesController < ApplicationController
     @badge = current_course.badges.new(badge_params)
 
     if @badge.save
-      flash[:success] = "#{@badge.name} #{term_for :badge} successfully created"
-      redirect_to @badge
+      respond_with @badge
     else
       render action: "new"
     end
@@ -46,8 +45,7 @@ class BadgesController < ApplicationController
 
   def update
     if @badge.update_attributes(badge_params)
-      flash[:success] = "#{@badge.name} #{term_for :badge} successfully updated"
-      redirect_to badges_path
+      respond_with @badge
     else
       render action: "edit"
     end
@@ -60,8 +58,7 @@ class BadgesController < ApplicationController
   def destroy
     @name = @badge.name
     @badge.destroy
-    flash[:success] = "#{@name} #{term_for :badge} successfully deleted"
-    redirect_to badges_path
+    respond_with @badge
   end
   
   def export_structure
@@ -86,5 +83,9 @@ class BadgesController < ApplicationController
 
   def find_badge
     @badge = current_course.badges.find(params[:id])
+  end
+  
+  def flash_interpolation_options
+    { resource_name: @badge.name }
   end
 end

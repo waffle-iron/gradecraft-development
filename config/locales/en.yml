@@ -25,6 +25,16 @@ en:
         alert: "We're sorry, your assignment could not be created. Check below for possible errors."
       update: 
         success: "%{resource_name} successfully updated"
+    announcements: 
+      create: 
+        success: "Announcement created and sent."
+    challenge_grades: 
+      create: 
+        success: "Challenge Grade successfully created."
+      update_status: 
+        success: "Challenge Grades successfully updated."
+    course_memberships: 
+      destroy: "User was successfully deleted from this course"
     groups:
       create:
         success: "Your group was successfully created."

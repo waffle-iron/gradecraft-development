@@ -29,10 +29,8 @@ class AssignmentTypesController < ApplicationController
     @assignment_type =
       current_course.assignment_types.new(assignment_type_params)
     @title = "Create a New #{term_for :assignment_type}"
-
     if @assignment_type.save
-      flash[:success] = "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully created"
-      redirect_to assignments_path
+      respond_with @assignment_type, location: -> { assignments_path }
     else
       render action: "new"
     end
@@ -44,8 +42,7 @@ class AssignmentTypesController < ApplicationController
     @assignment_type.update_attributes(assignment_type_params)
     
     if @assignment_type.save
-      flash[:success] = "#{(term_for :assignment_type).titleize} #{@assignment_type.name} successfully updated"
-      redirect_to assignments_path
+      respond_with @assignment_type, location: -> { assignments_path }
     else
       render action: "edit"
     end
@@ -100,8 +97,7 @@ class AssignmentTypesController < ApplicationController
   def destroy
     @name = "#{@assignment_type.name}"
     @assignment_type.destroy
-    redirect_to assignments_path
-    flash[:success] = "#{(term_for :assignment_type).titleize} #{@name} successfully deleted"
+    respond_with @assignment_type, location: -> { assignments_path }
   end
 
   private
@@ -113,5 +109,9 @@ class AssignmentTypesController < ApplicationController
 
   def find_assignment_type
     @assignment_type = current_course.assignment_types.find(params[:id])
+  end
+  
+  def flash_interpolation_options
+    { resource_name: @assignment_type.name }
   end
 end
