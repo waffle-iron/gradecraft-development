@@ -24,6 +24,10 @@ GradeCraft::Application.configure do
   config.eager_load = true
   config.i18n.fallbacks = true
   config.log_level = :debug
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  config.force_ssl = true
+
   config.serve_static_files = ["1", "yes", "true", "on"].include?(ENV["GC_SERVE_STATIC_FILES"] || "0" )
   config.session_store :active_record_store, :expire_after => 60.minutes
 end
