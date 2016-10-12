@@ -18,6 +18,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "pg"
   s.add_dependency "rails", "~> 4.2.3"
+  s.add_dependency "sorcery"
 
+  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "faker"
   s.add_development_dependency "rspec-rails", "~> 3.4.2"
 end
