@@ -5,6 +5,8 @@ require "factory_girl"
 require "faker"
 require "yaml"
 
+require_relative "support/sorcery_helper"
+
 Dir["./app/models/concerns/*.rb"].each { |f| require f }
 Dir["./app/models/*.rb"].each { |f| require f }
 
