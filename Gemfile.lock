@@ -40,6 +40,12 @@ GIT
       connection_pool (~> 2.0)
       optionable (~> 0.2.0)
 
+PATH
+  remote: components
+  specs:
+    gradebook (0.0.1)
+      rails (~> 4.2.3)
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -717,6 +723,7 @@ DEPENDENCIES
   fog
   font-awesome-rails
   foreman
+  gradebook!
   haml
   haml-rails
   httparty
@@ -791,6 +798,9 @@ DEPENDENCIES
   whenever
   wysiwyg-rails
   zeus
+
+RUBY VERSION
+   ruby 2.2.2p95
 
 BUNDLED WITH
    1.12.5

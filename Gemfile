@@ -3,6 +3,11 @@ source 'https://rubygems.org'
 ruby '2.2.2'
 
 gem 'rails'
+
+path "components" do
+  gem "gradebook"
+end
+
 gem 'resque', '1.26'
 gem 'actionpack-action_caching'
 gem 'activerecord-import'
