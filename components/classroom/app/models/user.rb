@@ -1,5 +1,10 @@
 module Classroom
   class User < ActiveRecord::Base
-    validates :email, presence: true
+    # TODO: Move this to Regex::Email
+    email_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+
+    validates :email, presence: true,
+                      format: { with: email_regex },
+                      uniqueness: { case_sensitive: false }
   end
 end
