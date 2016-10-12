@@ -43,6 +43,9 @@ GIT
 PATH
   remote: components
   specs:
+    classroom (0.0.1)
+      pg
+      rails (~> 4.2.3)
     gradebook (0.0.1)
       pg
       rails (~> 4.2.3)
@@ -709,6 +712,7 @@ DEPENDENCIES
   capybara-select2
   carrierwave (~> 0.10.0)
   carrierwave_backgrounder (= 0.4.2)
+  classroom!
   codeclimate-test-reporter
   coffee-rails
   compass-rails

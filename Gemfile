@@ -5,6 +5,7 @@ ruby '2.2.2'
 gem 'rails'
 
 path "components" do
+  gem "classroom"
   gem "gradebook"
 end
 
