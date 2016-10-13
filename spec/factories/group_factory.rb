@@ -8,4 +8,11 @@ FactoryGirl.define do
     name { Faker::Lorem.word }
     approved "Pending"
   end
+
+  factory :empty_group, class: Group do
+    association :course, factory: :course
+    association :assignment_group, factory: :assignment_group
+    name { Faker::Lorem.word }
+    approved "Pending"
+  end
 end

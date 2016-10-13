@@ -9,6 +9,7 @@ RSpec.describe SubmissionsExportsController, type: :controller do
   let(:submissions_export) { create(:submissions_export, course: course, assignment: assignment, s3_object_key: "some thing") }
   let(:assignment) { create(:assignment) }
   let(:professor) { create(:professor_course_membership, course: course).user }
+  let(:group) { create :empty_group, course: course, assignment: assignment }
 
   before do
     login_user(professor)
@@ -274,11 +275,13 @@ RSpec.describe SubmissionsExportsController, type: :controller do
 
   describe "#create_submissions_export" do
     subject { controller.instance_eval { create_submissions_export } }
+
     let(:submissions_export_attrs) {{
       assignment_id: assignment.id,
       course_id: course.id,
       professor_id: professor.id,
-      team_id: team.id
+      team_id: team.id,
+      group_id: group.id
     }}
 
     before do

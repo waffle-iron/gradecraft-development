@@ -70,7 +70,8 @@ class SubmissionsExportsController < ApplicationController
       assignment_id: params[:assignment_id],
       course_id: current_course.id,
       professor_id: current_user.id,
-      team_id: params[:team_id]
+      team_id: params[:team_id],
+      group_id: params[:group_id]
     )
   end
 
