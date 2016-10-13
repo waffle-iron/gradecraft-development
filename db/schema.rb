@@ -654,6 +654,7 @@ ActiveRecord::Schema.define(version: 20161031184138) do
     t.integer  "assignment_id"
     t.integer  "course_id"
     t.integer  "professor_id"
+    t.integer  "group_id"
     t.integer  "student_ids",              default: [], null: false, array: true
     t.integer  "team_id"
     t.text     "export_filename"
