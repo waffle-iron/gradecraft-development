@@ -20,6 +20,7 @@ class Group < ActiveRecord::Base
   accepts_nested_attributes_for :proposals, allow_destroy: true, reject_if: proc { |a| a["proposal"].blank? }
 
   has_many :submissions
+  has_many :submissions_exports
 
   has_many :earned_badges, as: :group
 

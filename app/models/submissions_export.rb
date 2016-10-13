@@ -17,6 +17,7 @@ class SubmissionsExport < ActiveRecord::Base
   belongs_to :course
   belongs_to :professor, class_name: "User", foreign_key: "professor_id"
   belongs_to :team
+  belongs_to :group
   belongs_to :assignment
 
   # secure tokens allow for one-click downloads of the file from an email
