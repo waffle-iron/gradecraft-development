@@ -157,7 +157,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def fetch_students_for_csv
-    if submissions_export.has_team?
+    if submissions_export.team
       @students_for_csv = User.students_by_team(@course, @team)
     else
       @students_for_csv = User.with_role_in_course("student", @course)
@@ -165,7 +165,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def fetch_students
-    if submissions_export.has_team?
+    if submissions_export.team
       @students = @assignment.students_with_text_or_binary_files_on_team(@team)
     else
       @students = @assignment.students_with_text_or_binary_files
@@ -173,7 +173,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def fetch_submissions
-    if submissions_export.has_team?
+    if submissions_export.team
       @submissions = @assignment.student_submissions_with_files_for_team(@team)
     else
       @submissions = @assignment.student_submissions_with_files

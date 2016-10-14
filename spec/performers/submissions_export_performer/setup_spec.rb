@@ -7,25 +7,9 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   describe "#setup" do
     subject { performer.setup }
 
-    describe "ensuring s3fs parent dir" do
-      before(:each) { allow(performer).to receive(:s3fs_tmp_dir_path) { Dir.mktmpdir } }
-
-      context "system is using s3fs" do
-        before { allow(performer).to receive(:use_s3fs?) { true } }
-
-        it "ensures that the tmp dir parent exists" do
-          expect(performer).to receive(:ensure_s3fs_tmp_dir)
-          subject
-        end
-      end
-
-      context "system is not using s3fs" do
-        before { allow(performer).to receive(:use_s3fs?) { false } }
-        it "doesn't ensure that the tmp dir parent exists" do
-          expect(performer).not_to receive(:ensure_s3fs_tmp_dir)
-          subject
-        end
-      end
+    it "ensures that the s3fs tmpdir exists" do
+      expect(S3fs).to receive(:ensure_tmpdir)
+      performer
     end
 
     it "finds the submissions export by id" do
