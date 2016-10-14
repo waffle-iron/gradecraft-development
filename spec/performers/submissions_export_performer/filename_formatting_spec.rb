@@ -58,35 +58,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
       subject
       expect(FileUtils).not_to receive(:mkdir_p).with(archive_root_dir_path)
       subject
-    end
-
-    it "sets the root dir path to @archive_root_dir" do
-      subject
-      expect(performer.instance_variable_get(:@archive_root_dir)).to eq(archive_root_dir_path)
-    end
-  end
-
-  describe "#archive_root_dir_path" do
-    let(:tmp_dir) { Dir.mktmpdir }
-    let(:expected_outcome) { File.expand_path(export_file_basename, tmp_dir) }
-    let(:export_file_basename) { performer.submissions_export.export_file_basename }
-    subject { performer.instance_eval { archive_root_dir_path }}
-
-    before(:each) { allow(performer).to receive(:tmp_dir) { tmp_dir }}
-
-    it "returns the archive root dir path" do
-      expect(subject).to eq(expected_outcome)
-    end
-
-    it "caches the root dir path" do
-      subject
-      expect(File).not_to receive(:expand_path).with(export_file_basename, tmp_dir)
-      subject
-    end
-
-    it "sets the root dir path to @archive_root_dir_path" do
-      subject
-      expect(performer.instance_variable_get(:@archive_root_dir_path)).to eq(expected_outcome)
+      expect(performer.instance_variable_get :@archive_root_dir)
+        .to eq(archive_root_dir_path)
     end
   end
 
@@ -99,10 +72,6 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     it "caches the temporary directory" do
       original_tmp_dir = subject
       expect(subject).to eq(original_tmp_dir)
-    end
-
-    it "sets the directory path to @tmp_dir" do
-      subject
       expect(performer.instance_variable_get(:@tmp_dir)).to eq(subject)
     end
   end
@@ -111,17 +80,13 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     subject { performer.instance_eval { archive_tmp_dir }}
 
     it "builds a temporary directory for the archive" do
-      expect(Dir).to receive(:mktmpdir).with(no_args)
+      expect(S3fs).to receive(:mktmpdir)
       subject
     end
 
     it "caches the temporary directory" do
       original_tmp_dir = subject
       expect(subject).to eq(original_tmp_dir)
-    end
-
-    it "sets the directory path to @archive_tmp_dir" do
-      subject
       expect(performer.instance_variable_get(:@archive_tmp_dir)).to eq(subject)
     end
   end
@@ -140,11 +105,6 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     it "caches the basename" do
       subject
       expect(performer).not_to receive(:export_file_basename)
-      subject
-    end
-
-    it "sets the expanded path to @expanded_archive_base_path" do
-      subject
       expect(performer.instance_variable_get(:@expanded_archive_base_path)).to eq(subject)
     end
   end
