@@ -113,11 +113,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def tmp_dir
-    if use_s3fs?
-      @tmp_dir ||= Dir.mktmpdir(nil, s3fs_tmp_dir_path)
-    else
-      @tmp_dir ||= Dir.mktmpdir
-    end
+    @tmp_dir ||= S3fs.mktmpdir
   end
 
   def archive_root_dir
