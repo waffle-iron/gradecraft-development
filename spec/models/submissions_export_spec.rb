@@ -1,4 +1,4 @@
-require "active_record_spec_helper"
+require "rails_spec_helper"
 require "formatter"
 
 RSpec.describe SubmissionsExport do
@@ -74,24 +74,25 @@ RSpec.describe SubmissionsExport do
     before do
       allow(subject).to receive_messages \
         formatted_assignment_name: "The Assignment",
-        formatted_team_name: "The Team"
+        formatted_team_name: "The Team",
+        formatted_group_name: "Some Group"
     end
 
     it "combines the formatted assignment and team names" do
-      expect(result).to eq "The Assignment - The Team"
+      expect(result).to eq "The Assignment - The Team - Some Group"
     end
 
     it "strips out whitespace" do
       allow(subject).to receive_messages \
         formatted_assignment_name: "           The Assignment",
-        formatted_team_name: "The Team    "
+        formatted_group_name: "Some Group               "
 
-      expect(result).to eq "The Assignment - The Team"
+      expect(result).to eq "The Assignment - The Team - Some Group"
     end
 
     it "compacts out nil team names" do
       allow(subject).to receive(:formatted_team_name) { nil }
-      expect(result).to eq "The Assignment"
+      expect(result).to eq "The Assignment - Some Group"
     end
   end
 
@@ -101,43 +102,15 @@ RSpec.describe SubmissionsExport do
     # make sure that stale instance variables don't interfere with caching
     before(:each) { subject.instance_variable_set(:@team_name, nil) }
 
-    context "has_team? is false and @team_name is nil" do
-      before do
-        allow(subject).to receive(:has_team?) { false }
-      end
-
-      it "returns nil" do
-        expect(result).to be_nil
-      end
-
-      it "doesn't set a @team_name" do
-        result
-        expect(subject.instance_variable_get(:@team_name)).to be_nil
-      end
+    it "formats the team name if a team exists" do
+      allow(subject).to receive(:team) { create :team, name: "Super Team" }
+      expect(Formatter::Filename).to receive(:titleize).with "Super Team"
+      result
     end
 
-    context "has_team? is true" do
-      before do
-        allow(subject).to receive(:has_team?) { true }
-        allow(subject).to receive_message_chain(:team, :name) { "Super Team" }
-      end
-
-      it "titleizes the team name" do
-        expect(Formatter::Filename).to receive(:titleize).with "Super Team"
-        result
-      end
-
-      it "sets a @team_name" do
-        result
-        expect(subject.instance_variable_get(:@team_name)).to eq "Super Team"
-      end
-
-      it "caches the team name" do
-        result
-        expect(Formatter::Filename).not_to receive(:titleize)
-        result
-      end
+    it "returns nil if no team exists" do
+      allow(subject).to receive(:team) { nil }
+      expect(result).to be_nil
     end
   end
-
 end
