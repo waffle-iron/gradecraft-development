@@ -1,3 +1,5 @@
+require 'fileutils'
+
 # The purpose of this module is just to help us figure out whether to use s3fs,
 # as we can in staging and production, or whether we can use the tmp directories
 # local to the machine running this code.
@@ -26,6 +28,11 @@ module S3fs
     #
     def tmpdir_prefix
       available? ? "/s3mnt/tmp/#{rails_env}" : nil
+    end
+
+    # create a separate tmp dir for storing the final generated archive
+    def ensure_tmpdir
+      FileUtils.mkdir_p(tmpdir_prefix) if available?
     end
 
     def rails_env

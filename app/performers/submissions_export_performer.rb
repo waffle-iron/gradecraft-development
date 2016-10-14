@@ -6,7 +6,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   attr_reader :submissions_export, :professor, :course, :errors, :assignment, :team, :submissions
 
   def setup
-    ensure_s3fs_tmp_dir if use_s3fs?
+    S3fs.ensure_tmpdir # make sure the s3fs tmpdir exists
     @submissions_export = SubmissionsExport.find @attrs[:submissions_export_id]
     fetch_assets
     @submissions_export.update_attributes submissions_export_attributes
@@ -204,29 +204,8 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   # final archive concerns
 
-  # create a separate tmp dir for storing the final generated archive
-  def ensure_s3fs_tmp_dir
-    FileUtils.mkdir_p(s3fs_tmp_dir_path) unless Dir.exist?(s3fs_tmp_dir_path)
-  end
-
   def archive_tmp_dir
-    if use_s3fs?
-      @archive_tmp_dir ||= Dir.mktmpdir(nil, s3fs_tmp_dir_path)
-    else
-      @archive_tmp_dir ||= Dir.mktmpdir
-    end
-  end
-
-  def tmp_dir_parent_path
-    use_s3fs? ? s3fs_tmp_dir_path : nil
-  end
-
-  def s3fs_tmp_dir_path
-    "/s3mnt/tmp/#{Rails.env}"
-  end
-
-  def use_s3fs?
-    @use_s3fs ||= Rails.env.staging? || Rails.env.production?
+    @archive_tmp_dir ||= S3fs.mktmpdir
   end
 
   def expanded_archive_base_path

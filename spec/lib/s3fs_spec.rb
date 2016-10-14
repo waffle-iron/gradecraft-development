@@ -50,6 +50,17 @@ describe S3fs do
     end
   end
 
+  describe ".ensure_tmpdir" do
+    it "makes the tmpdir if s3fs is available" do
+      allow(S3fs).to receive_messages \
+        available?: true,
+        rails_env: "staging"
+
+      expect(FileUtils).to receive(:mkdir_p).with("/s3mnt/tmp/staging")
+      S3fs.ensure_tmpdir
+    end
+  end
+
   describe ".rails_env" do
     it "returns the value of ENV['RAILS_ENV']" do
       expect(S3fs.rails_env).to eq "test"
