@@ -654,7 +654,6 @@ ActiveRecord::Schema.define(version: 20161031184138) do
     t.integer  "assignment_id"
     t.integer  "course_id"
     t.integer  "professor_id"
-    t.integer  "group_id"
     t.integer  "student_ids",              default: [], null: false, array: true
     t.integer  "team_id"
     t.text     "export_filename"
@@ -667,6 +666,7 @@ ActiveRecord::Schema.define(version: 20161031184138) do
     t.datetime "last_export_started_at"
     t.datetime "last_export_completed_at"
     t.string   "last_completed_step"
+    t.integer  "group_ids",                default: [], null: false, array: true
   end
 
   create_table "team_leaderships", force: :cascade do |t|
