@@ -24,6 +24,11 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
     describe "team submissions export" do
       let(:performer) { performer_with_team }
+
+      before do
+        allow(performer.submissions_export).to receive(:use_groups) { false }
+      end
+
       it_behaves_like "an submissions export resource", :team
     end
   end
@@ -101,47 +106,22 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   end
 
   describe "fetch_submissions" do
-    context "a team is present" do
-      let(:submissions_ivar) { performer_with_team.instance_variable_get(:@submissions) }
-      subject { performer_with_team.instance_eval { fetch_submissions }}
+    context "the SubmissionsExport has a team" do
+      it "returns the student submissions with files for the team" do
+        team = create :team
+        performer.instance_variable_set :@team, team
 
-      before(:each) do
-        allow(performer_with_team.submissions_export).to receive(:has_team?) { true }
-        performer_with_team.instance_variable_set(:@assignment, assignment)
-        performer_with_team.instance_variable_set(:@team, team)
-        allow(assignment).to receive(:student_submissions_with_files_for_team) { submissions }
-      end
+        allow(performer.assignment)
+          .to receive(:students_with_text_or_binary_files_on_team).with(team)
+          .and_return ["some-students"]
 
-      it "returns the submissions being graded for that team" do
-        expect(assignment).to receive(:student_submissions_with_files_for_team).with(team)
-        subject
-      end
 
-      it "fetches the submissions" do
-        subject
-        expect(submissions_ivar).to eq(submissions)
+        expect(performer.instance_eval { fetch_submissions }).to eq ["some-students"]
       end
     end
 
-    context "no team is present" do
-      let(:submissions_ivar) { performer.instance_variable_get(:@submissions) }
-      subject { performer.instance_eval { fetch_submissions }}
-
-      before(:each) do
-        allow(performer.submissions_export).to receive(:has_team?) { false }
-        performer.instance_variable_set(:@assignment, assignment)
-        performer.instance_variable_set(:@team, team)
-        allow(assignment).to receive(:student_submissions_with_files) { submissions }
-      end
-
-      it "returns submissions being graded for the assignment" do
-        expect(assignment).to receive(:student_submissions_with_files)
-        subject
-      end
-
-      it "fetches the submissions" do
-        subject
-        expect(submissions_ivar).to eq(submissions)
+    context "the SubmissionsExport has no team" do
+      it "returns all student submissions with files for the course" do
       end
     end
   end
