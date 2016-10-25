@@ -1,0 +1,14 @@
+- if assignment.has_groups?
+  %li= link_to glyph("file-zip-o") + "Download Group Submissions",
+    submissions_exports_path(assignment_id: assignment.id,
+    use_groups: true),
+    method: :post
+- elsif team
+  %li= link_to glyph("file-zip-o") + "Download Team Submissions",
+    submissions_exports_path(assignment_id: assignment.id,
+    team_id: team.id),
+    method: :post
+- else
+  %li.hide-for-small= link_to glyph("file-zip-o") + "Download All Submissions",
+  submissions_exports_path(assignment_id: assignment.id),
+  method: :post

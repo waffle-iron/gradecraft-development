@@ -18,10 +18,8 @@
               %li= link_to glyph(:check) + "Quick Grade", mass_edit_assignment_grades_path(presenter.assignment)
 
           - if presenter.assignment.accepts_submissions?
-            - if presenter.team
-              %li= link_to glyph("file-zip-o") + "Download Team Submissions", submissions_exports_path(assignment_id: presenter.assignment.id, team_id: presenter.team.id), method: :post
-            - else
-              %li.hide-for-small= link_to glyph("file-zip-o") + "Download All Submissions", submissions_exports_path(assignment_id: presenter.assignment.id), method: :post
+            = render partial: "assignments/buttons/submissions_exports",
+              locals: { assignment: presenter.assignment, team: presenter.team }
 
           - unless presenter.assignment.imported_assignment.nil?
             %li.hide-for-small
