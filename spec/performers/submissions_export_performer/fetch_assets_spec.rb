@@ -74,10 +74,13 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_students_for_csv" do
+  describe "fetch_submitters_for_csv" do
+    context "the submissions export uses groups" do
+    end
+
     context "a team is present" do
-      let(:students_ivar) { performer_with_team.instance_variable_get(:@students_for_csv) }
-      subject { performer_with_team.instance_eval { fetch_students_for_csv }}
+      let(:students_ivar) { performer_with_team.instance_variable_get(:@submitters_for_csv) }
+      subject { performer_with_team.instance_eval { fetch_submitters_for_csv }}
 
       before(:each) do
         allow(performer_with_team.submissions_export).to receive(:has_team?) { true }
@@ -97,8 +100,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
 
     context "no team is present" do
-      let(:students_ivar) { performer.instance_variable_get(:@students_for_csv) }
-      subject { performer.instance_eval { fetch_students_for_csv }}
+      let(:students_ivar) { performer.instance_variable_get(:@submitters_for_csv) }
+      subject { performer.instance_eval { fetch_submitters_for_csv }}
 
       before(:each) do
         allow(performer.submissions_export).to receive(:has_team?) { false }
