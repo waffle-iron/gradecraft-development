@@ -75,48 +75,27 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   end
 
   describe "fetch_submitters_for_csv" do
+    let(:fetch_submitters_for_csv) do
+      performer.instance_eval { fetch_submitters_for_csv }
+    end
+
     context "the submissions export uses groups" do
-    end
+      it "returns groups for the course" do
+        group = double(:group)
+        allow(performer.submissions_export).to receive(:use_groups) { true }
+        allow(Group).to receive(:where).with(course: course) { [group] }
 
-    context "a team is present" do
-      let(:students_ivar) { performer_with_team.instance_variable_get(:@submitters_for_csv) }
-      subject { performer_with_team.instance_eval { fetch_submitters_for_csv }}
-
-      before(:each) do
-        allow(performer_with_team.submissions_export).to receive(:has_team?) { true }
-        performer_with_team.instance_variable_set(:@course, course)
-        allow(User).to receive(:students_by_team) { students }
-      end
-
-      it "returns the students being graded for that team" do
-        expect(User).to receive(:students_by_team).with(course, team)
-        subject
-      end
-
-      it "fetches the students" do
-        subject
-        expect(students_ivar).to eq(students)
+        expect(fetch_submitters_for_csv).to eq [group]
       end
     end
 
-    context "no team is present" do
-      let(:students_ivar) { performer.instance_variable_get(:@submitters_for_csv) }
-      subject { performer.instance_eval { fetch_submitters_for_csv }}
-
-      before(:each) do
-        allow(performer.submissions_export).to receive(:has_team?) { false }
-        performer.instance_variable_set(:@course, course)
-        allow(User).to receive(:with_role_in_course) { students }
+    context "the submissions export has a team" do
+      it "returns the students on the given team" do
       end
+    end
 
-      it "returns students being graded for the course" do
-        expect(User).to receive(:with_role_in_course).with("student", course)
-        subject
-      end
-
-      it "fetches the students" do
-        subject
-        expect(students_ivar).to eq(students)
+    context "submissions export has no team" do
+      it "returns all students in the course" do
       end
     end
   end
