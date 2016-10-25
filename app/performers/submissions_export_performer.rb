@@ -104,7 +104,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     @professor = @submissions_export.professor
     @team = @submissions_export.team
     @students = fetch_students
-    @students_for_csv = fetch_students_for_csv
+    @submitters_for_csv = fetch_submitters_for_csv
     @submissions = fetch_submissions
   end
 
@@ -152,11 +152,13 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     @course = @assignment.course
   end
 
-  def fetch_students_for_csv
-    if submissions_export.team
-      @students_for_csv = User.students_by_team(@course, @team)
+  def fetch_submitters_for_csv
+    if submissions_export.use_groups
+      Group.where course: @course
+    elsif submissions_export.team
+      User.students_by_team(@course, @team)
     else
-      @students_for_csv = User.with_role_in_course("student", @course)
+      User.with_role_in_course("student", @course)
     end
   end
 
@@ -190,7 +192,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def generate_export_csv
     open(csv_file_path, "w") do |f|
-      f.puts @assignment.grade_import(@students_for_csv)
+      f.puts @assignment.grade_import(@submitters_for_csv)
     end
   end
 
