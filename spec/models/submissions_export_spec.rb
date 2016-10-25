@@ -75,7 +75,7 @@ RSpec.describe SubmissionsExport do
       allow(subject).to receive_messages \
         formatted_assignment_name: "The Assignment",
         formatted_team_name: "The Team",
-        formatted_group_name: "Some Group"
+        group_suffix: "Some Group"
     end
 
     it "combines the formatted assignment and team names" do
@@ -85,7 +85,7 @@ RSpec.describe SubmissionsExport do
     it "strips out whitespace" do
       allow(subject).to receive_messages \
         formatted_assignment_name: "           The Assignment",
-        formatted_group_name: "Some Group               "
+        group_suffix: "Some Group               "
 
       expect(result).to eq "The Assignment - The Team - Some Group"
     end

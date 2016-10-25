@@ -17,7 +17,6 @@ class SubmissionsExport < ActiveRecord::Base
   belongs_to :course
   belongs_to :professor, class_name: "User", foreign_key: "professor_id"
   belongs_to :team
-  belongs_to :group
   belongs_to :assignment
 
   # secure tokens allow for one-click downloads of the file from an email
@@ -52,7 +51,7 @@ class SubmissionsExport < ActiveRecord::Base
   def archive_basename
     [formatted_assignment_name,
      formatted_team_name,
-     formatted_group_name].compact.join(" - ").strip
+     group_suffix].compact.join(" - ").strip
   end
 
   def formatted_assignment_name
@@ -63,7 +62,7 @@ class SubmissionsExport < ActiveRecord::Base
     @team_name ||= Formatter::Filename.titleize(team.name) if team
   end
 
-  def formatted_group_name
-    @group_name ||= Formatter::Filename.titleize(group.name) if group
+  def group_suffix
+    "Group Submissions" if use_groups
   end
 end
