@@ -13,23 +13,43 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   it_behaves_like "ModelAddons::ImprovedLogging is included"
 
   describe "fetch_assets" do
-    subject { performer.instance_eval { fetch_assets }}
-    before { performer.instance_variable_set(:@submissions_export, submissions_export) }
-
-    describe "assignment submissions export" do
-      it_behaves_like "an submissions export resource", :professor, User # this is a User object fetched as "professor"
-      it_behaves_like "an submissions export resource", :assignment
-      it_behaves_like "an submissions export resource", :course
+    let(:fetch_assets) do
+      subject.instance_eval { fetch_assets }
     end
 
-    describe "team submissions export" do
-      let(:performer) { performer_with_team }
+    it "gets the submissions export assignment" do
+      fetch_assets
+      expect(performer.assignment).to eq submissions_export.assignment
+    end
 
-      before do
-        allow(performer.submissions_export).to receive(:use_groups) { false }
-      end
+    it "gets the submissions export course" do
+      fetch_assets
+      expect(performer.course).to eq submissions_export.course
+    end
 
-      it_behaves_like "an submissions export resource", :team
+    it "gets the submissions export professor" do
+      fetch_assets
+      expect(performer.professor).to eq submissions_export.professor
+    end
+
+    it "gets the submissions export team" do
+      fetch_assets
+      expect(performer.team).to eq submissions_export.team
+    end
+
+    it "fetches the students" do
+      expect(performer).to receive(:fetch_students)
+      fetch_assets
+    end
+
+    it "fetches the submitters for the csv" do
+      expect(performer).to receive(:fetch_submitters_for_csv)
+      fetch_assets
+    end
+
+    it "fetches submissions" do
+      expect(performer).to receive(:fetch_submissions)
+      fetch_assets
     end
   end
 
