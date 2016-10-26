@@ -37,8 +37,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
       expect(performer.team).to eq submissions_export.team
     end
 
-    it "fetches the students" do
-      expect(performer).to receive(:fetch_students)
+    it "fetches the submitters" do
+      expect(performer).to receive(:fetch_submitters)
       fetch_assets
     end
 
@@ -53,7 +53,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_submitters_for_csv", focus: true do
+  describe "fetch_submitters_for_csv" do
     let(:fetch_submitters_for_csv) do
       performer.instance_eval { fetch_submitters_for_csv }
     end
@@ -95,20 +95,34 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_students" do
-    let(:fetch_students) do
-      performer.instance_eval { fetch_students }
+  describe "fetch_submitters" do
+    let(:fetch_submitters) do
+      performer.instance_eval { fetch_submitters}
+    end
+
+    context "the SubmissionsExport uses groups" do
+      it "returns groups with files" do
+        allow(performer.submissions_export).to receive(:use_groups) { true }
+
+        allow(performer.assignment)
+          .to receive(:groups_with_files)
+          .and_return ["some-groups"]
+
+        expect(fetch_submitters).to eq ["some-groups"]
+      end
     end
 
     context "the SubmissionsExport has a team" do
       it "returns students with files for the team" do
-        allow(performer.submissions_export).to receive(:team) { true }
+        allow(performer.submissions_export).to receive_messages \
+          use_groups: false,
+          team: true
 
         allow(performer.assignment)
           .to receive(:students_with_text_or_binary_files_on_team).with(team)
           .and_return ["some-students"]
 
-        expect(fetch_students).to eq ["some-students"]
+        expect(fetch_submitters).to eq ["some-students"]
       end
     end
 
@@ -120,7 +134,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
           .to receive(:students_with_text_or_binary_files)
           .and_return ["all-students"]
 
-        expect(fetch_students).to eq ["all-students"]
+        expect(fetch_submitters).to eq ["all-students"]
       end
     end
   end
