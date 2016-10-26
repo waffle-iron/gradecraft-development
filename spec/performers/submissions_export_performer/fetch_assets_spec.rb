@@ -53,52 +53,6 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_students" do
-    context "a team is present" do
-      let(:students_ivar) { performer_with_team.instance_variable_get(:@students) }
-      subject { performer_with_team.instance_eval { fetch_students }}
-
-      before(:each) do
-        allow(performer_with_team.submissions_export).to receive(:has_team?) { true }
-        performer_with_team.instance_variable_set(:@assignment, assignment)
-        performer_with_team.instance_variable_set(:@team, team)
-        allow(assignment).to receive(:students_with_text_or_binary_files_on_team) { students }
-      end
-
-      it "returns the submissions being graded for that team" do
-        expect(assignment).to receive(:students_with_text_or_binary_files_on_team).with(team)
-        subject
-      end
-
-      it "fetches the students" do
-        subject
-        expect(students_ivar).to eq(students)
-      end
-    end
-
-    context "no team is present" do
-      let(:students_ivar) { performer.instance_variable_get(:@students) }
-      subject { performer.instance_eval { fetch_students }}
-
-      before(:each) do
-        allow(performer.submissions_export).to receive(:has_team?) { false }
-        performer.instance_variable_set(:@team, nil)
-        allow(assignment).to receive(:students_with_text_or_binary_files) { students }
-        performer.instance_variable_set(:@assignment, assignment)
-      end
-
-      it "returns the submissions being graded for that team" do
-        expect(assignment).to receive(:students_with_text_or_binary_files)
-        subject
-      end
-
-      it "fetches the students" do
-        subject
-        expect(students_ivar).to eq(students)
-      end
-    end
-  end
-
   describe "fetch_submitters_for_csv" do
     let(:fetch_submitters_for_csv) do
       performer.instance_eval { fetch_submitters_for_csv }
@@ -125,7 +79,37 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_submissions", focus: true do
+  describe "fetch_students", focus: true do
+    let(:fetch_students) do
+      performer.instance_eval { fetch_students }
+    end
+
+    context "the SubmissionsExport has a team" do
+      it "returns students with files for the team" do
+        allow(performer.submissions_export).to receive(:team) { true }
+
+        allow(performer.assignment)
+          .to receive(:students_with_text_or_binary_files_on_team).with(team)
+          .and_return ["some-students"]
+
+        expect(fetch_students).to eq ["some-students"]
+      end
+    end
+
+    context "the SubmissionsExport has no team" do
+      it "returns students with files for the team" do
+        allow(performer.submissions_export).to receive(:team) { false }
+
+        allow(performer.assignment)
+          .to receive(:students_with_text_or_binary_files)
+          .and_return ["all-students"]
+
+        expect(fetch_students).to eq ["all-students"]
+      end
+    end
+  end
+
+  describe "fetch_submissions" do
     let(:fetch_submissions) do
       performer.instance_eval { fetch_submissions }
     end
