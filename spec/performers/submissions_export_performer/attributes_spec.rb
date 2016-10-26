@@ -48,7 +48,7 @@ RSpec.describe "SubmissionsExport attributes", type: :background_job do
     let(:export_start_time) { Date.parse("Jan 20 1987").to_time }
 
     it "should include the student ids" do
-      expect(subject[:student_ids]).to eq(performer.instance_variable_get(:@students).collect(&:id))
+      expect(subject[:submitter_ids]).to eq(performer.instance_variable_get(:@submitters).collect(&:id))
     end
 
     it "should include the last export started time" do
