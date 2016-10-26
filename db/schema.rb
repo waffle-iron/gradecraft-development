@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161024134703) do
+ActiveRecord::Schema.define(version: 20161026131150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,7 +153,7 @@ ActiveRecord::Schema.define(version: 20161024134703) do
     t.datetime "updated_at",                                   null: false
     t.boolean  "visible",                      default: true,  null: false
     t.boolean  "can_earn_multiple_times",      default: true,  null: false
-    t.integer  "position",                                     null: false
+    t.integer  "position"
     t.boolean  "visible_when_locked",          default: true,  null: false
     t.boolean  "show_name_when_locked",        default: true,  null: false
     t.boolean  "show_points_when_locked",      default: true
@@ -654,19 +654,18 @@ ActiveRecord::Schema.define(version: 20161024134703) do
     t.integer  "assignment_id"
     t.integer  "course_id"
     t.integer  "professor_id"
-    t.integer  "student_ids",              default: [], null: false, array: true
+    t.integer  "submitter_ids",            default: [],    null: false, array: true
     t.integer  "team_id"
     t.text     "export_filename"
     t.text     "s3_object_key"
     t.text     "s3_bucket_name"
-    t.text     "performer_error_log",      default: [], null: false, array: true
-    t.hstore   "submissions_snapshot",     default: {}, null: false
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.text     "performer_error_log",      default: [],    null: false, array: true
+    t.hstore   "submissions_snapshot",     default: {},    null: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
     t.datetime "last_export_started_at"
     t.datetime "last_export_completed_at"
     t.string   "last_completed_step"
-    t.integer  "group_ids",                default: [], null: false, array: true
     t.boolean  "use_groups",               default: false
   end
 

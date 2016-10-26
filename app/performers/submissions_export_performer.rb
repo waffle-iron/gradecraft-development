@@ -65,7 +65,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def base_export_attributes
     {
-      student_ids: @submitters.collect(&:id),
+      submitter_ids: @submitters.collect(&:id),
       submissions_snapshot: submissions_snapshot,
       last_export_started_at: Time.now
     }
