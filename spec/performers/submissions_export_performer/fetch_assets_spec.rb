@@ -53,7 +53,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_submitters_for_csv" do
+  describe "fetch_submitters_for_csv", focus: true do
     let(:fetch_submitters_for_csv) do
       performer.instance_eval { fetch_submitters_for_csv }
     end
@@ -70,6 +70,14 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
     context "the submissions export has a team" do
       it "returns the students on the given team" do
+        allow(performer.submissions_export).to receive_messages \
+          use_groups: false,
+          team: true
+
+        allow(User).to receive(:students_by_team).with(course, team)
+          .and_return ["team-students"]
+
+        expect(fetch_submitters_for_csv).to eq ["team-students"]
       end
     end
 
@@ -79,7 +87,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_students", focus: true do
+  describe "fetch_students" do
     let(:fetch_students) do
       performer.instance_eval { fetch_students }
     end
