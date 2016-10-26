@@ -83,6 +83,14 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
     context "submissions export has no team" do
       it "returns all students in the course" do
+        allow(performer.submissions_export).to receive_messages \
+          use_groups: false,
+          team: false
+
+        allow(User).to receive(:with_role_in_course).with("student", course)
+          .and_return ["some-students"]
+
+        expect(fetch_submitters_for_csv).to eq ["some-students"]
       end
     end
   end
