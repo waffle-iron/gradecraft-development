@@ -35,26 +35,6 @@ module Toolkits
       end
 
       module SharedExamples
-
-        RSpec.shared_examples "an submissions export resource" do |resource_name, resource_klass|
-          let(:expected_klass) { resource_klass || resource_name.to_s.camelize.constantize }
-
-          it "gets the #{resource_name} from the submissions export" do
-            expect(submissions_export).to receive(resource_name).and_return send(resource_name.to_sym)
-            subject
-          end
-
-          it "assigns the #{resource_name} to @#{resource_name}" do
-            subject
-            expect(performer.instance_variable_get(:"@#{resource_name}")).to eq(send(resource_name.to_sym))
-          end
-
-          it "fetches an object that actually has the correct class" do
-            subject
-            expect(performer.instance_variable_get(:"@#{resource_name}").class).to eq(expected_klass)
-          end
-        end
-
         RSpec.shared_examples "an expandable messages hash" do
           it "expands the base messages" do
             expect(performer).to receive(:expand_messages)
