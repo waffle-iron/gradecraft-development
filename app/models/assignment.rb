@@ -157,8 +157,21 @@ class Assignment < ActiveRecord::Base
       .to_a # eager-load
   end
 
+  def group_submissions_with_files
+    Submission
+      .includes(:submission_files)
+      .includes(:group)
+      .where(assignment_id: self[:id])
+      .where(submissions_with_files_query)
+      .to_a # eager-load
+  end
+
   def student_with_submissions_query
     "select distinct(student_id) from submissions where assignment_id = ?"
+  end
+
+  def group_with_submissions_query
+    "select distinct(group_id) from submissions where assignment_id = ?"
   end
 
   def submissions_with_files_query
@@ -183,6 +196,11 @@ class Assignment < ActiveRecord::Base
   def students_with_submissions_on_team(team)
     User.order_by_name
       .where(students_with_submissions_on_team_conditions.join(" AND "), self[:id], team.id)
+  end
+
+  def groups_with_files
+    Group.order_by_name
+      .where("id in (#{group_with_submissions_query} and (#{submissions_with_files_query}))", self.id)
   end
 
   def students_with_text_or_binary_files

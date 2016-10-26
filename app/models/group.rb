@@ -34,6 +34,7 @@ class Group < ActiveRecord::Base
   scope :approved, -> { where approved: "Approved" }
   scope :rejected, -> { where approved: "Rejected" }
   scope :pending, -> { where approved: "Pending" }
+  scope :order_by_name, -> { order "name ASC" }
 
   clean_html :text_proposal
 
