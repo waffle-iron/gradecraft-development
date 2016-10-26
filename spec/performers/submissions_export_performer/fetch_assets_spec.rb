@@ -144,6 +144,18 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
       performer.instance_eval { fetch_submissions }
     end
 
+    context "the SubmissionsExport uses groups" do
+      it "returns group submissions with files" do
+        allow(performer.submissions_export).to receive(:use_groups) { true }
+
+        allow(performer.assignment)
+          .to receive(:group_submissions_with_files)
+          .and_return ["group-submissions"]
+
+        expect(fetch_submissions).to eq ["group-submissions"]
+      end
+    end
+
     context "the SubmissionsExport has a team" do
       it "returns the student submissions with files for the team" do
         allow(performer.submissions_export).to receive(:team) { true }
