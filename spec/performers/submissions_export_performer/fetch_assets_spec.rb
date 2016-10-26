@@ -125,23 +125,32 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "fetch_submissions" do
+  describe "fetch_submissions", focus: true do
+    let(:fetch_submissions) do
+      performer.instance_eval { fetch_submissions }
+    end
+
     context "the SubmissionsExport has a team" do
       it "returns the student submissions with files for the team" do
-        team = create :team
-        performer.instance_variable_set :@team, team
+        allow(performer.submissions_export).to receive(:team) { true }
 
         allow(performer.assignment)
-          .to receive(:students_with_text_or_binary_files_on_team).with(team)
-          .and_return ["some-students"]
+          .to receive(:student_submissions_with_files_for_team).with(team)
+          .and_return ["some-submissions"]
 
-
-        expect(performer.instance_eval { fetch_submissions }).to eq ["some-students"]
+        expect(fetch_submissions).to eq ["some-submissions"]
       end
     end
 
     context "the SubmissionsExport has no team" do
       it "returns all student submissions with files for the course" do
+        allow(performer.submissions_export).to receive(:team) { false }
+
+        allow(performer.assignment)
+          .to receive(:student_submissions_with_files)
+          .and_return ["other-submissions"]
+
+        expect(fetch_submissions).to eq ["other-submissions"]
       end
     end
   end

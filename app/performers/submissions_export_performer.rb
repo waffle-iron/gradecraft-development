@@ -164,17 +164,17 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def fetch_students
     if submissions_export.team
-      @students = @assignment.students_with_text_or_binary_files_on_team(@team)
+      @assignment.students_with_text_or_binary_files_on_team(@team)
     else
-      @students = @assignment.students_with_text_or_binary_files
+      @assignment.students_with_text_or_binary_files
     end
   end
 
   def fetch_submissions
     if submissions_export.team
-      @submissions = @assignment.student_submissions_with_files_for_team(@team)
+      @assignment.student_submissions_with_files_for_team(@team)
     else
-      @submissions = @assignment.student_submissions_with_files
+      @assignment.student_submissions_with_files
     end
   end
 
