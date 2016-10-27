@@ -175,7 +175,7 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     let(:students) {[ student_with_empty_dir, student_with_files ]}
 
     before(:each) do
-      performer.instance_variable_set(:@students, students)
+      performer.instance_variable_set(:@submitters, students)
       allow(performer).to receive(:submitter_directory_path).with(student_with_empty_dir) { empty_dir }
       allow(performer).to receive(:submitter_directory_path).with(student_with_files) { dir_with_files }
       allow(performer).to receive(:submitter_directory_empty?).with(student_with_empty_dir) { true }
