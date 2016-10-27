@@ -279,9 +279,9 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def create_submission_text_file(submission)
     if submissions_export.use_groups
-      submitter_name = "#{submission.student.last_name}, #{submission.student.first_name}"
-    else
       submitter_name = submission.group.name
+    else
+      submitter_name = "#{submission.student.last_name}, #{submission.student.first_name}"
     end
 
     open(submission_text_file_path(submission.submitter), "w") do |f|
@@ -297,21 +297,21 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     end
   end
 
-  def submission_text_file_path(student)
-    File.expand_path submission_text_filename(student),
-      submitter_directory_path(student)
+  def submission_text_file_path(submitter)
+    File.expand_path submission_text_filename(submitter),
+      submitter_directory_path(submitter)
   end
 
-  def submission_text_filename(student)
+  def submission_text_filename(submitter)
     [
-      formatted_student_name(student),
+      formatted_submitter_name(submitter),
       submissions_export.formatted_assignment_name,
       "Submission Text.txt"
     ].join(" - ")
   end
 
-  def formatted_student_name(student)
-    Formatter::Filename.titleize student.name
+  def formatted_submitter_name(submitter)
+    Formatter::Filename.titleize submitter.name
   end
 
   def create_submission_binary_files

@@ -118,9 +118,10 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
     describe "submission_text_file_path", inspect: true do
       subject { performer.instance_eval { submission_text_file_path(@some_student) }}
+
       before do
         allow(performer).to receive(:submission_text_filename) { "garrett_hornsby.txt" }
-        allow(performer).to receive(:student_directory_path) { "/some/student/dir" }
+        allow(performer).to receive(:submitter_directory_path) { "/some/student/dir" }
       end
 
       it "builds the correct file path" do
@@ -146,8 +147,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
         subject
       end
 
-      it "uses the formatted_student_name" do
-        expect(performer).to receive(:formatted_student_name).with(student1)
+      it "uses the formatted_submitter_name" do
+        expect(performer).to receive(:formatted_submitter_name).with(student1)
         subject
       end
 
