@@ -246,7 +246,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def create_submitter_directories
     @submitters.each do |submitter|
-      dir_path = submitter_directory_path(student)
+      dir_path = submitter_directory_path(submitter)
       FileUtils.mkdir_p(dir_path) # unless Dir.exist?(dir_path) # create directory with parents
     end
   end

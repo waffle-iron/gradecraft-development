@@ -10,7 +10,7 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
 
   let(:archive_root_dir) { Dir.mktmpdir }
   let(:students) { [ student1, student2, student3 ] }
-  let(:stub_students) { performer.instance_variable_set(:@students, students) }
+  let(:stub_students) { performer.instance_variable_set(:@submitters, students) }
 
   let(:student1) { create(:user) }
   let(:student2) { create(:user, first_name: student1.first_name, last_name: student1.last_name) }
