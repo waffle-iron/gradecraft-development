@@ -1,4 +1,3 @@
-require "active_record_spec_helper"
 require "rails_spec_helper"
 
 RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :background_job do
@@ -62,7 +61,7 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
 
     context "student directories have been created" do
       it "returns an empty array" do
-        performer.instance_eval { create_student_directories }
+        performer.instance_eval { create_submitter_directories }
         expect(subject).to be_empty
       end
       after { remove_student_dirs }
@@ -87,8 +86,8 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     end
   end
 
-  describe "create_student_directories" do
-    subject { performer.instance_eval { create_student_directories }}
+  describe "create_submitter_directories" do
+    subject { performer.instance_eval { create_submitter_directories }}
     before(:each) { stub_students }
 
     it "calls Dir.mkdir once for each student in @students" do
@@ -113,10 +112,10 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     end
   end
 
-  describe "student_directory_path" do
-    subject { performer.instance_eval { student_directory_path( @some_student ) }}
+  describe "submitter_directory_path" do
+    subject { performer.instance_eval { submitter_directory_path( @some_student ) }}
     before(:each) do
-      performer.instance_variable_set(:@students, students)
+      performer.instance_variable_set(:@submitters, students)
       performer.instance_variable_set(:@some_student, student1)
     end
 
@@ -130,8 +129,8 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     end
   end
 
-  describe "#student_directory_names" do
-    subject { performer.instance_eval { student_directory_names }}
+  describe "#submitter_directory_names" do
+    subject { performer.instance_eval { submitter_directory_names }}
     before(:each) { stub_students }
 
     context "students have identical names" do
@@ -160,14 +159,14 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
       end
     end
 
-    it "sets the result to @student_directory_names" do
+    it "sets the result to @submitter_directory_names" do
       subject
-      expect(performer.instance_variable_get(:@student_directory_names)).to eq(subject)
+      expect(performer.instance_variable_get(:@submitter_directory_names)).to eq(subject)
     end
   end
 
-  describe "#remove_empty_student_directories" do
-    subject { performer.instance_eval { remove_empty_student_directories }}
+  describe "#remove_empty_submitter_directories" do
+    subject { performer.instance_eval { remove_empty_submitter_directories }}
     let(:student_with_empty_dir) { create(:user) }
     let(:student_with_files) { create(:user) }
     let(:empty_dir_path) { Dir.mktmpdir }
@@ -177,10 +176,10 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
 
     before(:each) do
       performer.instance_variable_set(:@students, students)
-      allow(performer).to receive(:student_directory_path).with(student_with_empty_dir) { empty_dir }
-      allow(performer).to receive(:student_directory_path).with(student_with_files) { dir_with_files }
-      allow(performer).to receive(:student_directory_empty?).with(student_with_empty_dir) { true }
-      allow(performer).to receive(:student_directory_empty?).with(student_with_files) { false }
+      allow(performer).to receive(:submitter_directory_path).with(student_with_empty_dir) { empty_dir }
+      allow(performer).to receive(:submitter_directory_path).with(student_with_files) { dir_with_files }
+      allow(performer).to receive(:submitter_directory_empty?).with(student_with_empty_dir) { true }
+      allow(performer).to receive(:submitter_directory_empty?).with(student_with_files) { false }
     end
 
     context "student directory is empty" do
@@ -208,8 +207,8 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     end
   end
 
-  describe "#student_directory_empty?" do
-    subject { performer.instance_eval { student_directory_empty?(@some_student) }}
+  describe "#submitter_directory_empty?" do
+    subject { performer.instance_eval { submitter_directory_empty?(@some_student) }}
     let(:student) { create(:user) }
     let(:student_directory) { Dir.mktmpdir }
     let(:visible_file_path) { File.expand_path("visible_file.txt", student_directory) }
@@ -218,7 +217,7 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     before(:each) do
       student_directory
       performer.instance_variable_set(:@some_student, student)
-      allow(performer).to receive(:student_directory_path) { student_directory }
+      allow(performer).to receive(:submitter_directory_path) { student_directory }
     end
 
     after(:each) { subject }
@@ -230,7 +229,7 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
       end
 
       it "should look in the student directory path for the given student" do
-        expect(performer).to receive(:student_directory_path).with(student)
+        expect(performer).to receive(:submitter_directory_path).with(student)
       end
     end
 

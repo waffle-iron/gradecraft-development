@@ -31,12 +31,12 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     [
       :generate_export_csv, # generate the csv overview for the assignment or team
       :confirm_export_csv_integrity, # check whether the csv export was successful
-      :create_student_directories, # generate student directories
+      :create_submitter_directories, # generate student directories
       :student_directories_created_successfully, # check whether the student directories were all created successfully
       :create_submission_text_files, # create text files in each student directory if there is submission data that requires it
       :create_submission_binary_files, # create binary files in each student directory
       :write_note_for_missing_binary_files,
-      :remove_empty_student_directories,
+      :remove_empty_submitter_directories,
       :generate_error_log, # write error log for errors that may have occurred during file generation
       :archive_exported_files,
       :upload_archive_to_s3,
@@ -134,7 +134,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def submissions_grouped_by_student
     @submissions_grouped_by_student ||= @submissions.group_by do |submission|
-      student_directory_names[submission.student.id]
+      submitter_directory_names[submission.student.id]
     end
   end
 
@@ -221,51 +221,51 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def missing_student_directories
-    @students.inject([]) do |memo, student|
-      memo << student_directory_names[student.id] unless Dir.exist?(student_directory_path(student))
+    @submitters.inject([]) do |memo, submitter|
+      memo << submitter_directory_names[submitter.id] unless Dir.exist?(submitter_directory_path(submitter))
       memo
     end
   end
 
   # in the format of { student_id => "lastname_firstname(--username-if-naming-conflict)" }
-  def student_directory_names
-    @student_directory_names ||= @students.inject({}) do |memo, student|
+  def submitter_directory_names
+    @submitter_directory_names ||= @submitters.inject({}) do |memo, submitter|
       # check to see whether there are any duplicate student names
-      total_students_with_name = @students.to_a.count do |compared_student|
-        student.same_name_as?(compared_student)
+      total_submitters_with_name = @submitters.to_a.count do |compared_submitter|
+        submitter.same_name_as?(compared_submitter)
       end
 
-      if total_students_with_name > 1
-        memo[student.id] = student.student_directory_name_with_username
+      if total_submitters_with_name > 1
+        memo[submitter.id] = submitter.student_directory_name_with_username
       else
-        memo[student.id] = student.student_directory_name
+        memo[submitter.id] = submitter.student_directory_name
       end
       memo
     end
   end
 
-  def create_student_directories
-    @students.each do |student|
-      dir_path = student_directory_path(student)
+  def create_submitter_directories
+    @submitters.each do |submitter|
+      dir_path = submitter_directory_path(student)
       FileUtils.mkdir_p(dir_path) # unless Dir.exist?(dir_path) # create directory with parents
     end
   end
 
   # removing student directories
-  def remove_empty_student_directories
-    @students.each do |student|
-      if student_directory_empty?(student)
-        Dir.delete student_directory_path(student)
+  def remove_empty_submitter_directories
+    @submitters.each do |student|
+      if submitter_directory_empty?(student)
+        Dir.delete submitter_directory_path(student)
       end
     end
   end
 
-  def student_directory_empty?(student)
-    (Dir.entries(student_directory_path(student)) - %w{ . .. }).empty?
+  def submitter_directory_empty?(submitter)
+    (Dir.entries(submitter_directory_path(submitter)) - %w{ . .. }).empty?
   end
 
-  def student_directory_path(student)
-    File.expand_path(student_directory_names[student.id], archive_root_dir)
+  def submitter_directory_path(submitter)
+    File.expand_path(submitter_directory_names[submitter.id], archive_root_dir)
   end
 
   def create_submission_text_files
@@ -293,7 +293,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def submission_text_file_path(student)
     File.expand_path submission_text_filename(student),
-      student_directory_path(student)
+      submitter_directory_path(student)
   end
 
   def submission_text_filename(student)
@@ -356,7 +356,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def student_directory_file_path(student, filename)
-    File.expand_path filename, student_directory_path(student)
+    File.expand_path filename, submitter_directory_path(student)
   end
 
   def stream_s3_file_to_disk(submission_file, target_file_path)
@@ -467,10 +467,10 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     })
   end
 
-  def create_student_directories_messages
+  def create_submitter_directories_messages
     expand_messages ({
-      success: "Successfully created the student directories",
-      failure: "Failed to create the student directories"
+      success: "Successfully created the submitter directories",
+      failure: "Failed to create the submitter directories"
     })
   end
 
@@ -523,10 +523,10 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     })
   end
 
-  def remove_empty_student_directories_messages
+  def remove_empty_submitter_directories_messages
     expand_messages ({
-      success: "Successfully removed empty student directories from archive",
-      failure: "Failed to remove empty student directories"
+      success: "Successfully removed empty submitter directories from archive",
+      failure: "Failed to remove empty submitter directories"
     })
   end
 

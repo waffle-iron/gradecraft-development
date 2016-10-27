@@ -33,8 +33,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
         expect(subject).to receive(:confirm_export_csv_integrity)
       end
 
-      it "creates directories for each student" do
-        expect(subject).to receive(:create_student_directories)
+      it "creates directories for each submitter (group or student)" do
+        expect(subject).to receive(:create_submitter_directories)
       end
 
       it "ensures that all student directories were created successfully" do
