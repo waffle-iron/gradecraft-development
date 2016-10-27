@@ -278,8 +278,14 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   end
 
   def create_submission_text_file(submission)
-    open(submission_text_file_path(submission.student), "w") do |f|
-      f.puts "Submission items from #{submission.student.last_name}, #{submission.student.first_name}"
+    if submissions_export.use_groups
+      submitter_name = "#{submission.student.last_name}, #{submission.student.first_name}"
+    else
+      submitter_name = submission.group.name
+    end
+
+    open(submission_text_file_path(submission.submitter), "w") do |f|
+      f.puts "Submission items from #{submitter_name}"
 
       if submission.text_comment.present?
         f.puts "\ntext comment: #{submission.text_comment}"

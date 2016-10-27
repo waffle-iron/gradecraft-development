@@ -1,4 +1,4 @@
-require "active_record_spec_helper"
+require "rails_spec_helper"
 require "toolkits/historical_toolkit"
 require "toolkits/sanitization_toolkit"
 require "support/uni_mock/rails"
@@ -306,6 +306,28 @@ describe Submission do
       student = create(:user, first_name: "Joon", last_name: "Pearl")
       submission = create(:submission, student: student)
       expect(submission.name).to eq("Joon Pearl")
+    end
+  end
+
+  describe "#submitter" do
+    let(:submission) { create :submission }
+
+    context "submission uses groups" do
+      it "returns the group" do
+        group = double :group
+        allow(submission.assignment).to receive(:has_groups?) { true }
+        allow(submission).to receive(:group) { group }
+
+        expect(submission.submitter).to eq group
+      end
+    end
+
+    context "submissions doesn't use groups" do
+      it "returns the student" do
+        allow(submission.assignment).to receive(:has_groups?) { false }
+
+        expect(submission.submitter).to eq submission.student
+      end
     end
   end
 
