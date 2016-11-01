@@ -128,41 +128,57 @@ describe ActiveLMS::CanvasSyllabus, type: :disable_external_api do
 
   describe "#grades" do
     let(:assignment_ids) { [456, 789] }
-    let!(:stub) do
+    let(:stub) do
       stub_request(:get,
           "https://canvas.instructure.com/api/v1/courses/123/students/submissions")
         .with(query: { "assignment_ids" => assignment_ids, "student_ids" => "all",
                        "include" => ["assignment", "course", "user"],
                        "access_token" => access_token })
-        .to_return(status: 200, body: [{ id: 456, score: 87 }].to_json, headers: {})
     end
     subject { described_class.new access_token }
 
-    it "retrieves the grades from the api" do
-      grades = subject.grades(123, assignment_ids)
-
-      expect(grades.count).to eq 1
-      expect(grades.first["score"]).to eq 87
-    end
-
-    context "for specific ids" do
-      it "filters out a single id" do
-        grades = subject.grades(123, assignment_ids, "456")
-
-        expect(grades.first["id"]).to eq 456
+    context "with a successful API call" do
+      let!(:successful_stub) do
+        stub.to_return(status: 200, body: [{ id: 456, score: 87 }].to_json, headers: {})
       end
 
-      it "does not duplicate the grades for double grade ids" do
-        grades = subject.grades(123, assignment_ids, [456, 456])
+      it "retrieves the grades from the api" do
+        grades = subject.grades(123, assignment_ids)
 
         expect(grades.count).to eq 1
+        expect(grades.first["score"]).to eq 87
       end
 
-      it "filters out the grade ids" do
-        grades = subject.grades(123, assignment_ids, [123])
+      context "for specific ids" do
+        it "filters out a single id" do
+          grades = subject.grades(123, assignment_ids, "456")
 
-        expect(grades).to be_empty
+          expect(grades.first["id"]).to eq 456
+        end
+
+        it "does not duplicate the grades for double grade ids" do
+          grades = subject.grades(123, assignment_ids, [456, 456])
+
+          expect(grades.count).to eq 1
+        end
+
+        it "filters out the grade ids" do
+          grades = subject.grades(123, assignment_ids, [123])
+
+          expect(grades).to be_empty
+        end
       end
+    end
+
+    context "with an API error" do
+      let!(:json_error) { stub.to_raise(JSON::ParserError) }
+
+      it "calls the exception handler if one is provided" do
+        expect { |b| subject.grades(123, assignment_ids, "456",  &b) }.to \
+          yield_with_args(instance_of(JSON::ParserError))
+      end
+
+      xit "raises the error if an exception handler is not provided"
     end
   end
 
