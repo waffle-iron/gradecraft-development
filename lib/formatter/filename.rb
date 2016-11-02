@@ -31,6 +31,18 @@ module Formatter
       self
     end
 
+    # just remove erroneous characters, strip out whitespace, and replace
+    # any other consecutive non-alphanum characters with a single underscore
+    #
+    def directory_name
+      self.filename = filename
+        .gsub(/[^\w\s_-]+/, "") # remove non alphanum characters
+        .gsub(/[_]+/, "_") # condense redundant underscores
+        .gsub(/ +/, " ") # condense redundant spaces
+        .gsub(/^_+|_+$/, "") # remove leading or trailing underscores
+      self
+    end
+
     def reset!
       self.filename = original_filename
     end
