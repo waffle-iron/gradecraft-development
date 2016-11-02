@@ -16,8 +16,15 @@ class Grades::ImportersController < ApplicationController
   def assignments
     @assignment = Assignment.find params[:assignment_id]
     @provider_name = params[:importer_provider_id]
-    @course = syllabus.course(params[:id])
-    @assignments = syllabus.assignments(params[:id])
+    @course = syllabus.course(params[:id]) do
+      redirect_to assignment_grades_importers_path(@assignment),
+        alert: "There was an issue trying to retrieve the course from #{@provider_name.capitalize}." \
+        and return
+    end
+    @assignments = syllabus.assignments(params[:id]) do
+      redirect_to assignment_grades_importers_path(@assignment),
+        alert: "There was an issue trying to retrieve the assignments from #{@provider_name.capitalize}." and return
+    end
   end
 
   # rubocop:disable AndOr
@@ -38,13 +45,14 @@ class Grades::ImportersController < ApplicationController
   def grades
     @assignment = Assignment.find params[:assignment_id]
     @provider_name = params[:importer_provider_id]
-    @provider_assignment = syllabus.assignment(params[:id], params[:assignment_ids]) do |e|
+    @provider_assignment = syllabus.assignment(params[:id], params[:assignment_ids]) do
       redirect_to assignment_grades_importers_path(@assignment),
-        alert: "There was an issue trying to retrieve the assignment from Canvas." and return
+        alert: "There was an issue trying to retrieve the assignment from #{@provider_name.capitalize}." and return
     end
-    @grades = syllabus.grades(params[:id], [params[:assignment_ids]].flatten) do |e|
+    @grades = syllabus.grades(params[:id], [params[:assignment_ids]].flatten) do
       redirect_to assignment_grades_importers_path(@assignment),
-        alert: "There was an issue trying to retrieve the grades from Canvas." and return
+        alert: "There was an issue trying to retrieve the grades from #{@provider_name.capitalize}." \
+        and return
     end
   end
 
@@ -60,7 +68,10 @@ class Grades::ImportersController < ApplicationController
     if @result.success?
       render :grades_import_results
     else
-      @grades = syllabus.grades(params[:id], params[:assignment_ids])
+      @grades = syllabus.grades(params[:id], params[:assignment_ids]) do
+        redirect_to assignment_grades_importers_path(@assignment),
+          alert: "There was an issue trying to retrieve the grades from #{@provider_name.capitalize}." and return
+      end
 
       render :grades, alert: @result.message
     end
