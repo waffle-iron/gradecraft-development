@@ -75,10 +75,10 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     base_export_attributes
   end
 
-  def submission_binary_file_path(student, submission_file, index)
+  def submission_binary_file_path(submitter, submission_file, index)
     # get the filename from the submission file with an index
     filename = submission_file.instructor_filename index
-    student_directory_file_path student, filename
+    submitter_directory_file_path submitter, filename
   end
 
   def write_submission_binary_file(student, submission_file, index)
@@ -361,7 +361,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     end
   end
 
-  def student_directory_file_path(student, filename)
+  def submitter_directory_file_path(student, filename)
     File.expand_path filename, submitter_directory_path(student)
   end
 

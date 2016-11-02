@@ -8,25 +8,25 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
   subject { performer }
 
-  describe "student_directory_file_path" do
-    let(:student_double) { double(:student) }
+  describe "submitter_directory_file_path" do
+    let(:submitter_double) { double(:submitter) }
     let(:result) do
       performer.instance_eval do
-        student_directory_file_path(@some_student, "whats_up.doc")
+        submitter_directory_file_path(@some_submitter, "whats_up.doc")
       end
     end
 
     before do
-      performer.instance_variable_set(:@some_student, student_double)
-      allow(performer).to receive(:student_directory_path) { "/this/great/path" }
+      performer.instance_variable_set(:@some_submitter, submitter_double)
+      allow(performer).to receive(:submitter_directory_path) { "/this/great/path" }
     end
 
-    it "gets the student directory path from the student" do
-      expect(performer).to receive(:student_directory_path).with(student_double)
+    it "gets the submitter directory path from the submitter" do
+      expect(performer).to receive(:submitter_directory_path).with(submitter_double)
       result
     end
 
-    it "builds the correct path relative to the student directory" do
+    it "builds the correct path relative to the submitter directory" do
       expect(result).to eq("/this/great/path/whats_up.doc")
     end
   end
