@@ -22,7 +22,9 @@ class SubmissionsExportPerformer < ResqueJob::Performer
       submissions_export.update_export_completed_time
     else
       if logger
-        log_error_with_attributes "@assignment.present? and/or @students.present? failed and both should have been present, could not do_the_work"
+        log_error_with_attributes "@assignment.present? and/or" \
+          "@submitters.present? failed and both should have been present, " \
+          "could not do_the_work"
       end
     end
   end
@@ -31,10 +33,10 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     [
       :generate_export_csv, # generate the csv overview for the assignment or team
       :confirm_export_csv_integrity, # check whether the csv export was successful
-      :create_submitter_directories, # generate student directories
-      :submitter_directories_created_successfully, # check whether the student directories were all created successfully
-      :create_submission_text_files, # create text files in each student directory if there is submission data that requires it
-      :create_submission_binary_files, # create binary files in each student directory
+      :create_submitter_directories, # generate submitter directories
+      :submitter_directories_created_successfully, # check whether the submitter directories were all created successfully
+      :create_submission_text_files, # create text files in each submitter directory if there is submission data that requires it
+      :create_submission_binary_files, # create binary files in each submitter directory
       :write_note_for_missing_binary_files,
       :remove_empty_submitter_directories,
       :generate_error_log, # write error log for errors that may have occurred during file generation
@@ -81,14 +83,14 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     submitter_directory_file_path submitter, filename
   end
 
-  def write_submission_binary_file(student, submission_file, index)
-    file_path = submission_binary_file_path(student, submission_file, index)
+  def write_submission_binary_file(submitter, submission_file, index)
+    file_path = submission_binary_file_path(submitter, submission_file, index)
     stream_s3_file_to_disk(submission_file, file_path)
   end
 
   def create_binary_files_for_submission(submission)
     submission.submission_files.present.each_with_index do |submission_file, index|
-      write_submission_binary_file(submission.student, submission_file, index)
+      write_submission_binary_file(submission.submitter, submission_file, index)
     end
   end
 
