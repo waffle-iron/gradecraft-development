@@ -41,8 +41,8 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     allow(performer).to receive(:archive_root_dir) { archive_root_dir }
   end
 
-  describe "missing_student_directories" do
-    subject { performer.instance_eval { missing_student_directories }}
+  describe "missing_submitter_directories" do
+    subject { performer.instance_eval { missing_submitter_directories }}
     before(:each) do
       stub_students
       make_student_dirs
@@ -68,19 +68,19 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
     end
   end
 
-  describe "student_directories_created_successfully" do
-    subject { performer.instance_eval { student_directories_created_successfully }}
+  describe "submitter_directories_created_successfully" do
+    subject { performer.instance_eval { submitter_directories_created_successfully }}
 
-    context "missing_student_directories is empty" do
+    context "missing_submitter_directories is empty" do
       it "returns true" do
-        allow(performer).to receive(:missing_student_directories) { [] }
+        allow(performer).to receive(:missing_submitter_directories) { [] }
         expect(subject).to be_truthy
       end
     end
 
-    context "missing_student_directories are present" do
+    context "missing_submitter_directories are present" do
       it "returns false" do
-        allow(performer).to receive(:missing_student_directories) { [student_dir_name1, student_dir_name2] }
+        allow(performer).to receive(:missing_submitter_directories) { [student_dir_name1, student_dir_name2] }
         expect(subject).to be_falsey
       end
     end

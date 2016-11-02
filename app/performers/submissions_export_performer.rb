@@ -32,7 +32,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
       :generate_export_csv, # generate the csv overview for the assignment or team
       :confirm_export_csv_integrity, # check whether the csv export was successful
       :create_submitter_directories, # generate student directories
-      :student_directories_created_successfully, # check whether the student directories were all created successfully
+      :submitter_directories_created_successfully, # check whether the student directories were all created successfully
       :create_submission_text_files, # create text files in each student directory if there is submission data that requires it
       :create_submission_binary_files, # create binary files in each student directory
       :write_note_for_missing_binary_files,
@@ -214,13 +214,13 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     @expanded_archive_base_path ||= File.expand_path(submissions_export.export_file_basename, archive_tmp_dir)
   end
 
-  ## creating student directories
+  ## creating submitter directories
 
-  def student_directories_created_successfully
-    missing_student_directories.empty?
+  def submitter_directories_created_successfully
+    missing_submitter_directories.empty?
   end
 
-  def missing_student_directories
+  def missing_submitter_directories
     @submitters.inject([]) do |memo, submitter|
       memo << submitter_directory_names[submitter.id] unless Dir.exist?(submitter_directory_path(submitter))
       memo
