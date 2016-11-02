@@ -80,6 +80,10 @@ module ActiveLMS
     # Internal: Retrieves all the courses assigned to as a teacher from
     # the Canvas API.
     #
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
+    #
     # Examples
     #
     # GET: http://instructure.com/api/v1/courses?enrollment_type=teacher
@@ -127,11 +131,13 @@ module ActiveLMS
     #   "access_restricted_by_date": false,
     #   "time_zone": "America/Denver"
     # }]
-    def courses
+    def courses(&exception_handler)
       @courses || begin
         @courses = []
-        client.get_data("/courses", enrollment_type: "teacher") do |data|
-          @courses += data
+        handle_exceptions(exception_handler) do
+          client.get_data("/courses", enrollment_type: "teacher") do |data|
+            @courses += data
+          end
         end
       end
       @courses

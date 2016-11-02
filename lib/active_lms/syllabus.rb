@@ -18,8 +18,8 @@ module ActiveLMS
       provider.course(id, &exception_handler)
     end
 
-    def courses
-      provider.courses
+    def courses(&exception_handler)
+      provider.courses(&exception_handler)
     end
 
     def assignment(course_id, assignment_id, &exception_handler)
