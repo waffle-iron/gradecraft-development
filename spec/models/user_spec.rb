@@ -57,15 +57,15 @@ describe User do
   describe "student directory names" do
     let(:user) { create(:user, first_name: "Ben", last_name: "Bailey", username: "bbailey10") }
 
-    describe "#student_directory_name" do
-      it "formats the student info into an alphabetical student directory name" do
-        expect(user.student_directory_name).to eq("Bailey, Ben")
+    describe "#submitter_directory_name" do
+      it "formats the submitter info into an alphabetical submitter directory name" do
+        expect(user.submitter_directory_name).to eq("Bailey, Ben")
       end
     end
 
-    describe "#student_directory_name_with_username" do
-      it "formats the student directory name with username" do
-        expect(user.student_directory_name_with_username).to eq("Bailey, Ben - Bbailey10")
+    describe "#submitter_directory_name_with_suffix" do
+      it "formats the submitter directory name with suffix" do
+        expect(user.submitter_directory_name_with_suffix).to eq("Bailey, Ben - Bbailey10")
       end
     end
   end
@@ -494,25 +494,25 @@ describe User do
       expect(student.grade_for_assignment_id(assignment.id)).to eq([grade])
     end
   end
-  
+
   describe "#predictions_for_course?(course)" do
     #predicted_earned_grades.for_course(course).predicted_to_be_done.present?
-    it "returns true if the student has predicted any assignment" do 
+    it "returns true if the student has predicted any assignment" do
       prediction = create(:predicted_earned_grade, student: student, assignment: assignment)
       expect(student.predictions_for_course?(course)).to eq true
     end
-    
-    it "returns false if the student has not predicted any assignments" do 
+
+    it "returns false if the student has not predicted any assignments" do
       expect(student.predictions_for_course?(course)).to eq false
     end
   end
-  
+
   describe "#last_course_login(course)" do
-    it "returns nil  if the student has not logged into the course site" do 
+    it "returns nil  if the student has not logged into the course site" do
       expect(student.last_course_login(course)).to be nil
     end
-    
-    it "returns the last time the student logged into the course" do 
+
+    it "returns the last time the student logged into the course" do
       login_time = DateTime.now
       student_2 = create(:user)
       cm = create(:student_course_membership, user: student_2, course: course, last_login_at:

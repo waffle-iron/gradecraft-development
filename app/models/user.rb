@@ -176,11 +176,11 @@ class User < ActiveRecord::Base
     @name = [first_name,last_name].reject(&:blank?).join(" ").presence || "User #{id}"
   end
 
-  def student_directory_name
+  def submitter_directory_name
     "#{last_name.camelize}, #{first_name.camelize}"
   end
 
-  def student_directory_name_with_username
+  def submitter_directory_name_with_suffix
     "#{student_directory_name} - #{username.camelize}"
   end
 
