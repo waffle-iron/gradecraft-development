@@ -56,6 +56,14 @@ class Group < ActiveRecord::Base
     submissions_by_assignment_id[assignment.id].try(:first)
   end
 
+  def submitter_directory_name
+    Formatter::Filename.new(name).directory_name.filename
+  end
+
+  def submitter_directory_name_with_suffix
+    "#{submitter_directory_name} - #{id}"
+  end
+
   private
 
   # Checking to make sure any constraints the instructor has set up around
@@ -91,14 +99,6 @@ class Group < ActiveRecord::Base
         end
       end
     end
-  end
-
-  def submitter_directory_name
-    Formatter::Filename.new(name).directory_name.filename
-  end
-
-  def submitter_directory_name_with_suffix
-    "#{submitter_directory_name} - #{id}"
   end
 
   def submissions_by_assignment_id

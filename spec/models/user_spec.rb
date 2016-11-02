@@ -54,7 +54,7 @@ describe User do
     end
   end
 
-  describe "student directory names" do
+  describe "submitter directory names" do
     let(:user) { create(:user, first_name: "Ben", last_name: "Bailey", username: "bbailey10") }
 
     describe "#submitter_directory_name" do

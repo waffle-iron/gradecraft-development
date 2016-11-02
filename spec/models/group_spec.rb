@@ -1,4 +1,4 @@
-require "active_record_spec_helper"
+require "rails_spec_helper"
 require "toolkits/sanitization_toolkit"
 
 describe Group do
@@ -62,6 +62,23 @@ describe Group do
       subject.save
 
       expect(subject.assignment_groups.count).to eq 2
+    end
+  end
+
+  describe "submitter directory names" do
+    subject { create :group, name: "Steven's Wondersauce" }
+
+    describe "#submitter_directory_name" do
+      it "formats the submitter name into a directory name" do
+        expect(subject.submitter_directory_name).to eq("Stevens Wondersauce")
+      end
+    end
+
+    describe "#submitter_directory_name_with_suffix" do
+      it "formats the submitter name into a directory name with unique id" do
+        expect(subject.submitter_directory_name_with_suffix)
+          .to eq("Stevens Wondersauce - #{subject.id}")
+      end
     end
   end
 
