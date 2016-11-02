@@ -15,16 +15,15 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
   # private and protected methods
 
-  describe "sorted_student_directory_keys" do
-    let(:contrived_student_submissions_hash) {{ "dave_hoggworthy"=>"", "carla_makeshift"=>"", "bordwell_hamhock"=>"" }}
-    let(:expected_keys_result) { %w[ bordwell_hamhock carla_makeshift dave_hoggworthy ] }
-
-    before do
-      allow(performer).to receive(:submissions_grouped_by_student) { contrived_student_submissions_hash }
-    end
-
+  describe "sorted_submitter_directory_keys" do
     it "sorts the keys alphabetically" do
-      expect(performer.instance_eval { sorted_student_directory_keys }).to eq(expected_keys_result)
+      submitters = { "dave_hoggworthy"=>"", "carla_makeshift"=>"", "bordwell_hamhock"=>"" }
+
+      allow(subject).to receive(:submissions_grouped_by_submitter)
+        .and_return submitters
+
+      expect(performer.instance_eval { sorted_submitter_directory_keys })
+        .to eq %w[bordwell_hamhock carla_makeshift dave_hoggworthy]
     end
   end
 
@@ -149,17 +148,17 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
   end
 
-  describe "submissions_by_student" do
+  describe "submissions_by_submitter" do
     let(:student1) { create(:user, first_name: "Ben", last_name: "Bailey", username: "benfriend") }
     let(:student2) { create(:user, first_name: "Mike", last_name: "McCaffrey") }
     let(:student3) { create(:user, first_name: "Dana", last_name: "Dafferty") }
     let(:student4) { create(:user, first_name: "Ben", last_name: "Bailey", username: "benweirdo") }
 
-    let(:submission1) { double(:submission, id: 1, student: student1) }
-    let(:submission2) { double(:submission, id: 2, student: student2) }
-    let(:submission3) { double(:submission, id: 3, student: student3) }
-    let(:submission4) { double(:submission, id: 4, student: student2) } # note that this uses student 2
-    let(:submission5) { double(:submission, id: 5, student: student4) }
+    let(:submission1) { double(:submission, id: 1, submitter_id: student1.id) }
+    let(:submission2) { double(:submission, id: 2, submitter_id: student2.id) }
+    let(:submission3) { double(:submission, id: 3, submitter_id: student3.id) }
+    let(:submission4) { double(:submission, id: 4, submitter_id: student2.id) } # note that this uses student 2
+    let(:submission5) { double(:submission, id: 5, submitter_id: student4.id) }
 
     let(:grouped_submission_expectation) {{
       "Bailey, Ben - Benfriend" => [submission1],
@@ -176,7 +175,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     end
 
     subject do
-      performer.instance_eval { submissions_grouped_by_student }
+      performer.instance_eval { submissions_grouped_by_submitter }
     end
 
     it "should reorder the @submissions array by student" do

@@ -128,20 +128,20 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     @csv_file_path ||= File.expand_path("_grade_import_template.csv", archive_root_dir)
   end
 
-  def sorted_student_directory_keys
-    submissions_grouped_by_student.keys.sort
+  def sorted_submitter_directory_keys
+    submissions_grouped_by_submitter.keys.sort
   end
 
-  def submissions_grouped_by_student
-    @submissions_grouped_by_student ||= @submissions.group_by do |submission|
-      submitter_directory_names[submission.student.id]
+  def submissions_grouped_by_submitter
+    @submissions_grouped_by_submitter ||= @submissions.group_by do |submission|
+      submitter_directory_names[submission.submitter_id]
     end
   end
 
   def submissions_snapshot
     @submissions_snapshot ||= @submissions.inject({}) do |memo, submission|
       memo[submission.id] = {
-        student_id: submission.student_id,
+        submitter_id: submission.submitter_id,
         updated_at: submission.updated_at.to_s
       }
       memo
