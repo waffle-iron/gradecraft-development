@@ -467,6 +467,9 @@ module ActiveLMS
     # Internal: Retrieves single user from the Canvas API.
     #
     # id - A String representing the user id from the Canvas API.
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
     #
     # Examples
     #
@@ -491,10 +494,12 @@ module ActiveLMS
     #  "time_zone": "America/Denver",
     #  "bio": "I like the Muppets."
     # }
-    def user(id)
-      user = nil
-      client.get_data("/users/#{id}/profile") { |data| user = data }
-      user
+    def user(id, &exception_handler)
+      handle_exceptions(exception_handler) do
+        user = nil
+        client.get_data("/users/#{id}/profile") { |data| user = data }
+        user
+      end
     end
 
     private
