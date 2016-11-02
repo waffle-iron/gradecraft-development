@@ -87,6 +87,10 @@ class Submission < ActiveRecord::Base
     assignment.has_groups? ? group : student
   end
 
+  def submitter_id
+    assignment.has_groups? ? group_id : student_id
+  end
+
   # Checking to see if a submission was turned in late
   # Set while skipping validations and callbacks
   def check_and_set_late_status!

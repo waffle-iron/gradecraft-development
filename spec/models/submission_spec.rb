@@ -331,6 +331,25 @@ describe Submission do
     end
   end
 
+  describe "#submitter_id" do
+    let(:submission) { create :submission, group_id: 20, student_id: 30 }
+
+    context "submission uses groups" do
+      it "returns the group id" do
+        allow(submission.assignment).to receive(:has_groups?) { true }
+        expect(submission.submitter_id).to eq 20
+      end
+    end
+
+    context "submissions doesn't use groups" do
+      it "returns the student" do
+        allow(submission.assignment).to receive(:has_groups?) { false }
+        expect(submission.submitter_id).to eq 30
+      end
+    end
+  end
+
+
   describe "#check_and_set_late_status!" do
     context "when the assignment has a due_at date" do
       context "with a submission that is late" do
