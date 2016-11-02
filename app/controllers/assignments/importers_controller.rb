@@ -18,8 +18,14 @@ class Assignments::ImportersController < ApplicationController
   # GET /assignments/importers/:importer_provider_id/courses/:id/assignments
   def assignments
     @provider_name = params[:importer_provider_id]
-    @course = syllabus.course(params[:id])
-    @assignments = syllabus.assignments(params[:id])
+    @course = syllabus.course(params[:id]) do
+      redirect_to assignment_importers_path,
+          alert: "There was an issue trying to retrieve the course from #{@provider_name.capitalize}." and return
+    end
+    @assignments = syllabus.assignments(params[:id]) do
+      redirect_to assignment_importers_path,
+          alert: "There was an issue trying to retrieve the assignments from #{@provider_name.capitalize}." and return
+    end
     @assignment_types = current_course.assignment_types.ordered
   end
 
@@ -35,8 +41,14 @@ class Assignments::ImportersController < ApplicationController
     if @result.success?
       render :assignments_import_results
     else
-      @course = syllabus.course(@course_id)
-      @assignments = syllabus.assignments(@course_id)
+      @course = syllabus.course(@course_id) do
+        redirect_to assignment_importers_path,
+          alert: "There was an issue trying to retrieve the course from #{@provider_name.capitalize}." and return
+      end
+      @assignments = syllabus.assignments(@course_id) do
+        redirect_to assignment_importers_path,
+          alert: "There was an issue trying to retrieve the assignments from #{@provider_name.capitalize}." and return
+      end
       @assignment_types = current_course.assignment_types.ordered
 
       render :assignments, alert: @result.message
