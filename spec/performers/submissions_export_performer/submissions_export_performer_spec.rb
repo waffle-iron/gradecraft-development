@@ -34,7 +34,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
     let(:csv_path) { performer.instance_eval { csv_file_path }}
 
     before(:each) do
-      performer.instance_variable_set(:@students_for_csv, students_for_csv)
+      performer.instance_variable_set(:@submitters_for_csv, students_for_csv)
       performer.instance_variable_set(:@assignment, assignment)
       allow(assignment).to receive(:grade_import) { CSV.generate {|csv| csv << ["dogs", "are", "nice"]} }
     end
@@ -123,27 +123,27 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   describe "work_resources_present?" do
     let(:assignment_present) { performer.instance_variable_set(:@assignment, true) }
     let(:assignment_not_present) { performer.instance_variable_set(:@assignment, false) }
-    let(:students_present) { performer.instance_variable_set(:@students, true) }
-    let(:students_not_present) { performer.instance_variable_set(:@students, false) }
+    let(:students_present) { performer.instance_variable_set(:@submitters, true) }
+    let(:students_not_present) { performer.instance_variable_set(:@submitters, false) }
 
     subject { performer.instance_eval { work_resources_present? }}
 
-    context "both @assignment and @students are present" do
+    context "both @assignment and @submitters are present" do
       before { assignment_present; students_present }
       it { should be_truthy }
     end
 
-    context "@assignment is present but @students are not" do
+    context "@assignment is present but @submitters are not" do
       before { assignment_present; students_not_present }
       it { should be_falsey }
     end
 
-    context "@students is present but @assignment is not" do
+    context "@submitters is present but @assignment is not" do
       before { students_present; assignment_not_present }
       it { should be_falsey }
     end
 
-    context "neither @students nor @assignment are present" do
+    context "neither @submitters nor @assignment are present" do
       before { students_not_present; assignment_not_present }
       it { should be_falsey }
     end
@@ -172,7 +172,7 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
 
     before(:each) do
       performer.instance_variable_set(:@submissions, submissions_by_id)
-      performer.instance_variable_set(:@students, [ student1, student2, student3, student4 ])
+      performer.instance_variable_set(:@submitters, [ student1, student2, student3, student4 ])
     end
 
     subject do
