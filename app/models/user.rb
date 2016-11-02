@@ -181,7 +181,7 @@ class User < ActiveRecord::Base
   end
 
   def submitter_directory_name_with_suffix
-    "#{student_directory_name} - #{username.camelize}"
+    "#{submitter_directory_name} - #{username.camelize}"
   end
 
   def same_name_as?(another_user)
