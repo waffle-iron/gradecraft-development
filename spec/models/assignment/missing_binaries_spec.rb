@@ -1,4 +1,3 @@
-require "active_record_spec_helper"
 require "rails_spec_helper"
 
 RSpec.describe "Assignment #missing_binaries methods" do
@@ -62,28 +61,33 @@ RSpec.describe "Assignment #missing_binaries methods" do
       end
     end
 
-    describe "#students_with_missing_binaries" do
-      subject { assignment.students_with_missing_binaries }
+    describe "#submitters_with_missing_binaries" do
+      subject { assignment.submitters_with_missing_binaries }
 
-      it "returns students that have submissions for the assignment" do
+      let(:cache_submission_files) do
+        missing_submission_file
+        present_submission_file
+        another_missing_submission_file
+      end
+
+      it "returns submitters that have submissions for the assignment" do
         expect(subject).to include(student1)
       end
 
-      it "doesn't return students that don't have a submission for the assignment" do
+      it "doesn't return submitters that don't have a submission for the assignment" do
         expect(subject).not_to include(student2)
       end
 
-      describe "ordering" do
-        let(:cache_submission_files) { missing_submission_file; present_submission_file; another_missing_submission_file }
-
-        it "orders the students by name" do
-          expect(subject.first.student_directory_name < subject.last.student_directory_name).to be_truthy
-        end
+      it "orders the students by name" do
+        expect(subject.first.submitter_directory_name <
+          subject.last.submitter_directory_name).to be_truthy
       end
 
       describe "assignment association" do
-        let(:cache_submission_files) { missing_submission_file; present_submission_file; another_missing_submission_file }
-        let(:another_submission_with_missing_file) { create(:submission, student: student3) } # some other assignment
+        let(:another_submission_with_missing_file) do
+          # some other assignment
+          create(:submission, student: student3)
+        end
 
         context "user has submissions with missing files for the assignment" do
           it "returns the user with those files" do
@@ -190,7 +194,8 @@ RSpec.describe "Assignment #missing_binaries methods" do
         let(:cache_team_memberships) { team_membership; another_team_membership }
 
         it "orders the students by name" do
-          expect(subject.first.student_directory_name < subject.last.student_directory_name).to be_truthy
+          expect(subject.first.submitter_directory_name <
+            subject.last.submitter_directory_name).to be_truthy
         end
       end
     end
