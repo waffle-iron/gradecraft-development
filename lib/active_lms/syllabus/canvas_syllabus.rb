@@ -250,7 +250,7 @@ module ActiveLMS
     #
     # GET: http://instructure.com/api/v1/courses/:course_id/assignments/:id
     #
-    # Returns a Hashes representing an assignments.
+    # Returns a Hash representing a single assignment.
     #
     # {
     #   "id": 4,
@@ -379,11 +379,87 @@ module ActiveLMS
       end
     end
 
-    def update_assignment(course_id, assignment_id, params)
+    # Internal: Updates an assignment on Canvas with the specified params on
+    # the Canvas API.
+    #
+    # course_id - A String representing the course id from the Canvas API.
+    # assignment_id - A String representing the assignment id from the Canvas API.
+    # params - A hash representing the changes for the assignment on the Canvas API.
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
+    #
+    # Examples
+    #
+    # PUT: http://instructure.com/api/v1/courses/:id/students/submission
+    #
+    # Returns a Hash representing an updated assignment.
+    #
+    # {
+    #   "id": 4,
+    #   "name": "some assignment",
+    #   "description": "<p>Do the following:</p>...",
+    #   "created_at": "2012-07-01T23:59:00-06:00",
+    #   "updated_at": "2012-07-01T23:59:00-06:00",
+    #   "due_at": "2012-07-01T23:59:00-06:00",
+    #   "lock_at": "2012-07-01T23:59:00-06:00",
+    #   "unlock_at": "2012-07-01T23:59:00-06:00",
+    #   "has_overrides": true,
+    #   "all_dates": null,
+    #   "course_id": 123,
+    #   "html_url": "https://...",
+    #   "submissions_download_url": ".../courses/:course_id/assignments/:id/submissions",
+    #  "assignment_group_id": 2,
+    #  "allowed_extensions": ["docx", "ppt"],
+    #  "turnitin_enabled": true,
+    #  "turnitin_settings": null,
+    #  "grade_group_students_individually": false,
+    #  "external_tool_tag_attributes": null,
+    #  "peer_reviews": false,
+    #  "automatic_peer_reviews": false,
+    #  "peer_review_count": 0,
+    #  "peer_reviews_assign_at": "2012-07-01T23:59:00-06:00",
+    #  "group_category_id": 1,
+    #  "needs_grading_count": 17,
+    #  "needs_grading_count_by_section": [{
+    #     "section_id":"123456",
+    #     "needs_grading_count":5 }],
+    #  "position": 1,
+    #  "post_to_sis": true,
+    #  "integration_id": "12341234",
+    #  "integration_data": "12341234",
+    #  "muted": null,
+    #  "points_possible": 12,
+    #  "submission_types": ["online_text_entry"],
+    #  "grading_type": "points",
+    #  "grading_standard_id": null,
+    #  "published": true,
+    #  "unpublishable": false,
+    #  "only_visible_to_overrides": false,
+    #  "locked_for_user": false,
+    #  "lock_info": null,
+    #  "lock_explanation": "This assignment is locked until September 1 at 12:00am",
+    #  "quiz_id": 620,
+    #  "anonymous_submissions": false,
+    #  "discussion_topic": null,
+    #  "freeze_on_copy": false,
+    #  "frozen": false,
+    #  "frozen_attributes": ["title"],
+    #  "submission": null,
+    #  "use_rubric_for_grading": true,
+    #  "rubric_settings": "{"points_possible"=>12}",
+    #  "rubric": null,
+    #  "assignment_visibility": [137, 381, 572],
+    #  "overrides": null,
+    #  "omit_from_final_grade": true
+    # }
+    def update_assignment(course_id, assignment_id, params, &exception_handler)
       assignment = nil
-      client.set_data(
-        "/courses/#{course_id}/assignments/#{assignment_id}", :put, params) do |data|
-          assignment = data
+      handle_exceptions(exception_handler) do
+        client.set_data(
+          "/courses/#{course_id}/assignments/#{assignment_id}", :put, params) do |data|
+            assignment = data
+        end
       end
       assignment
     end
@@ -396,7 +472,7 @@ module ActiveLMS
     #
     # GET: http://instructure.com/api/v1/users/:id/profile
     #
-    # Returns an Array of Hashes representing multiple grades.
+    # Returns a Hashe representing a single user.
     #
     # {
     #   "id": 2,

@@ -250,20 +250,36 @@ describe ActiveLMS::CanvasSyllabus, type: :disable_external_api do
   end
 
   describe "#update_assignment" do
-    subject { described_class.new access_token }
-
-    it "updates the assignment for the id from the api" do
-      request = { assignment: { name: "This is a published assignment" }}
-      body = { id: "123", name: "This is a published assignment" }
+    let(:request) { { assignment: { name: "This is a published assignment" }} }
+    let(:stub) do
       stub_request(:put,
                    "https://canvas.instructure.com/api/v1/courses/123/assignments/456")
         .with(query: { "access_token" => access_token }, body: request.to_json)
-        .to_return(status: 200, body: body.to_json,
-                   headers: {})
+    end
+    subject { described_class.new access_token }
 
-      assignment = subject.update_assignment(123, 456, request)
+    context "with a successful API call" do
+      it "updates the assignment for the id from the api" do
+        body = { id: "123", name: "This is a published assignment" }
+        stub.to_return(status: 200, body: body.to_json, headers: {})
 
-      expect(assignment["name"]).to eq "This is a published assignment"
+        assignment = subject.update_assignment(123, 456, request)
+
+        expect(assignment["name"]).to eq "This is a published assignment"
+      end
+    end
+
+    context "with an API error" do
+      let!(:json_error) { stub.to_raise(JSON::ParserError) }
+
+      it "calls the exception handler if one is provided" do
+        expect { |b| subject.update_assignment(123, 456,  request, &b) }.to \
+          yield_with_args(instance_of(JSON::ParserError))
+      end
+
+      it "raises the error if an exception handler is not provided" do
+        expect { subject.update_assignment(123, 456, request) }.to raise_error JSON::ParserError
+      end
     end
   end
 

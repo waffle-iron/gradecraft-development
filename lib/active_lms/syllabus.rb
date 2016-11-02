@@ -34,8 +34,8 @@ module ActiveLMS
       provider.grades(course_id, assignment_ids, grade_ids, &exception_handler)
     end
 
-    def update_assignment(course_id, assignment_id, params)
-      provider.update_assignment(course_id, assignment_id, params)
+    def update_assignment(course_id, assignment_id, params, &exception_handler)
+      provider.update_assignment(course_id, assignment_id, params, &exception_handler)
     end
 
     def user(id)
