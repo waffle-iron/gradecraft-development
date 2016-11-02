@@ -26,8 +26,8 @@ module ActiveLMS
       provider.assignment(course_id, assignment_id, &exception_handler)
     end
 
-    def assignments(course_id, assignment_ids=nil)
-      provider.assignments(course_id, assignment_ids)
+    def assignments(course_id, assignment_ids=nil, &exception_handler)
+      provider.assignments(course_id, assignment_ids, &exception_handler)
     end
 
     def grades(course_id, assignment_ids, grade_ids=nil, &exception_handler)

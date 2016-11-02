@@ -138,6 +138,9 @@ module ActiveLMS
     # id - A String representing the course id from the Canvas API.
     # assignment_ids - An Array of ids that can filter out the assignments
     # there were retrieved.
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
     #
     # Examples
     #
@@ -203,13 +206,15 @@ module ActiveLMS
     #  "overrides": null,
     #  "omit_from_final_grade": true
     # }]
-    def assignments(course_id, assignment_ids=nil)
+    def assignments(course_id, assignment_ids=nil, &exception_handler)
       assignments = []
 
       if assignment_ids.nil?
-        client.get_data("/courses/#{course_id}/assignments") do |data|
-          data.select { |assignment| assignment["published"] }.each do |assignment|
-            assignments << assignment
+        handle_exceptions(exception_handler) do
+          client.get_data("/courses/#{course_id}/assignments") do |data|
+            data.select { |assignment| assignment["published"] }.each do |assignment|
+              assignments << assignment
+            end
           end
         end
       else

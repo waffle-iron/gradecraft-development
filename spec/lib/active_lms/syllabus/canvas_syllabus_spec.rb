@@ -51,64 +51,81 @@ describe ActiveLMS::CanvasSyllabus, type: :disable_external_api do
   end
 
   describe "#assignments" do
-    subject { described_class.new access_token }
-
-    it "retrieves the published assignments for the course from the api" do
-      body = [{ name: "This is a published assignment", published: true },
-              { name: "This is an unpublished assignment", published: false }]
+    let(:stub) do
       stub_request(:get, "https://canvas.instructure.com/api/v1/courses/123/assignments")
         .with(query: { "access_token" => access_token })
-        .to_return(status: 200, body: body.to_json,
-                   headers: {})
-
-      assignments = subject.assignments(123)
-
-      expect(assignments.count).to eq 1
-      expect(assignments.first["name"]).to eq "This is a published assignment"
     end
+    subject { described_class.new access_token }
 
-    context "for specific ids" do
-      let!(:stub) do
-        stub_request(:get,
-                     "https://canvas.instructure.com/api/v1/courses/123/assignments/456")
-          .with(query: { "access_token" => access_token })
-          .to_return(status: 200, body: { name: "This is an assignment" }.to_json,
-                     headers: {})
+    context "with a successful API call" do
+      it "retrieves the published assignments for the course from the api" do
+        body = [{ name: "This is a published assignment", published: true },
+                { name: "This is an unpublished assignment", published: false }]
+        stub.to_return(status: 200, body: body.to_json, headers: {})
+
+        assignments = subject.assignments(123)
+
+        expect(assignments.count).to eq 1
+        expect(assignments.first["name"]).to eq "This is a published assignment"
       end
 
-      it "retrieves the assignment details from the api" do
-        subject.assignments(123, 456)
-
-        expect(stub).to have_been_requested
-      end
-
-      it "handles multiple assignment ids" do
-        stub2 = stub_request(:get,
-          "https://canvas.instructure.com/api/v1/courses/123/assignments/789")
-          .with(query: { "access_token" => access_token })
-          .to_return(status: 200, body: { name: "This is an assignment" }.to_json,
-                     headers: {})
-
-        subject.assignments(123, [456, 789])
-
-        expect(stub2).to have_been_requested
-      end
-
-      it "does not call the api for double assignment ids" do
-        subject.assignments(123, [456, 456])
-
-        expect(stub).to have_been_requested.once
-      end
-
-      it "does not call the api for nil assignment ids" do
-        stub.request_pattern = WebMock::RequestPattern.new(:get,
-          "https://canvas.instructure.com/api/v1/courses/123/assignments/")
+      context "for specific ids" do
+        let!(:stub) do
+          stub_request(:get,
+                       "https://canvas.instructure.com/api/v1/courses/123/assignments/456")
             .with(query: { "access_token" => access_token })
-        subject.assignments(123, [nil])
+            .to_return(status: 200, body: { name: "This is an assignment" }.to_json,
+                       headers: {})
+        end
 
-        expect(stub).to_not have_been_requested
+        it "retrieves the assignment details from the api" do
+          subject.assignments(123, 456)
+
+          expect(stub).to have_been_requested
+        end
+
+        it "handles multiple assignment ids" do
+          stub2 = stub_request(:get,
+            "https://canvas.instructure.com/api/v1/courses/123/assignments/789")
+            .with(query: { "access_token" => access_token })
+            .to_return(status: 200, body: { name: "This is an assignment" }.to_json,
+                       headers: {})
+
+          subject.assignments(123, [456, 789])
+
+          expect(stub2).to have_been_requested
+        end
+
+        it "does not call the api for double assignment ids" do
+          subject.assignments(123, [456, 456])
+
+          expect(stub).to have_been_requested.once
+        end
+
+        it "does not call the api for nil assignment ids" do
+          stub.request_pattern = WebMock::RequestPattern.new(:get,
+            "https://canvas.instructure.com/api/v1/courses/123/assignments/")
+              .with(query: { "access_token" => access_token })
+          subject.assignments(123, [nil])
+
+          expect(stub).to_not have_been_requested
+        end
       end
     end
+
+    context "with an API error" do
+      let!(:json_error) { stub.to_raise(JSON::ParserError) }
+
+      it "calls the exception handler if one is provided" do
+        expect { |b| subject.assignments(123, &b) }.to \
+          yield_with_args(instance_of(JSON::ParserError))
+      end
+
+      it "raises the error if an exception handler is not provided" do
+        expect { subject.assignments(123) }.to raise_error JSON::ParserError
+      end
+    end
+
   end
 
   describe "#course" do
