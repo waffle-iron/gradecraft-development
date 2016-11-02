@@ -178,7 +178,9 @@ describe ActiveLMS::CanvasSyllabus, type: :disable_external_api do
           yield_with_args(instance_of(JSON::ParserError))
       end
 
-      xit "raises the error if an exception handler is not provided"
+      it "raises the error if an exception handler is not provided" do
+        expect { subject.grades(123, assignment_ids, "456") }.to raise_error JSON::ParserError
+      end
     end
   end
 
