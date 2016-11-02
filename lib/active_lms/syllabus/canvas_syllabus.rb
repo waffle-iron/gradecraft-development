@@ -339,26 +339,22 @@ module ActiveLMS
     #   "excused": true
     # }]
     def grades(course_id, assignment_ids, grade_ids=nil, &exception_handler)
-      grades = []
-      params = { assignment_ids: assignment_ids,
-                 student_ids: "all",
-                 include: ["assignment", "course", "user"] }
-      client.get_data("/courses/#{course_id}/students/submissions", params) do |data|
-        if grade_ids.nil?
-          grades += data
-        else
-          filtered_ids = [grade_ids].flatten.uniq.compact.map(&:to_s)
-          data.select { |grade| filtered_ids.include?(grade["id"].to_s) }.each do |grade|
-            grades << grade
+      handle_exceptions(exception_handler) do
+        grades = []
+        params = { assignment_ids: assignment_ids,
+                   student_ids: "all",
+                   include: ["assignment", "course", "user"] }
+        client.get_data("/courses/#{course_id}/students/submissions", params) do |data|
+          if grade_ids.nil?
+            grades += data
+          else
+            filtered_ids = [grade_ids].flatten.uniq.compact.map(&:to_s)
+            data.select { |grade| filtered_ids.include?(grade["id"].to_s) }.each do |grade|
+              grades << grade
+            end
           end
         end
-      end
-      grades
-    rescue Canvas::ResponseError, HTTParty::Error, JSON::ParserError => e
-      if block_given?
-        exception_handler.call(e)
-      else
-        raise e
+        grades
       end
     end
 
@@ -407,5 +403,15 @@ module ActiveLMS
     private
 
     attr_reader :client
+
+    def handle_exceptions(exception_handler, &blk)
+      blk.call
+    rescue Canvas::ResponseError, HTTParty::Error, JSON::ParserError => e
+      if !exception_handler.nil?
+        exception_handler.call(e)
+      else
+        raise e
+      end
+    end
   end
 end
