@@ -33,19 +33,19 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
         expect(subject).to receive(:confirm_export_csv_integrity)
       end
 
-      it "creates directories for each submitter (group or student)" do
+      it "creates directories for each submitter (group or submitter)" do
         expect(subject).to receive(:create_submitter_directories)
       end
 
-      it "ensures that all student directories were created successfully" do
-        expect(subject).to receive(:student_directories_created_successfully)
+      it "ensures that all submitter directories were created successfully" do
+        expect(subject).to receive(:submitter_directories_created_successfully)
       end
 
-      it "creates submission text files in each student directory where needed" do
+      it "creates submission text files in each submitter directory where needed" do
         expect(subject).to receive(:create_submission_text_files)
       end
 
-      it "creates submission binary files in each student directory where present" do
+      it "creates submission binary files in each submitter directory where present" do
         expect(subject).to receive(:create_submission_binary_files)
       end
 
@@ -53,8 +53,8 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
         expect(subject).to receive(:write_note_for_missing_binary_files)
       end
 
-      it "removes any student directories that were created but weren't used" do
-        expect(subject).to receive(:remove_empty_student_directories)
+      it "removes any submitter directories that were created but weren't used" do
+        expect(subject).to receive(:remove_empty_submitter_directories)
       end
 
       describe "updating the export_completed_at time" do
