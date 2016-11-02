@@ -125,22 +125,37 @@ describe ActiveLMS::CanvasSyllabus, type: :disable_external_api do
         expect { subject.assignments(123) }.to raise_error JSON::ParserError
       end
     end
-
   end
 
   describe "#course" do
-    subject { described_class.new access_token }
-
-    it "retrieves the course for the id from the api" do
+    let(:stub) do
       stub_request(:get, "https://canvas.instructure.com/api/v1/courses/123")
         .with(query: { "access_token" => access_token })
-        .to_return(status: 200, body: { name: "This is a course" }.to_json,
-                   headers: {})
+    end
+    subject { described_class.new access_token }
 
-      course = subject.course(123)
+    context "with a successful API call" do
+      it "retrieves the course for the id from the api" do
+        stub.to_return(status: 200, body: { name: "This is a course" }.to_json, headers: {})
 
-      expect(course).to_not be_nil
-      expect(course["name"]).to eq "This is a course"
+        course = subject.course(123)
+
+        expect(course).to_not be_nil
+        expect(course["name"]).to eq "This is a course"
+      end
+    end
+
+    context "with an API error" do
+      let!(:json_error) { stub.to_raise(JSON::ParserError) }
+
+      it "calls the exception handler if one is provided" do
+        expect { |b| subject.course(123, &b) }.to \
+          yield_with_args(instance_of(JSON::ParserError))
+      end
+
+      it "raises the error if an exception handler is not provided" do
+        expect { subject.course(123) }.to raise_error JSON::ParserError
+      end
     end
   end
 

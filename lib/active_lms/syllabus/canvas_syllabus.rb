@@ -18,6 +18,9 @@ module ActiveLMS
     # Internal: Retrieves a single course from the Canvas API.
     #
     # id - A String representing the course id from the Canvas API.
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
     #
     # Examples
     #
@@ -66,10 +69,12 @@ module ActiveLMS
     #   "access_restricted_by_date": false,
     #   "time_zone": "America/Denver"
     # }
-    def course(id)
-      course = nil
-      client.get_data("/courses/#{id}") { |data| course = data }
-      course
+    def course(id, &exception_handler)
+      handle_exceptions(exception_handler) do
+        course = nil
+        client.get_data("/courses/#{id}") { |data| course = data }
+        course
+      end
     end
 
     # Internal: Retrieves all the courses assigned to as a teacher from

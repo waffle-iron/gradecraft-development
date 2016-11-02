@@ -14,8 +14,8 @@ module ActiveLMS
       raise InvalidProviderError.new(provider)
     end
 
-    def course(id)
-      provider.course(id)
+    def course(id, &exception_handler)
+      provider.course(id, &exception_handler)
     end
 
     def courses
