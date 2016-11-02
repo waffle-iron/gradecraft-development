@@ -253,11 +253,11 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     end
   end
 
-  # removing student directories
+  # removing submitter directories
   def remove_empty_submitter_directories
-    @submitters.each do |student|
-      if submitter_directory_empty?(student)
-        Dir.delete submitter_directory_path(student)
+    @submitters.each do |submitter|
+      if submitter_directory_empty?(submitter)
+        Dir.delete submitter_directory_path(submitter)
       end
     end
   end
@@ -333,12 +333,12 @@ class SubmissionsExportPerformer < ResqueJob::Performer
     @submission_files_with_missing_binaries ||= @assignment.submission_files_with_missing_binaries
   end
 
-  def students_with_missing_binaries
-    @students_with_missing_binaries ||= @assignment.students_with_missing_binaries
+  def submitters_with_missing_binaries
+    @submitters_with_missing_binaries ||= @assignment.submitters_with_missing_binaries
   end
 
   def write_note_for_missing_binary_files
-    unless students_with_missing_binaries.empty?
+    unless submitters_with_missing_binaries.empty?
       open(missing_binaries_file_path, "wt") do |file|
         write_missing_binary_text(file)
       end
@@ -347,13 +347,13 @@ class SubmissionsExportPerformer < ResqueJob::Performer
 
   def write_missing_binary_text(file)
     file.puts "The following files were uploaded, but no longer appear to be available on the server:"
-    write_missing_binary_files_for_student(file)
+    write_missing_binary_files_for_submitter(file)
   end
 
-  def write_missing_binary_files_for_student(file)
-    students_with_missing_binaries.each_with_index do |student, index|
-      file.puts "\n#{student.name}:"
-      add_missing_binary_filenames_to_file(file, student)
+  def write_missing_binary_files_for_submitter(file)
+    submitters_with_missing_binaries.each_with_index do |submitter, index|
+      file.puts "\n#{submitter.name}:"
+      add_missing_binary_filenames_to_file(file, submitter)
     end
   end
 

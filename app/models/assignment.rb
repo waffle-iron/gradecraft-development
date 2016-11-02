@@ -215,9 +215,20 @@ class Assignment < ActiveRecord::Base
   end
 
   # students and submissions with missing binaries
-  def students_with_missing_binaries
-    User.order_by_name
-      .where("id in (select distinct(student_id) from submissions where assignment_id = ? and id in (#{missing_submission_files_query}))", self.id, true)
+  def submitters_with_missing_binaries
+    if has_groups?
+      submitter_class = Group
+      submitter_foreign_key = "group_id"
+    else
+      submitter_class = User
+      submitter_foreign_key = "student_id"
+    end
+
+    missing_binaries_query = "id in (select distinct(#{submitter_foreign_key})" \
+      "from submissions where assignment_id = ? " \
+      "and id in (#{missing_submission_files_query}))"
+
+    submitter_class.order_by_name.where(missing_binaries_query, self.id, true)
   end
 
   # students and submissions with missing binaries
