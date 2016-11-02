@@ -93,6 +93,14 @@ class Group < ActiveRecord::Base
     end
   end
 
+  def submitter_directory_name
+    Formatter::Filename.new(name).directory_name.filename
+  end
+
+  def submitter_directory_name_with_suffix
+    "#{submitter_directory_name} - #{id}"
+  end
+
   def submissions_by_assignment_id
     @submissions_by_assignment ||= submissions.group_by(&:assignment_id)
   end
