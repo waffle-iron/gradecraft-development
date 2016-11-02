@@ -14,7 +14,10 @@ class Integrations::CoursesController < ApplicationController
     authorize! :read, @course
 
     @provider_name = params[:integration_id]
-    @courses = syllabus(@provider_name).courses
+    @courses = syllabus(@provider_name).courses do
+      redirect_to integrations_path,
+        alert: "There was an issue trying to retrieve the courses from #{@provider_name.capitalize}." and return
+    end
   end
 
   def create
