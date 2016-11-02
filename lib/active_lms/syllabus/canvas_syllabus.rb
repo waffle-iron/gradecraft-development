@@ -306,6 +306,9 @@ module ActiveLMS
     # assignment_ids - An Array of ids that can filter out the assignments
     # there were retrieved.
     # grade_ids - An array of ids that can filter out the grades that were retrieved.
+    # exception_handler - A block that is called (if provided) when an error occurs
+    # so the calling client can handle an exception gracefully. Currently rescues
+    # `HTTParty::Error`, `Canvas::ResponseError`, and `JSON::ParserError`.
     #
     # Examples
     #
