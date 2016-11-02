@@ -238,9 +238,9 @@ class SubmissionsExportPerformer < ResqueJob::Performer
       end
 
       if total_submitters_with_name > 1
-        memo[submitter.id] = submitter.student_directory_name_with_username
+        memo[submitter.id] = submitter.submitter_directory_name_with_suffix
       else
-        memo[submitter.id] = submitter.student_directory_name
+        memo[submitter.id] = submitter.submitter_directory_name
       end
       memo
     end

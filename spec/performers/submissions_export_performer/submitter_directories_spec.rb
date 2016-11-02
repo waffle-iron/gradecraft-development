@@ -16,9 +16,9 @@ RSpec.describe "SubmissionsExportPerformer: student directory handling", type: :
   let(:student2) { create(:user, first_name: student1.first_name, last_name: student1.last_name) }
   let(:student3) { create(:user) }
 
-  let(:student_dir_name1) { student1.student_directory_name_with_username }
-  let(:student_dir_name2) { student2.student_directory_name_with_username }
-  let(:student_dir_name3) { student3.student_directory_name }
+  let(:student_dir_name1) { student1.submitter_directory_name_with_suffix }
+  let(:student_dir_name2) { student2.submitter_directory_name_with_suffix }
+  let(:student_dir_name3) { student3.submitter_directory_name }
 
   let(:student_dir_path1) { "#{archive_root_dir}/#{student_dir_name1}" }
   let(:student_dir_path2) { "#{archive_root_dir}/#{student_dir_name2}" }
