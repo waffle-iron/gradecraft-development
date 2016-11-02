@@ -34,12 +34,18 @@ class Grades::ImportersController < ApplicationController
     end
   end
 
-  # POST /assignments/:assignment_id/grades/importers/:importer_provider_id/courses/:id/grades
+  # GET /assignments/:assignment_id/grades/importers/:importer_provider_id/courses/:id/grades
   def grades
     @assignment = Assignment.find params[:assignment_id]
     @provider_name = params[:importer_provider_id]
-    @provider_assignment = syllabus.assignment(params[:id], params[:assignment_ids])
-    @grades = syllabus.grades(params[:id], [params[:assignment_ids]].flatten)
+    @provider_assignment = syllabus.assignment(params[:id], params[:assignment_ids]) do |e|
+      redirect_to assignment_grades_importers_path(@assignment),
+        alert: "There was an issue trying to retrieve the assignment from Canvas." and return
+    end
+    @grades = syllabus.grades(params[:id], [params[:assignment_ids]].flatten) do |e|
+      redirect_to assignment_grades_importers_path(@assignment),
+        alert: "There was an issue trying to retrieve the grades from Canvas." and return
+    end
   end
 
   # POST /assignments/:assignment_id/grades/importers/:importer_provider_id/courses/:id/grades_import
