@@ -95,7 +95,7 @@ class SubmissionsExportPerformer < ResqueJob::Performer
   protected
 
   def work_resources_present?
-    @assignment.present? && @students.present?
+    @assignment.present? && @submitters.present?
   end
 
   def fetch_assets

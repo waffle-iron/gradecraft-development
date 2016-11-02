@@ -123,28 +123,28 @@ RSpec.describe SubmissionsExportPerformer, type: :background_job do
   describe "work_resources_present?" do
     let(:assignment_present) { performer.instance_variable_set(:@assignment, true) }
     let(:assignment_not_present) { performer.instance_variable_set(:@assignment, false) }
-    let(:students_present) { performer.instance_variable_set(:@submitters, true) }
-    let(:students_not_present) { performer.instance_variable_set(:@submitters, false) }
+    let(:submitters_present) { performer.instance_variable_set(:@submitters, true) }
+    let(:submitters_not_present) { performer.instance_variable_set(:@submitters, false) }
 
     subject { performer.instance_eval { work_resources_present? }}
 
     context "both @assignment and @submitters are present" do
-      before { assignment_present; students_present }
+      before { assignment_present; submitters_present }
       it { should be_truthy }
     end
 
     context "@assignment is present but @submitters are not" do
-      before { assignment_present; students_not_present }
+      before { assignment_present; submitters_not_present }
       it { should be_falsey }
     end
 
     context "@submitters is present but @assignment is not" do
-      before { students_present; assignment_not_present }
+      before { submitters_present; assignment_not_present }
       it { should be_falsey }
     end
 
     context "neither @submitters nor @assignment are present" do
-      before { students_not_present; assignment_not_present }
+      before { submitters_not_present; assignment_not_present }
       it { should be_falsey }
     end
   end
