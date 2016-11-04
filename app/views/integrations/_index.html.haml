@@ -3,8 +3,8 @@
     %img{src: "/images/canvas-logo.png"}
   .card-block= integration_card_for(:canvas, @course)
   
--# .card{style: "height: 350px;"}
--#   .card-cap
--#     %img{src: "/images/canvas-logo.png"}
--#   .card_block
--#     = render partial: "integrations/courses/lti_card", locals: { f: f }
+.card{style: "height: 350px;"}
+  .card-cap
+    %h2.inverse.center= glyph(:link) + "LTI Integration"
+  .card-block
+    = render partial: "integrations/courses/lti_card", locals: { f: f }
