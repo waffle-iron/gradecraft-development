@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/UM-USElab/gradecraft-development.png?label=ready&title=Ready)](https://waffle.io/UM-USElab/gradecraft-development)
 # Gradecraft is a gamified learning management system.
 
 [ ![Codeship Status for UM-USElab/gradecraft-development](https://codeship.com/projects/a7421010-4e8b-0133-aacd-4e8e1c03c7f2/status?branch=master)](https://codeship.com/projects/106957)
